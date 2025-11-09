@@ -142,7 +142,9 @@ export function GameScene() {
           
           while (
             nextVisible < currentStoryNode.messages.length &&
-            currentStoryNode.messages[nextVisible].speaker === "system"
+            (currentStoryNode.messages[nextVisible].speaker === "system" ||
+             currentStoryNode.messages[nextVisible].speaker === "narrator" ||
+             currentStoryNode.messages[nextVisible].speaker === "detective")
           ) {
             nextVisible++;
           }
@@ -156,7 +158,9 @@ export function GameScene() {
         
         while (
           nextVisible < currentStoryNode.messages.length &&
-          currentStoryNode.messages[nextVisible].speaker === "system"
+          (currentStoryNode.messages[nextVisible].speaker === "system" ||
+           currentStoryNode.messages[nextVisible].speaker === "narrator" ||
+           currentStoryNode.messages[nextVisible].speaker === "detective")
         ) {
           nextVisible++;
         }
