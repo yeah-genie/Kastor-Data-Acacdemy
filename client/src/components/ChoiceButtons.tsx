@@ -69,7 +69,7 @@ export function ChoiceButtons({ question, choices, onChoiceSelected }: ChoiceBut
             className={`w-full text-left p-4 rounded-xl border-2 transition-all shadow-md ${
               showFeedback && selectedChoice?.id === choice.id
                 ? choice.isCorrect
-                  ? "bg-green-500/20 border-green-500 text-white"
+                  ? "bg-green-500/20 border-green-500 text-gray-900"
                   : "bg-red-500/20 border-red-500 text-red-100"
                 : "bg-slate-800/90 border-slate-600 text-slate-100 hover:bg-slate-700/90 hover:border-slate-500 hover:shadow-lg"
             } ${showFeedback ? "cursor-not-allowed" : "cursor-pointer"}`}

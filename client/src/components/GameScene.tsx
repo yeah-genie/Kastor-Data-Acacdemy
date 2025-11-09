@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BookOpen, Volume2, VolumeX, Plus, Mic, Send } from "lucide-react";
 import { useDetectiveGame } from "@/lib/stores/useDetectiveGame";
@@ -39,6 +39,11 @@ export function GameScene() {
   const [pendingClue, setPendingClue] = useState<any>(null);
   const [showHint, setShowHint] = useState(false);
   const [currentHint, setCurrentHint] = useState<string>("");
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [visibleMessages]);
 
   useEffect(() => {
     const story = getStory(currentCase);
@@ -220,6 +225,8 @@ export function GameScene() {
             )}
           </>
         )}
+        
+        <div ref={chatEndRef} />
       </div>
 
       {/* Bottom Input Area */}
