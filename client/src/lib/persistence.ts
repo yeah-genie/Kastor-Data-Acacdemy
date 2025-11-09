@@ -9,6 +9,8 @@ export interface GameProgress {
       starsEarned: number;
       completed: boolean;
       hintsUsed: number;
+      visitedNodeIds?: string[];
+      lastUpdated?: number;
     };
   };
   unlockedCases: number[];

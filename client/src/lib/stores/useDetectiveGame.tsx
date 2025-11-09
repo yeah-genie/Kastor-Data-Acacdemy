@@ -86,6 +86,7 @@ interface DetectiveGameState {
   unlockedCases: number[];
   achievements: string[];
   totalScore: number;
+  visitedNodeIds: string[];
 
   setPhase: (phase: GamePhase) => void;
   setCurrentNode: (node: StoryNode) => void;
@@ -97,12 +98,15 @@ interface DetectiveGameState {
   setStarsEarned: (stars: number) => void;
   useHint: () => void;
   resetCase: () => void;
-  startCase: (caseNumber: number) => void;
+  startCase: (caseNumber: number, resumeMode?: boolean) => void;
   completeCase: (stars: number) => void;
   addAchievement: (achievementId: string) => void;
   loadSavedProgress: () => void;
   saveCurrentProgress: () => void;
   getProgress: (caseId: number) => { completed: boolean; starsEarned: number } | null;
+  getCaseProgressDetails: (caseId: number) => { percentComplete: number; isInProgress: boolean; isCompleted: boolean; lastNodeId: string | null };
+  recordNodeVisited: (nodeId: string) => void;
+  resetCaseFor: (caseId: number) => void;
   getCurrentXP: () => number;
   getCurrentLevel: () => number;
 }
@@ -125,6 +129,7 @@ export const useDetectiveGame = create<DetectiveGameState>()(
     unlockedCases: initialProgress.unlockedCases,
     achievements: initialProgress.achievements,
     totalScore: initialProgress.totalScore,
+    visitedNodeIds: [],
 
     setPhase: (phase) => {
       set({ phase });
@@ -193,15 +198,16 @@ export const useDetectiveGame = create<DetectiveGameState>()(
         score: 0,
         starsEarned: 0,
         hintsUsed: 0,
+        visitedNodeIds: [],
       });
       get().saveCurrentProgress();
     },
     
-    startCase: (caseNumber) => {
+    startCase: (caseNumber, resumeMode = false) => {
       const state = get();
       const savedCaseProgress = loadProgress()?.caseProgress[caseNumber];
       
-      if (savedCaseProgress && !savedCaseProgress.completed) {
+      if (resumeMode && savedCaseProgress && !savedCaseProgress.completed) {
         set({
           currentCase: caseNumber,
           phase: "stage1",
@@ -211,6 +217,7 @@ export const useDetectiveGame = create<DetectiveGameState>()(
           score: savedCaseProgress.score,
           starsEarned: savedCaseProgress.starsEarned,
           hintsUsed: savedCaseProgress.hintsUsed,
+          visitedNodeIds: savedCaseProgress.visitedNodeIds || [],
         });
       } else {
         set({
@@ -222,6 +229,7 @@ export const useDetectiveGame = create<DetectiveGameState>()(
           score: 0,
           starsEarned: 0,
           hintsUsed: 0,
+          visitedNodeIds: [],
         });
       }
       
@@ -278,6 +286,8 @@ export const useDetectiveGame = create<DetectiveGameState>()(
     
     saveCurrentProgress: () => {
       const state = get();
+      const uniqueVisitedNodes = Array.from(new Set(state.visitedNodeIds));
+      
       const progress: GameProgress = {
         currentCase: state.currentCase,
         caseProgress: {
@@ -287,8 +297,10 @@ export const useDetectiveGame = create<DetectiveGameState>()(
             evidenceCollected: state.evidenceCollected,
             score: state.score,
             starsEarned: state.starsEarned,
-            completed: state.phase === "stage5" && state.currentNode.includes("resolution"),
+            completed: state.currentNode === "end",
             hintsUsed: state.hintsUsed,
+            visitedNodeIds: uniqueVisitedNodes,
+            lastUpdated: Date.now(),
           },
         },
         unlockedCases: state.unlockedCases,
@@ -314,6 +326,53 @@ export const useDetectiveGame = create<DetectiveGameState>()(
         };
       }
       return null;
+    },
+    
+    recordNodeVisited: (nodeId) => {
+      set((state) => {
+        if (!state.visitedNodeIds.includes(nodeId)) {
+          return { visitedNodeIds: [...state.visitedNodeIds, nodeId] };
+        }
+        return {};
+      });
+      get().saveCurrentProgress();
+    },
+    
+    getCaseProgressDetails: (caseId) => {
+      const progress = loadProgress();
+      const caseProgress = progress?.caseProgress[caseId];
+      
+      if (!caseProgress) {
+        return {
+          percentComplete: 0,
+          isInProgress: false,
+          isCompleted: false,
+          lastNodeId: null,
+        };
+      }
+      
+      const visitedCount = caseProgress.visitedNodeIds?.length || 0;
+      const totalNodes = 20;
+      const percentComplete = Math.min(Math.round((visitedCount / totalNodes) * 100), 100);
+      
+      return {
+        percentComplete,
+        isInProgress: visitedCount > 0 && !caseProgress.completed,
+        isCompleted: caseProgress.completed,
+        lastNodeId: caseProgress.currentNode,
+      };
+    },
+    
+    resetCaseFor: (caseId) => {
+      const existingProgress = loadProgress();
+      if (existingProgress && existingProgress.caseProgress[caseId]) {
+        delete existingProgress.caseProgress[caseId];
+        saveProgress(existingProgress);
+      }
+      
+      if (get().currentCase === caseId) {
+        get().resetCase();
+      }
     },
     
     getCurrentXP: () => {
