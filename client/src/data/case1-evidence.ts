@@ -3,8 +3,19 @@ import { Evidence } from "@/lib/stores/useDetectiveGame";
 const mayaImage = "/characters/maya.jpg";
 const chrisImage = "/characters/chris.jpg";
 const ryanImage = "/characters/ryan.jpg";
+const officeImage = "/office-scene.jpg";
 
 export const case1Evidence: Record<string, Evidence> = {
+  office_photo: {
+    id: "office_photo",
+    type: "PHOTO",
+    title: "Game Studio Office",
+    imageUrl: officeImage,
+    caption: "The Game Studio headquarters - a modern office with developers working on multiple monitors.",
+    timestamp: Date.now(),
+    unlockedByNode: "stage2_start",
+  },
+  
   maya_profile: {
     id: "maya_profile",
     type: "CHARACTER",

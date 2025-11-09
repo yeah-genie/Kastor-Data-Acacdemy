@@ -5,6 +5,7 @@ export interface Message {
   avatar?: string;
   characterName?: string;
   timestamp?: string;
+  photo?: string;
 }
 
 export interface DataVisualization {
@@ -70,7 +71,7 @@ export const case1Story: Record<string, StoryNode> = {
     phase: "stage2",
     messages: [
       { id: "m10", speaker: "system", text: "📊 STAGE 2: DATA COLLECTION" },
-      { id: "m11", speaker: "system", text: "☀️ 8:00 AM - You arrive at the Game Studio headquarters. Large monitors display live game statistics." },
+      { id: "m11", speaker: "system", text: "☀️ 8:00 AM - You arrive at the Game Studio headquarters. Large monitors display live game statistics.", photo: "/office-scene.jpg" },
       { id: "m12", speaker: "maya", text: "Good morning, Detective. Let me introduce you to the team.", timestamp: "8:05 AM" },
       { id: "m14", speaker: "maya", text: "This is Chris Park, our Data Analyst. He monitors game stats and player behavior patterns.", timestamp: "8:06 AM" },
       { id: "m15", speaker: "maya", text: "And Ryan Torres, our Junior Server Engineer. He manages our server logs and database access.", timestamp: "8:06 AM" },
@@ -80,9 +81,9 @@ export const case1Story: Record<string, StoryNode> = {
       id: "q2",
       text: "🔍 Who should we interview first?",
       choices: [
-        { id: "c4", text: "Maya", isCorrect: true, nextNode: "maya_interview", feedback: "", evidenceAwarded: [case1Evidence.maya_profile, case1Evidence.chris_profile, case1Evidence.ryan_profile], pointsAwarded: 15 },
-        { id: "c5", text: "Chris", isCorrect: true, nextNode: "chris_interview", feedback: "", evidenceAwarded: [case1Evidence.maya_profile, case1Evidence.chris_profile, case1Evidence.ryan_profile], pointsAwarded: 15 },
-        { id: "c6", text: "Ryan", isCorrect: true, nextNode: "ryan_interview", feedback: "", evidenceAwarded: [case1Evidence.maya_profile, case1Evidence.chris_profile, case1Evidence.ryan_profile], pointsAwarded: 15 },
+        { id: "c4", text: "Maya", isCorrect: true, nextNode: "maya_interview", feedback: "", evidenceAwarded: [case1Evidence.office_photo, case1Evidence.maya_profile, case1Evidence.chris_profile, case1Evidence.ryan_profile], pointsAwarded: 15 },
+        { id: "c5", text: "Chris", isCorrect: true, nextNode: "chris_interview", feedback: "", evidenceAwarded: [case1Evidence.office_photo, case1Evidence.maya_profile, case1Evidence.chris_profile, case1Evidence.ryan_profile], pointsAwarded: 15 },
+        { id: "c6", text: "Ryan", isCorrect: true, nextNode: "ryan_interview", feedback: "", evidenceAwarded: [case1Evidence.office_photo, case1Evidence.maya_profile, case1Evidence.chris_profile, case1Evidence.ryan_profile], pointsAwarded: 15 },
       ],
     },
   },

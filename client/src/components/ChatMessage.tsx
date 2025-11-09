@@ -59,16 +59,33 @@ export function ChatMessage({ message, index }: ChatMessageProps) {
   // System messages (centered notifications)
   if (isSystem) {
     return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: index * 0.2, duration: 0.3 }}
-        className="flex justify-center my-2"
-      >
-        <div className="bg-gray-200 text-gray-600 px-4 py-2 rounded-full text-xs font-semibold">
-          {message.text}
-        </div>
-      </motion.div>
+      <>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: index * 0.2, duration: 0.3 }}
+          className="flex justify-center my-2"
+        >
+          <div className="bg-gray-200 text-gray-600 px-4 py-2 rounded-full text-xs font-semibold">
+            {message.text}
+          </div>
+        </motion.div>
+        
+        {message.photo && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.2 + 0.3, duration: 0.4 }}
+            className="flex justify-center my-3"
+          >
+            <img 
+              src={message.photo} 
+              alt="Scene" 
+              className="max-w-[85%] rounded-2xl shadow-lg border-2 border-gray-200"
+            />
+          </motion.div>
+        )}
+      </>
     );
   }
 
