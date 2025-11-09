@@ -19,6 +19,7 @@ import { getHint } from "@/data/hints";
 import { CharacterCardsSlider } from "./CharacterCardsSlider";
 import { CharacterEvidence } from "@/lib/stores/useDetectiveGame";
 import { CaseClosedModal } from "./CaseClosedModal";
+import { TypingIndicator } from "./TypingIndicator";
 
 export function GameScene() {
   const {
@@ -52,6 +53,8 @@ export function GameScene() {
   const [showCelebration, setShowCelebration] = useState(false);
   const [celebrationData, setCelebrationData] = useState<{ caseNumber: number; caseTitle: string } | null>(null);
   const [handledCelebrationId, setHandledCelebrationId] = useState<string | null>(null);
+  const [showTypingIndicator, setShowTypingIndicator] = useState(false);
+  const [typingSpeaker, setTypingSpeaker] = useState<string | undefined>(undefined);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -124,16 +127,42 @@ export function GameScene() {
     if (!currentStoryNode) return;
     
     if (visibleMessages < currentStoryNode.messages.length) {
-      let nextVisible = visibleMessages + 1;
+      const nextMessage = currentStoryNode.messages[visibleMessages];
+      const shouldShowTyping = nextMessage && 
+        nextMessage.speaker !== "system" && 
+        nextMessage.speaker !== "narrator" && 
+        nextMessage.speaker !== "detective";
       
-      while (
-        nextVisible < currentStoryNode.messages.length &&
-        currentStoryNode.messages[nextVisible].speaker === "system"
-      ) {
-        nextVisible++;
+      if (shouldShowTyping) {
+        setShowTypingIndicator(true);
+        setTypingSpeaker(nextMessage.speaker);
+        
+        setTimeout(() => {
+          let nextVisible = visibleMessages + 1;
+          
+          while (
+            nextVisible < currentStoryNode.messages.length &&
+            currentStoryNode.messages[nextVisible].speaker === "system"
+          ) {
+            nextVisible++;
+          }
+          
+          setVisibleMessages(nextVisible);
+          setShowTypingIndicator(false);
+          setTypingSpeaker(undefined);
+        }, 1000);
+      } else {
+        let nextVisible = visibleMessages + 1;
+        
+        while (
+          nextVisible < currentStoryNode.messages.length &&
+          currentStoryNode.messages[nextVisible].speaker === "system"
+        ) {
+          nextVisible++;
+        }
+        
+        setVisibleMessages(nextVisible);
       }
-      
-      setVisibleMessages(nextVisible);
     } else if (currentStoryNode.showCharacterCards && !showCharacterCardsSlider) {
       setShowCharacterCardsSlider(true);
     } else if (currentStoryNode.showCharacterCards && showCharacterCardsSlider && !showQuestion && !showEvidencePresentation) {
@@ -296,8 +325,7 @@ export function GameScene() {
 
       {/* Chat Messages Area */}
       <div 
-        className="flex-1 overflow-y-auto px-4 py-4 space-y-3 cursor-pointer"
-        onClick={handleChatClick}
+        className="flex-1 overflow-y-auto px-4 py-4 space-y-3"
       >
         {currentStoryNode.messages.slice(0, visibleMessages)
           .filter(message => !message.celebration)
@@ -305,10 +333,8 @@ export function GameScene() {
             <ChatMessage key={message.id} message={message} index={index} />
           ))}
         
-        {visibleMessages < currentStoryNode.messages.length && (
-          <div className="text-center py-2">
-            <span className="text-gray-400 text-sm">Tap to continue...</span>
-          </div>
+        {showTypingIndicator && (
+          <TypingIndicator speaker={typingSpeaker} />
         )}
 
         {visibleMessages === currentStoryNode.messages.length && (
@@ -340,32 +366,41 @@ export function GameScene() {
           </>
         )}
         
-        {visibleMessages === currentStoryNode.messages.length && 
-         !currentStoryNode.autoAdvance && 
-         ((currentStoryNode.showCharacterCards && !showCharacterCardsSlider) || 
-          (currentStoryNode.showCharacterCards && showCharacterCardsSlider && !showQuestion) ||
-          (!currentStoryNode.showCharacterCards && currentStoryNode.question && !showQuestion)) && (
-          <div className="text-center py-2">
-            <span className="text-gray-400 text-sm">Tap to continue...</span>
-          </div>
-        )}
-        
         <div ref={chatEndRef} />
       </div>
 
       {/* Bottom Input Area */}
       <div className="bg-white border-t border-gray-200 px-3 py-2 safe-area-bottom">
         <div className="flex items-center gap-2">
-          <button className="p-2 rounded-full hover:bg-gray-100 transition-colors text-blue-500">
+          <button 
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-400"
+            disabled
+          >
             <Plus className="w-6 h-6" />
           </button>
-          <div className="flex-1 bg-gray-100 rounded-full px-4 py-2.5">
-            <span className="text-gray-500 text-sm">Tap anywhere to continue...</span>
+          <div className="flex-1 bg-gray-100 rounded-full px-4 py-2.5 flex items-center justify-between">
+            <span className="text-gray-500 text-sm">
+              {visibleMessages < currentStoryNode.messages.length 
+                ? "Continue the conversation..." 
+                : showQuestion || showEvidencePresentation
+                  ? "Make your choice above..."
+                  : currentStoryNode.autoAdvance
+                    ? "Story continues..."
+                    : "Tap Continue to proceed..."
+              }
+            </span>
           </div>
-          <button className="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-600">
+          <button 
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-400"
+            disabled
+          >
             <Mic className="w-5 h-5" />
           </button>
-          <button className="p-2 rounded-full hover:bg-gray-100 transition-colors text-blue-500">
+          <button 
+            onClick={handleChatClick}
+            disabled={showTypingIndicator || (visibleMessages === currentStoryNode.messages.length && (showQuestion || showEvidencePresentation))}
+            className="p-2.5 rounded-full bg-blue-500 hover:bg-blue-600 transition-colors text-white disabled:bg-gray-300 disabled:cursor-not-allowed shadow-sm"
+          >
             <Send className="w-5 h-5" />
           </button>
         </div>
