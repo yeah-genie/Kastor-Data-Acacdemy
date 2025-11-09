@@ -274,6 +274,10 @@ export function GameScene() {
     return getHint(currentCase, currentNode) !== null;
   };
 
+  const handleBackToMenu = () => {
+    setPhase("menu");
+  };
+
   if (phase === "resolution" && currentNode === "end") {
     return <ResolutionScene onContinue={handleResolutionContinue} />;
   }
@@ -291,7 +295,12 @@ export function GameScene() {
       {/* Chat Header */}
       <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button className="text-gray-600">←</button>
+          <button 
+            onClick={handleBackToMenu}
+            className="text-gray-600 hover:text-gray-900 transition-colors text-2xl font-light"
+          >
+            ←
+          </button>
           <div>
             <h1 className="font-semibold text-gray-900">
               {caseMetadata[currentCase]?.title || "Case Investigation"}
