@@ -210,9 +210,9 @@ export const case1Story: Record<string, StoryNode> = {
         headers: ["Time", "Event", "IP Address", "Computer Owner"],
         rows: [
           ["10:47 PM", "Maya leaves office (CCTV)", "N/A", "Maya Chen"],
-          ["11:12 PM", "admin01 access Balance_DB", "192.168.1.47", "Chris Park"],
-          ["11:15 PM", "admin01 modify data", "192.168.1.47", "Chris Park"],
-          ["11:58 PM", "admin01 logout", "192.168.1.47", "Chris Park"],
+          ["11:12 PM", "admin01 access Balance_DB", "192.168.1.47", "Chris Anderson"],
+          ["11:15 PM", "admin01 modify data", "192.168.1.47", "Chris Anderson"],
+          ["11:58 PM", "admin01 logout", "192.168.1.47", "Chris Anderson"],
         ],
       },
     }],
@@ -316,7 +316,7 @@ export const case1Story: Record<string, StoryNode> = {
     messages: [
       { id: "m62", speaker: "system", text: "📝 CASE RESOLUTION" },
       { id: "m63", speaker: "narrator", text: "Excellent work, Detective! Here's what happened..." },
-      { id: "m64", speaker: "detective", text: "Chris Park obtained Maya's admin credentials and deliberately modified Shadow Reaper's attack power to generate extreme gameplay data for his personal AI research project.", timestamp: "10:20 AM" },
+      { id: "m64", speaker: "detective", text: "Chris Anderson obtained Maya's admin credentials and deliberately modified Shadow Reaper's attack power to generate extreme gameplay data for his personal AI research project.", timestamp: "10:20 AM" },
       { id: "m65", speaker: "detective", text: "He didn't intend to cause permanent damage, but his unauthorized access violated security protocols and damaged player trust.", timestamp: "10:21 AM" },
       { id: "m66", speaker: "maya", text: "Thank you, Detective. We'll revert the changes immediately and implement mandatory password security training.", timestamp: "10:22 AM" },
       { id: "m67", speaker: "maya", text: "Chris will face disciplinary action, but we'll also improve our access control systems so this can't happen again.", timestamp: "10:23 AM" },
