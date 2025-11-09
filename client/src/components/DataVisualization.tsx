@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { DataVisualization as DataVizType } from "@/data/case1-story";
-import { BarChart3, Table2, ScrollText } from "lucide-react";
+import { BarChart3, Table2, FileText } from "lucide-react";
 
 interface DataVisualizationProps {
   visualization: DataVizType;
@@ -19,20 +19,21 @@ export function DataVisualization({ visualization }: DataVisualizationProps) {
     });
 
     return (
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={250}>
         <LineChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-          <XAxis dataKey="name" stroke="#9ca3af" />
-          <YAxis stroke="#9ca3af" domain={[0, 100]} />
+          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+          <XAxis dataKey="name" stroke="#6b7280" style={{ fontSize: '12px' }} />
+          <YAxis stroke="#6b7280" domain={[0, 100]} style={{ fontSize: '12px' }} />
           <Tooltip
             contentStyle={{
-              backgroundColor: '#1f2937',
-              border: '1px solid #374151',
+              backgroundColor: '#ffffff',
+              border: '1px solid #e5e7eb',
               borderRadius: '8px',
-              color: '#f3f4f6'
+              color: '#111827',
+              fontSize: '12px'
             }}
           />
-          <Legend />
+          <Legend wrapperStyle={{ fontSize: '12px' }} />
           {data.datasets.map((dataset: any, index: number) => (
             <Line
               key={index}
@@ -40,8 +41,8 @@ export function DataVisualization({ visualization }: DataVisualizationProps) {
               dataKey={dataset.label}
               stroke={dataset.color}
               strokeWidth={2}
-              dot={{ r: 4 }}
-              activeDot={{ r: 6 }}
+              dot={{ r: 3 }}
+              activeDot={{ r: 5 }}
             />
           ))}
         </LineChart>
@@ -55,9 +56,9 @@ export function DataVisualization({ visualization }: DataVisualizationProps) {
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-600">
+            <tr className="border-b border-gray-200 bg-gray-50">
               {data.headers.map((header: string, index: number) => (
-                <th key={index} className="text-left px-3 py-2 text-slate-300 font-semibold">
+                <th key={index} className="text-left px-3 py-2 text-gray-700 font-semibold text-xs">
                   {header}
                 </th>
               ))}
@@ -65,9 +66,9 @@ export function DataVisualization({ visualization }: DataVisualizationProps) {
           </thead>
           <tbody>
             {data.rows.map((row: string[], rowIndex: number) => (
-              <tr key={rowIndex} className="border-b border-slate-700/50 hover:bg-slate-700/30">
+              <tr key={rowIndex} className="border-b border-gray-100 hover:bg-gray-50">
                 {row.map((cell, cellIndex) => (
-                  <td key={cellIndex} className="px-3 py-2 text-slate-200">
+                  <td key={cellIndex} className="px-3 py-2 text-gray-800 text-xs">
                     {cell}
                   </td>
                 ))}
@@ -86,16 +87,18 @@ export function DataVisualization({ visualization }: DataVisualizationProps) {
         {data.entries.map((entry: any, index: number) => (
           <div
             key={index}
-            className="bg-slate-800/50 border border-slate-600/30 rounded px-3 py-2 font-mono text-xs"
+            className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 font-mono text-xs"
           >
             <div className="flex items-center gap-3 flex-wrap">
-              <span className="text-slate-400">{entry.time}</span>
-              <span className="text-blue-400">{entry.user}</span>
-              <span className="text-slate-300">{entry.action}</span>
-              <span className={`px-2 py-0.5 rounded text-xs ${
-                entry.status === "성공" || entry.status.includes("성공") 
-                  ? "bg-green-900/50 text-green-300" 
-                  : "bg-red-900/50 text-red-300"
+              <span className="text-gray-500 font-semibold">{entry.time}</span>
+              <span className="text-blue-600 font-medium">{entry.user}</span>
+              <span className="text-gray-700">{entry.action}</span>
+              <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                entry.status === "success" || entry.status.includes("성공") || entry.status.includes("성공") || entry.status === "noted" || entry.status === "normal"
+                  ? "bg-green-100 text-green-700" 
+                  : entry.status === "failed" || entry.status.includes("실패") || entry.status === "attacked" || entry.status === "emergency" || entry.status === "critical"
+                  ? "bg-red-100 text-red-700"
+                  : "bg-yellow-100 text-yellow-700"
               }`}>
                 {entry.status}
               </span>
@@ -109,27 +112,27 @@ export function DataVisualization({ visualization }: DataVisualizationProps) {
   const getIcon = () => {
     switch (visualization.type) {
       case "chart":
-        return <BarChart3 className="w-5 h-5" />;
+        return <BarChart3 className="w-4 h-4" />;
       case "table":
-        return <Table2 className="w-5 h-5" />;
+        return <Table2 className="w-4 h-4" />;
       case "log":
-        return <ScrollText className="w-5 h-5" />;
+        return <FileText className="w-4 h-4" />;
     }
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.4 }}
-      className="bg-slate-800/80 border border-slate-600/50 rounded-lg p-4 my-4"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="bg-white border border-gray-200 rounded-2xl p-4 my-3 shadow-sm"
     >
-      <div className="flex items-center gap-2 mb-4 text-amber-400">
+      <div className="flex items-center gap-2 mb-3 text-gray-700">
         {getIcon()}
-        <h3 className="font-semibold">{visualization.title}</h3>
+        <h3 className="font-semibold text-sm">{visualization.title}</h3>
       </div>
       
-      <div className="bg-slate-900/50 rounded-lg p-4">
+      <div className="bg-white rounded-lg">
         {visualization.type === "chart" && renderChart()}
         {visualization.type === "table" && renderTable()}
         {visualization.type === "log" && renderLog()}
