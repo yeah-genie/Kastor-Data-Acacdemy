@@ -105,19 +105,19 @@ export function StartMenu() {
                       key={caseId}
                       whileTap={isUnlocked ? { scale: 0.98 } : {}}
                       onClick={() => isUnlocked && handleCaseClick(caseId)}
-                      className={`bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200 ${
+                      className={`bg-white rounded-xl overflow-hidden shadow-sm ${
                         isUnlocked ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
                       }`}
                     >
                       {/* Mission Image */}
-                      <div className="relative h-48 bg-gradient-to-br from-gray-800 to-gray-600 overflow-hidden">
+                      <div className="relative h-48 bg-gradient-to-br from-gray-800 to-gray-600">
                         <img 
                           src={caseId === 1 ? case1Image : caseId === 2 ? case2Image : case3Image} 
                           alt={metadata.title}
                           className="w-full h-full object-cover"
                         />
                         {/* Gradient overlay at bottom */}
-                        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-white to-transparent" />
+                        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white to-transparent" />
                         
                         {!isUnlocked && (
                           <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
@@ -129,7 +129,7 @@ export function StartMenu() {
                       </div>
 
                       {/* Mission Info */}
-                      <div className="p-4">
+                      <div className="p-4 -mt-1">
                         <h3 className="text-lg font-semibold text-gray-900 mb-2">
                           {metadata.title}
                         </h3>
