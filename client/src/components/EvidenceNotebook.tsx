@@ -133,10 +133,10 @@ export function EvidenceNotebook({ isOpen, onClose }: EvidenceNotebookProps) {
           />
           
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 50 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 50 }}
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] h-[calc(100%-2rem)] md:w-[calc(100%-5rem)] md:h-[calc(100%-5rem)] max-w-5xl max-h-[900px] bg-white border-2 border-gray-200 rounded-2xl z-50 overflow-hidden flex flex-col shadow-2xl"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] h-[85vh] md:w-[80vw] md:h-[80vh] max-w-5xl max-h-[900px] bg-white border-2 border-gray-200 rounded-2xl z-50 overflow-hidden flex flex-col shadow-2xl"
           >
             <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -210,7 +210,7 @@ export function EvidenceNotebook({ isOpen, onClose }: EvidenceNotebookProps) {
                             >
                               <div className="flex gap-4">
                                 {char.photo && (
-                                  <img src={char.photo} alt={char.name} className="w-20 h-20 rounded-full object-cover border-2 border-blue-400" />
+                                  <img src={char.photo} alt={char.name} className="w-20 h-20 rounded-full object-cover object-center border-2 border-blue-400" />
                                 )}
                                 <div className="flex-1">
                                   <h4 className="font-bold text-lg text-gray-800">{char.name}</h4>
