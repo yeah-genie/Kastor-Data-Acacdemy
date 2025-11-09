@@ -51,6 +51,9 @@ interface DetectiveGameState {
   addAchievement: (achievementId: string) => void;
   loadSavedProgress: () => void;
   saveCurrentProgress: () => void;
+  getProgress: (caseId: number) => { completed: boolean; starsEarned: number } | null;
+  getCurrentXP: () => number;
+  getCurrentLevel: () => number;
 }
 
 const initialProgress = loadProgress() || getInitialProgress();
@@ -219,6 +222,26 @@ export const useDetectiveGame = create<DetectiveGameState>()(
       }
       
       saveProgress(progress);
+    },
+    
+    getProgress: (caseId) => {
+      const progress = loadProgress();
+      const caseProgress = progress?.caseProgress[caseId];
+      if (caseProgress) {
+        return {
+          completed: caseProgress.completed,
+          starsEarned: caseProgress.starsEarned,
+        };
+      }
+      return null;
+    },
+    
+    getCurrentXP: () => {
+      return get().totalScore;
+    },
+    
+    getCurrentLevel: () => {
+      return Math.floor(get().totalScore / 100) + 1;
     },
   }))
 );

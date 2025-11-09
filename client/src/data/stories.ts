@@ -8,38 +8,39 @@ export interface CaseMetadata {
   title: string;
   subtitle: string;
   description: string;
-  difficulty: "초급" | "중급" | "고급";
+  difficulty: "Beginner" | "Intermediate" | "Advanced";
   tags: string[];
   keyLearning: string;
+  imageUrl?: string;
 }
 
 export const caseMetadata: Record<number, CaseMetadata> = {
   1: {
     id: 1,
-    title: "실종된 밸런스 패치",
-    subtitle: "The Missing Balance Patch",
-    description: "인기 온라인 게임에서 특정 캐릭터의 승률이 비정상적으로 급등했습니다. 승률 그래프와 패치 로그를 분석하여 내부자의 조작을 밝혀내세요!",
-    difficulty: "초급",
-    tags: ["데이터 분석", "로그 추적", "변화 탐지"],
-    keyLearning: "데이터의 급격한 변화는 항상 원인이 있습니다. 시스템 로그와 권한 기록을 확인하면 숨겨진 조작을 발견할 수 있습니다.",
+    title: "The Missing Balance Patch",
+    subtitle: "Uncover unauthorized game modifications",
+    description: "A specific character's win rate has abnormally surged in a popular online game. Analyze the win rate graphs and patch logs to uncover the insider's manipulation!",
+    difficulty: "Beginner",
+    tags: ["Data Analysis", "Log Tracking", "Change Detection"],
+    keyLearning: "Sudden changes in data always have a cause. Check system logs and permission records to discover hidden manipulations.",
   },
   2: {
     id: 2,
-    title: "유령 유저의 랭킹 조작",
-    subtitle: "The Ghost User's Ranking Manipulation",
-    description: "존재하지 않는 사용자가 랭킹 최상위에 등장했습니다. 접속 로그, 랭킹 테이블, 데이터베이스 쿼리 로그를 분석하여 봇 계정을 추적하세요!",
-    difficulty: "중급",
-    tags: ["데이터베이스", "로그 분석", "봇 탐지"],
-    keyLearning: "데이터 무결성은 모든 시스템의 기초입니다. 테이블 간의 관계를 확인하면 비정상적인 데이터 삽입을 발견할 수 있습니다.",
+    title: "The Ghost User's Ranking Manipulation",
+    subtitle: "Track down the phantom bot account",
+    description: "A non-existent user appeared at the top of the rankings. Analyze connection logs, ranking tables, and database query logs to track the bot account!",
+    difficulty: "Intermediate",
+    tags: ["Database", "Log Analysis", "Bot Detection"],
+    keyLearning: "Data integrity is the foundation of all systems. Check relationships between tables to discover abnormal data insertion.",
   },
   3: {
     id: 3,
-    title: "숨겨진 알고리즘의 비밀",
-    subtitle: "The Secret of the Hidden Algorithm",
-    description: "특정 유저에게만 유리한 매칭 시스템이 발견되었습니다. 매칭 결과 분포와 알고리즘 설정을 분석하여 조작된 규칙을 확인하세요!",
-    difficulty: "고급",
-    tags: ["알고리즘 분석", "패턴 인식", "공정성 검증"],
-    keyLearning: "알고리즘의 공정성은 코드뿐 아니라 실행 결과로도 검증해야 합니다. 특이 패턴은 숨겨진 편향의 증거입니다.",
+    title: "The Secret of the Hidden Algorithm",
+    subtitle: "Expose the rigged matchmaking system",
+    description: "A matchmaking system favorable to certain users has been discovered. Analyze the matchmaking result distribution and algorithm settings to identify the manipulated rules!",
+    difficulty: "Advanced",
+    tags: ["Algorithm Analysis", "Pattern Recognition", "Fairness Verification"],
+    keyLearning: "Algorithm fairness must be verified not only by code but also by execution results. Unusual patterns are evidence of hidden bias.",
   },
 };
 
