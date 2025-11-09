@@ -106,10 +106,11 @@ export const case1Story: Record<string, StoryNode> = {
     ],
     question: {
       id: "q3",
-      text: "🎯 Who else should we talk to?",
+      text: "🎯 What's next?",
       choices: [
         { id: "c7", text: "Talk to Chris", isCorrect: true, nextNode: "chris_interview", feedback: "", evidenceAwarded: [case1Evidence.maya_dialogue, case1Evidence.maya_profile_updated], pointsAwarded: 10 },
         { id: "c8", text: "Talk to Ryan", isCorrect: true, nextNode: "ryan_interview", feedback: "", evidenceAwarded: [case1Evidence.maya_dialogue, case1Evidence.maya_profile_updated], pointsAwarded: 10 },
+        { id: "c8b", text: "Analyze the server logs", isCorrect: true, nextNode: "stage3_start", feedback: "", evidenceAwarded: [case1Evidence.maya_dialogue, case1Evidence.maya_profile_updated], pointsAwarded: 15 },
       ],
     },
   },
@@ -127,10 +128,11 @@ export const case1Story: Record<string, StoryNode> = {
     ],
     question: {
       id: "q4",
-      text: "🎯 Who else should we talk to?",
+      text: "🎯 What's next?",
       choices: [
         { id: "c9", text: "Talk to Maya", isCorrect: true, nextNode: "maya_interview", feedback: "", evidenceAwarded: [case1Evidence.chris_dialogue, case1Evidence.chris_profile_updated], pointsAwarded: 10 },
         { id: "c10", text: "Talk to Ryan", isCorrect: true, nextNode: "ryan_interview", feedback: "", evidenceAwarded: [case1Evidence.chris_dialogue, case1Evidence.chris_profile_updated], pointsAwarded: 10 },
+        { id: "c10b", text: "Analyze the server logs", isCorrect: true, nextNode: "stage3_start", feedback: "", evidenceAwarded: [case1Evidence.chris_dialogue, case1Evidence.chris_profile_updated], pointsAwarded: 15 },
       ],
     },
   },
@@ -148,7 +150,7 @@ export const case1Story: Record<string, StoryNode> = {
     ],
     question: {
       id: "q5",
-      text: "🎯 Who else should we talk to?",
+      text: "🎯 What's next?",
       choices: [
         { id: "c11", text: "Talk to Maya", isCorrect: true, nextNode: "maya_interview", feedback: "", evidenceAwarded: [case1Evidence.ryan_dialogue, case1Evidence.server_logs, case1Evidence.ryan_profile_updated], pointsAwarded: 10 },
         { id: "c12", text: "Talk to Chris", isCorrect: true, nextNode: "chris_interview", feedback: "", evidenceAwarded: [case1Evidence.ryan_dialogue, case1Evidence.server_logs, case1Evidence.ryan_profile_updated], pointsAwarded: 10 },

@@ -17,6 +17,7 @@ export function ResumeGameModal({ isOpen, onContinue, onStartOver }: ResumeGameM
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/80 z-50"
+            onClick={onContinue}
           />
           
           <motion.div
