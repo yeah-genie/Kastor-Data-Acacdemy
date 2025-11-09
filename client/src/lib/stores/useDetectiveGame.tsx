@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
 import { loadProgress, saveProgress, getInitialProgress, type GameProgress } from "../persistence";
 
-export type GamePhase = "menu" | "stage1" | "stage2" | "stage3" | "stage4" | "stage5";
+export type GamePhase = "menu" | "stage1" | "stage2" | "stage3" | "stage4" | "stage5" | "resolution";
 export type StoryNode = string;
 
 export interface Clue {
@@ -351,14 +351,23 @@ export const useDetectiveGame = create<DetectiveGameState>()(
         };
       }
       
+      if (caseProgress.completed) {
+        return {
+          percentComplete: 100,
+          isInProgress: false,
+          isCompleted: true,
+          lastNodeId: caseProgress.currentNode,
+        };
+      }
+      
       const visitedCount = caseProgress.visitedNodeIds?.length || 0;
       const totalNodes = 20;
-      const percentComplete = Math.min(Math.round((visitedCount / totalNodes) * 100), 100);
+      const percentComplete = Math.min(Math.round((visitedCount / totalNodes) * 100), 99);
       
       return {
         percentComplete,
-        isInProgress: visitedCount > 0 && !caseProgress.completed,
-        isCompleted: caseProgress.completed,
+        isInProgress: visitedCount > 0,
+        isCompleted: false,
         lastNodeId: caseProgress.currentNode,
       };
     },

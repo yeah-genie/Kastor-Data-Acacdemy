@@ -3,21 +3,52 @@ import { FileText, User } from "lucide-react";
 import { useDetectiveGame } from "@/lib/stores/useDetectiveGame";
 import { caseMetadata } from "@/data/stories";
 import { useState } from "react";
+import { ResumeGameModal } from "./ResumeGameModal";
 
 const case1Image = "/cases/case1.jpg";
 const case2Image = "/cases/case2.jpg";
 const case3Image = "/cases/case3.jpg";
 
 export function StartMenu() {
-  const { startCase, unlockedCases, achievements, getProgress, getCurrentXP, getCurrentLevel } = useDetectiveGame();
+  const { startCase, unlockedCases, achievements, getProgress, getCurrentXP, getCurrentLevel, getCaseProgressDetails, resetCaseFor } = useDetectiveGame();
   const [activeTab, setActiveTab] = useState<"missions" | "profile">("missions");
+  const [showResumeModal, setShowResumeModal] = useState(false);
+  const [selectedCase, setSelectedCase] = useState<number | null>(null);
 
   const currentXP = getCurrentXP();
   const currentLevel = getCurrentLevel();
 
   const getCaseProgress = (caseId: number) => {
-    const progress = getProgress(caseId);
-    return progress?.completed ? 100 : progress?.starsEarned ? (progress.starsEarned / 3) * 100 : 0;
+    const details = getCaseProgressDetails(caseId);
+    return details.percentComplete;
+  };
+
+  const handleCaseClick = (caseId: number) => {
+    const details = getCaseProgressDetails(caseId);
+    
+    if (details.isInProgress) {
+      setSelectedCase(caseId);
+      setShowResumeModal(true);
+    } else {
+      startCase(caseId, false);
+    }
+  };
+
+  const handleResumeContinue = () => {
+    if (selectedCase !== null) {
+      startCase(selectedCase, true);
+      setShowResumeModal(false);
+      setSelectedCase(null);
+    }
+  };
+
+  const handleResumeStartOver = () => {
+    if (selectedCase !== null) {
+      resetCaseFor(selectedCase);
+      startCase(selectedCase, false);
+      setShowResumeModal(false);
+      setSelectedCase(null);
+    }
   };
 
   const isCaseUnlocked = (caseId: number) => {
@@ -68,7 +99,7 @@ export function StartMenu() {
                     <motion.div
                       key={caseId}
                       whileTap={isUnlocked ? { scale: 0.98 } : {}}
-                      onClick={() => isUnlocked && startCase(caseId)}
+                      onClick={() => isUnlocked && handleCaseClick(caseId)}
                       className={`bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200 ${
                         isUnlocked ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
                       }`}
@@ -172,6 +203,12 @@ export function StartMenu() {
           <span className="text-xs font-medium">Profile</span>
         </button>
       </div>
+
+      <ResumeGameModal
+        isOpen={showResumeModal}
+        onContinue={handleResumeContinue}
+        onStartOver={handleResumeStartOver}
+      />
     </div>
   );
 }

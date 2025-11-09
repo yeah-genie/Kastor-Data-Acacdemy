@@ -27,6 +27,7 @@ export function GameScene() {
     unlockEvidence,
     addScore,
     setStarsEarned,
+    recordNodeVisited,
   } = useDetectiveGame();
 
   const { isMuted, toggleMute, playSuccess } = useAudio();
@@ -45,6 +46,7 @@ export function GameScene() {
       setCurrentStoryNode(node);
       setPhase(node.phase);
       setVisibleMessages(0);
+      recordNodeVisited(currentNode);
     }
   }, [currentNode, currentCase]);
   
