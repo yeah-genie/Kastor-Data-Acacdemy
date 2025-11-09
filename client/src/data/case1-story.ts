@@ -52,7 +52,7 @@ export const case1Story: Record<string, StoryNode> = {
     phase: "stage1",
     messages: [
       { id: "m1", speaker: "system", text: "📁 CASE FILE #001: THE MISSING BALANCE PATCH" },
-      { id: "m2", speaker: "system", text: "🕐 11:47 PM - Your detective office. An email notification chimes.", photo: "/detective-office.jpg" },
+      { id: "m2", speaker: "system", text: "🕐 11:47 PM - Your detective office.\nAn email notification chimes.", photo: "/detective-office.jpg" },
       { id: "m3", speaker: "maya", text: "Detective, we have a major problem. After last night's game update, the character 'Shadow Reaper' became incredibly overpowered - the win rate jumped abnormally and the community thinks someone deliberately manipulated the balance. Many players have stopped playing and I have a meeting tomorrow morning. I need to know what happened.", timestamp: "11:47 PM" },
       { id: "m5", speaker: "narrator", text: "Interesting case! A sudden win rate spike usually means something changed in the game data. What's your theory?" },
     ],
@@ -72,7 +72,7 @@ export const case1Story: Record<string, StoryNode> = {
     phase: "stage2",
     messages: [
       { id: "m10", speaker: "system", text: "📊 STAGE 2: DATA COLLECTION" },
-      { id: "m11", speaker: "system", text: "☀️ 8:00 AM - You arrive at the Game Studio headquarters. Since yesterday's incident, everyone has been busy investigating.", photo: "/office-scene.jpg" },
+      { id: "m11", speaker: "system", text: "☀️ 8:00 AM - You arrive at the Game Studio headquarters.\nSince yesterday's incident, everyone has been busy investigating.", photo: "/office-scene.jpg" },
       { id: "m12", speaker: "maya", text: "Good morning, Detective. Sorry, things have been really hectic since the problem started. 😰", timestamp: "8:05 AM" },
       { id: "m13", speaker: "maya", text: "Let me introduce you to the team.", timestamp: "8:05 AM" },
       { id: "m14", speaker: "maya", text: "This is Chris Park, our Data Analyst. He monitors game stats and player behavior patterns.", timestamp: "8:06 AM" },
@@ -161,7 +161,7 @@ export const case1Story: Record<string, StoryNode> = {
     phase: "stage3",
     messages: [
       { id: "m35", speaker: "system", text: "🔬 STAGE 3: DATA PREPROCESSING" },
-      { id: "m36", speaker: "system", text: "📊 Your office - Time to organize and clean the collected data" },
+      { id: "m36", speaker: "system", text: "📊 Your office\nTime to organize and clean the collected data" },
       { id: "m37", speaker: "narrator", text: "Let me process these server logs. There's a lot of entries here..." },
     ],
     autoAdvance: { nextNode: "analyze_logs", delay: 1000 },
@@ -277,7 +277,7 @@ export const case1Story: Record<string, StoryNode> = {
     phase: "stage5",
     messages: [
       { id: "m50", speaker: "system", text: "⚖️ STAGE 5: INSIGHT & RESOLUTION" },
-      { id: "m51", speaker: "system", text: "🎯 Conference room - Time to confront the suspect" },
+      { id: "m51", speaker: "system", text: "🎯 Conference room\nTime to confront the suspect" },
       { id: "m52", speaker: "maya", text: "I've called Chris to the conference room as you requested.", timestamp: "10:00 AM" },
     ],
     autoAdvance: { nextNode: "confront_chris", delay: 1000 },
