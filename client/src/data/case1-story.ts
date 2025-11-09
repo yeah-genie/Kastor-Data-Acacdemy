@@ -13,9 +13,15 @@ export interface Message {
 }
 
 export interface DataVisualization {
-  type: "chart" | "table" | "log";
+  type: "chart" | "table" | "log" | "bar" | "timeline" | "ip-matching" | "winrate-prediction";
   title: string;
   data: any;
+  interactive?: boolean;
+  pointDetails?: Array<{
+    label: string;
+    event: string;
+    description: string;
+  }>;
 }
 
 export interface StoryNode {
@@ -78,7 +84,46 @@ export const case1Story: Record<string, StoryNode> = {
       { id: "m10", speaker: "system", text: "📊 STAGE 2: DATA COLLECTION" },
       { id: "m11", speaker: "system", text: "☀️ 8:00 AM - You arrive at the Game Studio headquarters.\nSince yesterday's incident, everyone has been busy investigating.", photo: "/office-scene.jpg" },
       { id: "m12", speaker: "maya", text: "Good morning, Detective. Sorry, things have been really hectic since the problem started. 😰", timestamp: "8:05 AM" },
-      { id: "m13", speaker: "maya", text: "Let me introduce you to the team.", timestamp: "8:05 AM" },
+      { id: "m12b", speaker: "detective", text: "Let me see who was in the office last night. Can you show me the office hour logs?", timestamp: "8:05 AM" },
+      { id: "m12c", speaker: "maya", text: "Of course! Here's the data from our access card system for November 8th.", timestamp: "8:05 AM" },
+    ],
+    autoAdvance: { nextNode: "view_overtime_data", delay: 1000 },
+  },
+
+  view_overtime_data: {
+    id: "view_overtime_data",
+    phase: "stage2",
+    messages: [
+      { id: "m12d", speaker: "narrator", text: "Look at the overtime hours for each team member. Who stayed late on November 8th?" },
+    ],
+    dataVisualizations: [{
+      type: "bar",
+      title: "Team Overtime Hours - November 8",
+      data: {
+        labels: ["Maya", "Chris", "Ryan"],
+        datasets: [{
+          label: "Hours Worked",
+          data: [12, 14, 9],
+          color: "#3b82f6",
+        }],
+      },
+    }],
+    question: {
+      id: "q1b",
+      text: "🎯 What does this overtime data tell us?",
+      choices: [
+        { id: "c1b", text: "Chris worked the longest - 14 hours", isCorrect: true, nextNode: "meet_team", feedback: "He stayed very late. Let's meet everyone.", pointsAwarded: 10 },
+        { id: "c2b", text: "Maya worked 12 hours", isCorrect: true, nextNode: "meet_team", feedback: "A long day for her. Let's meet the team.", pointsAwarded: 10 },
+        { id: "c3b", text: "Everyone was working late", isCorrect: true, nextNode: "meet_team", feedback: "It was a busy day for the whole team.", pointsAwarded: 10 },
+      ],
+    },
+  },
+
+  meet_team: {
+    id: "meet_team",
+    phase: "stage2",
+    messages: [
+      { id: "m13", speaker: "maya", text: "Let me introduce you to the team.", timestamp: "8:06 AM" },
       { id: "m14", speaker: "maya", text: "This is Chris Anderson, our Data Analyst. He monitors game stats and player behavior patterns.", timestamp: "8:06 AM" },
       { id: "m14b", speaker: "chris", text: "Good morning! 👋", timestamp: "8:06 AM" },
       { id: "m15", speaker: "maya", text: "And Ryan Torres, our Junior Server Engineer. He manages our server logs and database access.", timestamp: "8:06 AM" },
@@ -170,23 +215,41 @@ export const case1Story: Record<string, StoryNode> = {
       { id: "m36", speaker: "system", text: "📊 Your office\nTime to organize and clean the collected data" },
       { id: "m37", speaker: "narrator", text: "Let me process these server logs. There's a lot of entries here..." },
     ],
-    autoAdvance: { nextNode: "analyze_logs", delay: 1000 },
+    autoAdvance: { nextNode: "analyze_logs", delay: 500 },
   },
 
   analyze_logs: {
     id: "analyze_logs",
     phase: "stage3",
     messages: [
-      { id: "m38", speaker: "narrator", text: "I've filtered the logs to show only admin01 activity on November 8th. Take a look." },
+      { id: "m37b", speaker: "narrator", text: "Before we dive into the logs, let's test your data analysis skills. Based on what you know so far..." },
+    ],
+    dataVisualizations: [{
+      type: "winrate-prediction",
+      title: "Win Rate Prediction Challenge",
+      data: {
+        targetValue: 74,
+        tolerance: 10,
+      },
+    }],
+    autoAdvance: { nextNode: "view_logs", delay: 500 },
+  },
+
+  view_logs: {
+    id: "view_logs",
+    phase: "stage3",
+    messages: [
+      { id: "m38", speaker: "narrator", text: "Great! Now let's check the server logs to see what really happened." },
     ],
     dataVisualizations: [{
       type: "log",
       title: "Server Access Logs - November 8",
+      interactive: true,
       data: {
         entries: [
           { time: "10:47 PM", user: "admin01", action: "Login", ip: "192.168.1.47" },
           { time: "11:12 PM", user: "admin01", action: "Access Balance_DB", ip: "192.168.1.47" },
-          { time: "11:15 PM", user: "admin01", action: "MODIFY Shadow_Reaper.attack_power: 100 → 150", ip: "192.168.1.47" },
+          { time: "11:15 PM", user: "admin01", action: "MODIFY: Shadow_Reaper.attack_power: 100 → 150", ip: "192.168.1.47" },
           { time: "11:58 PM", user: "admin01", action: "Logout", ip: "192.168.1.47" },
         ],
       },
@@ -195,32 +258,77 @@ export const case1Story: Record<string, StoryNode> = {
       id: "q6",
       text: "🎯 What do you notice about these logs?",
       choices: [
-        { id: "c14", text: "Maya's account was used at 10:47 PM", isCorrect: true, nextNode: "ip_discovery", feedback: "admin01 logged in. Let's check the IP address...", pointsAwarded: 10 },
-        { id: "c15", text: "The attack power was changed at 11:15 PM", isCorrect: true, nextNode: "ip_discovery", feedback: "From 100 to 150. But who made that change?", pointsAwarded: 10 },
-        { id: "c16", text: "All activity came from IP 192.168.1.47", isCorrect: true, nextNode: "ip_discovery", feedback: "Let's find out whose computer that is.", pointsAwarded: 15 },
+        { id: "c14", text: "Maya's account was used at 10:47 PM", isCorrect: true, nextNode: "ip_matching_puzzle", feedback: "admin01 logged in. Let's check the IP address...", pointsAwarded: 10 },
+        { id: "c15", text: "The attack power was changed at 11:15 PM", isCorrect: true, nextNode: "ip_matching_puzzle", feedback: "From 100 to 150. But who made that change?", pointsAwarded: 10 },
+        { id: "c16", text: "All activity came from IP 192.168.1.47", isCorrect: true, nextNode: "ip_matching_puzzle", feedback: "Let's find out whose computer that is.", pointsAwarded: 15 },
       ],
     },
+  },
+
+  ip_matching_puzzle: {
+    id: "ip_matching_puzzle",
+    phase: "stage3",
+    messages: [
+      { id: "m39a", speaker: "narrator", text: "I found the IP addresses from the server logs and the office network map. Can you match each IP address to the correct team member?" },
+    ],
+    dataVisualizations: [{
+      type: "ip-matching",
+      title: "IP Address Matching Puzzle",
+      data: {
+        ipAddresses: [
+          { id: "ip1", ip: "192.168.1.47", description: "Used to modify Shadow_Reaper data at 11:15 PM" },
+          { id: "ip2", ip: "192.168.1.23", description: "Maya's regular workstation" },
+          { id: "ip3", ip: "192.168.1.89", description: "Ryan's server management station" },
+        ],
+        people: [
+          { id: "maya", name: "Maya Chen", role: "Lead Designer" },
+          { id: "chris", name: "Chris Anderson", role: "Data Analyst" },
+          { id: "ryan", name: "Ryan Torres", role: "Server Engineer" },
+        ],
+        correctMatches: {
+          "ip1": "chris",
+          "ip2": "maya",
+          "ip3": "ryan",
+        },
+      },
+    }],
+    autoAdvance: { nextNode: "ip_discovery", delay: 500 },
   },
 
   ip_discovery: {
     id: "ip_discovery",
     phase: "stage3",
     messages: [
-      { id: "m39", speaker: "narrator", text: "I cross-referenced the IP addresses with the office network map. Here's what I found..." },
+      { id: "m39", speaker: "narrator", text: "Perfect! Now let's see the full timeline with CCTV footage..." },
     ],
-    dataVisualizations: [{
-      type: "table",
-      title: "IP Address Analysis",
-      data: {
-        headers: ["Time", "Event", "IP Address", "Computer Owner"],
-        rows: [
-          ["10:47 PM", "Maya leaves office (CCTV)", "N/A", "Maya Chen"],
-          ["11:12 PM", "admin01 access Balance_DB", "192.168.1.47", "Chris Anderson"],
-          ["11:15 PM", "admin01 modify data", "192.168.1.47", "Chris Anderson"],
-          ["11:58 PM", "admin01 logout", "192.168.1.47", "Chris Anderson"],
-        ],
+    dataVisualizations: [
+      {
+        type: "timeline",
+        title: "Office Activity Timeline - November 8",
+        data: {
+          events: [
+            { time: "10:30 PM", person: "Maya Chen", type: "activity", description: "Reviewing balance data at her desk" },
+            { time: "10:47 PM", person: "Maya Chen", type: "exit", description: "Left the office building (CCTV confirmed)" },
+            { time: "11:12 PM", person: "Chris Anderson", type: "activity", description: "Accessed Balance_DB from his computer (IP: 192.168.1.47)" },
+            { time: "11:15 PM", person: "Chris Anderson", type: "activity", description: "Modified Shadow_Reaper.attack_power: 100 → 150 using admin01 account" },
+            { time: "11:58 PM", person: "Chris Anderson", type: "exit", description: "Logged out and left the office" },
+          ],
+        },
       },
-    }],
+      {
+        type: "table",
+        title: "IP Address Analysis",
+        data: {
+          headers: ["Time", "Event", "IP Address", "Computer Owner"],
+          rows: [
+            ["10:47 PM", "Maya leaves office (CCTV)", "N/A", "Maya Chen"],
+            ["11:12 PM", "admin01 access Balance_DB", "192.168.1.47", "Chris Anderson"],
+            ["11:15 PM", "admin01 modify data", "192.168.1.47", "Chris Anderson"],
+            ["11:58 PM", "admin01 logout", "192.168.1.47", "Chris Anderson"],
+          ],
+        },
+      }
+    ],
     question: {
       id: "q7",
       text: "🎯 What does this tell us?",
@@ -258,6 +366,7 @@ export const case1Story: Record<string, StoryNode> = {
     dataVisualizations: [{
       type: "chart",
       title: "Shadow Reaper Win Rate Timeline",
+      interactive: true,
       data: {
         labels: ["Nov 7", "Nov 8 (Before)", "Nov 8 (After)", "Nov 9"],
         datasets: [{
@@ -266,6 +375,28 @@ export const case1Story: Record<string, StoryNode> = {
           color: "#ef4444",
         }],
       },
+      pointDetails: [
+        {
+          label: "Nov 7",
+          event: "Normal Gameplay",
+          description: "Shadow Reaper performing normally with 48.5% win rate. Character is balanced according to game design specifications."
+        },
+        {
+          label: "Nov 8 (Before)",
+          event: "Pre-Patch Status",
+          description: "Win rate at 49.2%, slightly above average but still within normal range. Maya reviews balance data and everything looks fine."
+        },
+        {
+          label: "Nov 8 (After)",
+          event: "🚨 Suspicious Spike",
+          description: "Win rate jumps to 73.8%! Attack power was changed from 100 → 150 at 11:15 PM using admin01 account from IP 192.168.1.47 (Chris's computer)."
+        },
+        {
+          label: "Nov 9",
+          event: "Crisis Continues",
+          description: "Win rate remains at 75.1%. Players are frustrated and leaving the game. Community outcry intensifies."
+        }
+      ],
     }],
     question: {
       id: "q8",
