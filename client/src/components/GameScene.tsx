@@ -179,6 +179,10 @@ export function GameScene() {
     
     if (presentation.wrongNode) {
       setCurrentNode(presentation.wrongNode);
+    } else {
+      setTimeout(() => {
+        setShowEvidencePresentation(true);
+      }, 100);
     }
     setShowEvidencePresentation(false);
   };
