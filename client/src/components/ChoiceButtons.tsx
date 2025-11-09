@@ -96,7 +96,7 @@ export function ChoiceButtons({ question, choices, onChoiceSelected }: ChoiceBut
           animate={{ opacity: 1, y: 0 }}
           className={`mt-4 p-4 rounded-xl border-2 shadow-md ${
             selectedChoice.isCorrect
-              ? "bg-green-500/20 border-green-500 text-white"
+              ? "bg-green-500/20 border-green-500 text-gray-900"
               : "bg-red-500/20 border-red-500 text-red-100"
           }`}
         >

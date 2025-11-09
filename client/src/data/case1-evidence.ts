@@ -25,7 +25,7 @@ export const case1Evidence: Record<string, Evidence> = {
     photo: mayaImage,
     description: "Oversees game balance patches and meta analysis. Has admin01 account access.",
     suspicionLevel: 2,
-    timestamp: Date.now(),
+    timestamp: Date.now() - 2,
     unlockedByNode: "meet_team",
   },
   
@@ -38,7 +38,7 @@ export const case1Evidence: Record<string, Evidence> = {
     photo: chrisImage,
     description: "Analyzes player behavior and monitors matchmaking algorithms.",
     suspicionLevel: 4,
-    timestamp: Date.now(),
+    timestamp: Date.now() - 1,
     unlockedByNode: "meet_team",
   },
   

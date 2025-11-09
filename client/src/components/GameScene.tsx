@@ -48,7 +48,7 @@ export function GameScene() {
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [visibleMessages]);
+  }, [visibleMessages, showCharacterCardsSlider, showQuestion]);
 
   useEffect(() => {
     const story = getStory(currentCase);
@@ -229,7 +229,9 @@ export function GameScene() {
             {currentStoryNode.showCharacterCards && showCharacterCardsSlider && (
               <div onClick={(e) => e.stopPropagation()}>
                 <CharacterCardsSlider 
-                  characters={evidenceCollected.filter(e => e.type === "CHARACTER") as CharacterEvidence[]}
+                  characters={evidenceCollected
+                    .filter(e => e.type === "CHARACTER")
+                    .sort((a, b) => a.timestamp - b.timestamp) as CharacterEvidence[]}
                 />
               </div>
             )}
