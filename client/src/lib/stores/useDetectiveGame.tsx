@@ -28,6 +28,7 @@ export interface CharacterEvidence extends EvidenceBase {
   role: string;
   photo?: string;
   description: string;
+  personality?: string;
   suspicionLevel?: number;
 }
 
