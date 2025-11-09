@@ -155,7 +155,7 @@ export const useDetectiveGame = create<DetectiveGameState>()(
       
       const nextCase = state.currentCase + 1;
       const newUnlockedCases = [...state.unlockedCases];
-      if (nextCase <= 3 && !newUnlockedCases.includes(nextCase)) {
+      if (nextCase <= 5 && !newUnlockedCases.includes(nextCase)) {
         newUnlockedCases.push(nextCase);
       }
       
