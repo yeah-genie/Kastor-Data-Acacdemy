@@ -12,6 +12,51 @@ export interface Clue {
   timestamp: number;
 }
 
+export type EvidenceType = "CHARACTER" | "DATA" | "DIALOGUE" | "PHOTO" | "DOCUMENT";
+
+export interface EvidenceBase {
+  id: string;
+  type: EvidenceType;
+  title: string;
+  timestamp: number;
+  unlockedByNode: string;
+}
+
+export interface CharacterEvidence extends EvidenceBase {
+  type: "CHARACTER";
+  name: string;
+  role: string;
+  photo?: string;
+  description: string;
+  suspicionLevel?: number;
+}
+
+export interface DataEvidence extends EvidenceBase {
+  type: "DATA";
+  dataType: "chart" | "table" | "log";
+  data: any;
+}
+
+export interface DialogueEvidence extends EvidenceBase {
+  type: "DIALOGUE";
+  character: string;
+  summary: string;
+  keyPoints: string[];
+}
+
+export interface PhotoEvidence extends EvidenceBase {
+  type: "PHOTO";
+  imageUrl: string;
+  caption: string;
+}
+
+export interface DocumentEvidence extends EvidenceBase {
+  type: "DOCUMENT";
+  content: string;
+}
+
+export type Evidence = CharacterEvidence | DataEvidence | DialogueEvidence | PhotoEvidence | DocumentEvidence;
+
 export interface Choice {
   id: string;
   text: string;
@@ -30,6 +75,9 @@ interface DetectiveGameState {
   phase: GamePhase;
   currentNode: StoryNode;
   cluesCollected: Clue[];
+  evidenceCollected: Evidence[];
+  recentEvidenceId: string | null;
+  isEvidenceModalOpen: boolean;
   score: number;
   starsEarned: number;
   currentCase: number;
@@ -42,6 +90,9 @@ interface DetectiveGameState {
   setPhase: (phase: GamePhase) => void;
   setCurrentNode: (node: StoryNode) => void;
   addClue: (clue: Clue) => void;
+  unlockEvidence: (evidence: Evidence) => void;
+  setEvidenceModalOpen: (isOpen: boolean) => void;
+  getEvidenceByType: (type: EvidenceType) => Evidence[];
   addScore: (points: number) => void;
   setStarsEarned: (stars: number) => void;
   useHint: () => void;
@@ -63,6 +114,9 @@ export const useDetectiveGame = create<DetectiveGameState>()(
     phase: "menu",
     currentNode: "start",
     cluesCollected: [],
+    evidenceCollected: [],
+    recentEvidenceId: null,
+    isEvidenceModalOpen: false,
     score: 0,
     starsEarned: 0,
     currentCase: initialProgress.currentCase,
@@ -89,6 +143,23 @@ export const useDetectiveGame = create<DetectiveGameState>()(
       get().saveCurrentProgress();
     },
     
+    unlockEvidence: (evidence) => {
+      set((state) => ({
+        evidenceCollected: [...state.evidenceCollected, evidence],
+        recentEvidenceId: evidence.id,
+        isEvidenceModalOpen: true,
+      }));
+      get().saveCurrentProgress();
+    },
+    
+    setEvidenceModalOpen: (isOpen) => {
+      set({ isEvidenceModalOpen: isOpen });
+    },
+    
+    getEvidenceByType: (type) => {
+      return get().evidenceCollected.filter(e => e.type === type);
+    },
+    
     addScore: (points) => {
       set((state) => ({ 
         score: state.score + points,
@@ -113,6 +184,9 @@ export const useDetectiveGame = create<DetectiveGameState>()(
       set({
         currentNode: "start",
         cluesCollected: [],
+        evidenceCollected: [],
+        recentEvidenceId: null,
+        isEvidenceModalOpen: false,
         score: 0,
         starsEarned: 0,
         hintsUsed: 0,
@@ -130,6 +204,7 @@ export const useDetectiveGame = create<DetectiveGameState>()(
           phase: "stage1",
           currentNode: savedCaseProgress.currentNode,
           cluesCollected: savedCaseProgress.cluesCollected,
+          evidenceCollected: savedCaseProgress.evidenceCollected || [],
           score: savedCaseProgress.score,
           starsEarned: savedCaseProgress.starsEarned,
           hintsUsed: savedCaseProgress.hintsUsed,
@@ -140,6 +215,7 @@ export const useDetectiveGame = create<DetectiveGameState>()(
           phase: "stage1",
           currentNode: "start",
           cluesCollected: [],
+          evidenceCollected: [],
           score: 0,
           starsEarned: 0,
           hintsUsed: 0,
@@ -205,6 +281,7 @@ export const useDetectiveGame = create<DetectiveGameState>()(
           [state.currentCase]: {
             currentNode: state.currentNode,
             cluesCollected: state.cluesCollected,
+            evidenceCollected: state.evidenceCollected,
             score: state.score,
             starsEarned: state.starsEarned,
             completed: state.phase === "stage5" && state.currentNode.includes("resolution"),

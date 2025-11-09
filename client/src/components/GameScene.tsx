@@ -9,6 +9,8 @@ import { ChatMessage } from "./ChatMessage";
 import { DataVisualization } from "./DataVisualization";
 import { ChoiceButtons } from "./ChoiceButtons";
 import { DetectiveNotebook } from "./DetectiveNotebook";
+import { EvidenceNotebook } from "./EvidenceNotebook";
+import { EvidenceUnlockModal } from "./EvidenceUnlockModal";
 import { ClueAnimation } from "./ClueAnimation";
 import { ResolutionScene } from "./ResolutionScene";
 import { HintDialog } from "./HintDialog";
@@ -22,6 +24,7 @@ export function GameScene() {
     setCurrentNode,
     setPhase,
     addClue,
+    unlockEvidence,
     addScore,
     setStarsEarned,
   } = useDetectiveGame();
@@ -63,6 +66,11 @@ export function GameScene() {
       };
       addClue(clue);
       setPendingClue(clue);
+      playSuccess();
+    }
+
+    if (choice.evidenceAwarded) {
+      unlockEvidence(choice.evidenceAwarded);
       playSuccess();
     }
 
@@ -199,12 +207,12 @@ export function GameScene() {
         </div>
       </div>
 
-      <DetectiveNotebook 
+      <EvidenceNotebook 
         isOpen={showNotebook} 
         onClose={() => setShowNotebook(false)}
-        onShowHint={handleShowHint}
-        hintAvailable={isHintAvailable()}
       />
+      
+      <EvidenceUnlockModal />
       
       {pendingClue && (
         <ClueAnimation clue={pendingClue} onComplete={handleClueAnimationComplete} />

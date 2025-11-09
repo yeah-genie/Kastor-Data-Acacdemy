@@ -4,6 +4,7 @@ export interface GameProgress {
     [caseId: number]: {
       currentNode: string;
       cluesCollected: any[];
+      evidenceCollected?: any[];
       score: number;
       starsEarned: number;
       completed: boolean;
