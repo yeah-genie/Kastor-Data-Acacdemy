@@ -28,16 +28,16 @@ function DataEvidenceCard({ data, idx }: { data: DataEvidence; idx: number }) {
     >
       <div className="flex items-center gap-2 mb-3">
         <BarChart3 className="w-5 h-5 text-green-600" />
-        <h4 className="font-semibold text-gray-800">{data.title}</h4>
+        <h4 className="font-semibold text-base md:text-lg text-gray-800">{data.title}</h4>
       </div>
       
       {data.dataType === "log" && data.data?.entries && (
         <div className="space-y-2">
-          <div className="text-xs text-gray-500 mb-2 flex items-center gap-2">
+          <div className="text-xs md:text-sm text-gray-600 mb-2 flex items-center gap-2">
             <Bookmark className="w-3 h-3" />
             <span>Click on log entries to highlight important ones</span>
           </div>
-          <div className="bg-slate-900 rounded-lg p-3 font-mono text-xs overflow-x-auto">
+          <div className="bg-slate-900 rounded-lg p-3 font-mono text-xs md:text-sm overflow-x-auto">
             {data.data.entries.map((entry: any, entryIdx: number) => (
               <div
                 key={entryIdx}
@@ -136,58 +136,58 @@ export function EvidenceNotebook({ isOpen, onClose }: EvidenceNotebookProps) {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] h-[85vh] md:w-[80vw] md:h-[80vh] max-w-5xl max-h-[900px] bg-white border-2 border-gray-200 rounded-2xl z-50 overflow-hidden flex flex-col shadow-2xl"
+            className="fixed inset-3 md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[85vw] md:h-[85vh] md:max-w-5xl bg-white border-2 border-gray-200 rounded-2xl z-50 overflow-hidden flex flex-col shadow-2xl"
           >
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <BookOpen className="w-6 h-6 text-white" />
-                <h2 className="text-xl font-bold text-white">Evidence Notebook</h2>
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-3 md:px-6 md:py-4 flex items-center justify-between">
+              <div className="flex items-center gap-2 md:gap-3">
+                <BookOpen className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                <h2 className="text-lg md:text-xl font-bold text-white">Evidence Notebook</h2>
               </div>
               <button
                 onClick={onClose}
-                className="text-white hover:text-gray-200 text-2xl font-bold"
+                className="text-white hover:text-gray-200 text-3xl md:text-2xl font-bold min-w-[44px] min-h-[44px] flex items-center justify-center"
               >
                 ×
               </button>
             </div>
 
-            <div className="bg-gray-50 px-6 py-3 border-b border-gray-200">
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-4">
-                  <span className="text-gray-600">Score: <span className="text-blue-600 font-bold">{score}</span></span>
-                  <span className="text-gray-600">Evidence: <span className="text-purple-600 font-bold">{evidenceCollected.length}</span></span>
-                  <span className="text-gray-600">Hints: <span className="text-orange-600 font-bold">{hintsUsed}/{maxHints}</span></span>
+            <div className="bg-gray-50 px-4 py-2 md:px-6 md:py-3 border-b border-gray-200">
+              <div className="flex items-center justify-between text-sm md:text-base">
+                <div className="flex items-center gap-3 md:gap-4 flex-wrap">
+                  <span className="text-gray-700">Score: <span className="text-blue-600 font-bold">{score}</span></span>
+                  <span className="text-gray-700">Evidence: <span className="text-purple-600 font-bold">{evidenceCollected.length}</span></span>
+                  <span className="text-gray-700">Hints: <span className="text-orange-600 font-bold">{hintsUsed}/{maxHints}</span></span>
                 </div>
               </div>
             </div>
 
             <div className="flex-1 overflow-hidden">
               <Tabs defaultValue="characters" className="h-full flex flex-col">
-                <div className="bg-white border-b border-gray-200">
-                  <TabsList className="w-full grid grid-cols-4 md:grid-cols-5 bg-transparent p-2">
-                    <TabsTrigger value="characters" className="flex items-center gap-2">
+                <div className="bg-white border-b border-gray-200 overflow-x-auto">
+                  <TabsList className="w-full flex md:grid md:grid-cols-5 bg-transparent p-2 gap-1 min-w-max md:min-w-0">
+                    <TabsTrigger value="characters" className="flex items-center gap-1.5 md:gap-2 px-3 py-2.5 text-sm whitespace-nowrap">
                       <Users className="w-4 h-4" />
-                      <span className="hidden sm:inline">Characters</span>
+                      <span>Characters</span>
                       {characters.length > 0 && <span className="bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{characters.length}</span>}
                     </TabsTrigger>
-                    <TabsTrigger value="data" className="flex items-center gap-2">
+                    <TabsTrigger value="data" className="flex items-center gap-1.5 md:gap-2 px-3 py-2.5 text-sm whitespace-nowrap">
                       <BarChart3 className="w-4 h-4" />
-                      <span className="hidden sm:inline">Data</span>
+                      <span>Data</span>
                       {dataViz.length > 0 && <span className="bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{dataViz.length}</span>}
                     </TabsTrigger>
-                    <TabsTrigger value="conversations" className="flex items-center gap-2">
+                    <TabsTrigger value="conversations" className="flex items-center gap-1.5 md:gap-2 px-3 py-2.5 text-sm whitespace-nowrap">
                       <MessageSquare className="w-4 h-4" />
-                      <span className="hidden sm:inline">Talks</span>
+                      <span>Talks</span>
                       {dialogues.length > 0 && <span className="bg-purple-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{dialogues.length}</span>}
                     </TabsTrigger>
-                    <TabsTrigger value="photos" className="flex items-center gap-2">
+                    <TabsTrigger value="photos" className="flex items-center gap-1.5 md:gap-2 px-3 py-2.5 text-sm whitespace-nowrap">
                       <ImageIcon className="w-4 h-4" />
-                      <span className="hidden sm:inline">Photos</span>
+                      <span>Photos</span>
                       {photos.length > 0 && <span className="bg-pink-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{photos.length}</span>}
                     </TabsTrigger>
-                    <TabsTrigger value="documents" className="hidden md:flex items-center gap-2">
+                    <TabsTrigger value="documents" className="flex items-center gap-1.5 md:gap-2 px-3 py-2.5 text-sm whitespace-nowrap">
                       <FileText className="w-4 h-4" />
-                      <span className="hidden sm:inline">Docs</span>
+                      <span>Docs</span>
                       {documents.length > 0 && <span className="bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{documents.length}</span>}
                     </TabsTrigger>
                   </TabsList>
@@ -196,9 +196,9 @@ export function EvidenceNotebook({ isOpen, onClose }: EvidenceNotebookProps) {
                 <div className="flex-1 overflow-hidden">
                   <TabsContent value="characters" className="h-full m-0">
                     <ScrollArea className="h-full">
-                      <div className="p-6 space-y-4">
+                      <div className="p-4 md:p-6 space-y-4">
                         {characters.length === 0 ? (
-                          <div className="text-center text-gray-400 py-12">No character profiles yet</div>
+                          <div className="text-center text-gray-400 py-12 text-base">No character profiles yet</div>
                         ) : (
                           characters.map((char, idx) => (
                             <motion.div
@@ -209,16 +209,16 @@ export function EvidenceNotebook({ isOpen, onClose }: EvidenceNotebookProps) {
                               className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4 border border-blue-200"
                             >
                               <div className="flex flex-col">
-                                <div className="flex gap-4 mb-3">
+                                <div className="flex gap-3 md:gap-4 mb-3">
                                   {char.photo && (
-                                    <img src={char.photo} alt={char.name} className="w-24 h-24 rounded-2xl object-cover object-center border-2 border-blue-400 shadow-lg" />
+                                    <img src={char.photo} alt={char.name} className="w-20 h-20 md:w-24 md:h-24 rounded-2xl object-cover object-center border-2 border-blue-400 shadow-lg" />
                                   )}
                                   <div className="flex-1">
-                                    <h4 className="font-bold text-xl text-gray-900 mb-1">{char.name}</h4>
-                                    <p className="text-sm text-blue-700 font-semibold mb-2">{char.role}</p>
+                                    <h4 className="font-bold text-lg md:text-xl text-gray-900 mb-1">{char.name}</h4>
+                                    <p className="text-sm md:text-base text-blue-700 font-semibold mb-2">{char.role}</p>
                                     {char.suspicionLevel !== undefined && (
                                       <div className="flex items-center gap-2">
-                                        <span className="text-xs text-gray-700 font-medium">Suspicion Level:</span>
+                                        <span className="text-xs md:text-sm text-gray-700 font-medium">Suspicion Level:</span>
                                         <div className="flex gap-1">
                                           {[...Array(5)].map((_, i) => (
                                             <Star key={i} className={`w-4 h-4 ${i < (char.suspicionLevel || 0) ? 'fill-red-500 text-red-500' : 'text-gray-300'}`} />
@@ -231,14 +231,14 @@ export function EvidenceNotebook({ isOpen, onClose }: EvidenceNotebookProps) {
                                 
                                 <div className="space-y-2">
                                   <div className="bg-white rounded-lg p-3 border border-blue-200 shadow-sm">
-                                    <p className="text-xs font-bold text-gray-800 mb-1.5">PROFILE</p>
-                                    <p className="text-sm text-gray-800 leading-relaxed">{char.description}</p>
+                                    <p className="text-xs md:text-sm font-bold text-gray-800 mb-1.5">PROFILE</p>
+                                    <p className="text-sm md:text-base text-gray-800 leading-relaxed">{char.description}</p>
                                   </div>
                                   
                                   {char.personality && (
                                     <div className="bg-purple-50 rounded-lg p-3 border border-purple-200 shadow-sm">
-                                      <p className="text-xs font-bold text-purple-700 mb-1.5">PERSONALITY</p>
-                                      <p className="text-sm text-gray-800 leading-relaxed">{char.personality}</p>
+                                      <p className="text-xs md:text-sm font-bold text-purple-700 mb-1.5">PERSONALITY</p>
+                                      <p className="text-sm md:text-base text-gray-800 leading-relaxed">{char.personality}</p>
                                     </div>
                                   )}
                                 </div>
@@ -252,9 +252,9 @@ export function EvidenceNotebook({ isOpen, onClose }: EvidenceNotebookProps) {
 
                   <TabsContent value="data" className="h-full m-0">
                     <ScrollArea className="h-full">
-                      <div className="p-6 space-y-4">
+                      <div className="p-4 md:p-6 space-y-4">
                         {dataViz.length === 0 ? (
-                          <div className="text-center text-gray-400 py-12">No data evidence yet</div>
+                          <div className="text-center text-gray-400 py-12 text-base">No data evidence yet</div>
                         ) : (
                           dataViz.map((data, idx) => (
                             <DataEvidenceCard key={data.id} data={data} idx={idx} />
@@ -266,9 +266,9 @@ export function EvidenceNotebook({ isOpen, onClose }: EvidenceNotebookProps) {
 
                   <TabsContent value="conversations" className="h-full m-0">
                     <ScrollArea className="h-full">
-                      <div className="p-6 space-y-4">
+                      <div className="p-4 md:p-6 space-y-4">
                         {dialogues.length === 0 ? (
-                          <div className="text-center text-gray-400 py-12">No conversations yet</div>
+                          <div className="text-center text-gray-400 py-12 text-base">No conversations yet</div>
                         ) : (
                           dialogues.map((dialogue, idx) => (
                             <motion.div
@@ -280,13 +280,13 @@ export function EvidenceNotebook({ isOpen, onClose }: EvidenceNotebookProps) {
                             >
                               <div className="flex items-center gap-2 mb-2">
                                 <MessageSquare className="w-5 h-5 text-purple-600" />
-                                <h4 className="font-semibold text-gray-800">{dialogue.title}</h4>
+                                <h4 className="font-semibold text-base md:text-lg text-gray-800">{dialogue.title}</h4>
                               </div>
-                              <p className="text-sm font-medium text-purple-700 mb-2">With: {dialogue.character}</p>
-                              <p className="text-sm text-gray-700 mb-3">{dialogue.summary}</p>
+                              <p className="text-sm md:text-base font-medium text-purple-700 mb-2">With: {dialogue.character}</p>
+                              <p className="text-sm md:text-base text-gray-700 mb-3">{dialogue.summary}</p>
                               <div className="border-t border-purple-200 pt-2">
-                                <p className="text-xs text-gray-600 font-medium mb-1">Key Points:</p>
-                                <ul className="text-xs text-gray-700 space-y-1">
+                                <p className="text-xs md:text-sm text-gray-600 font-medium mb-1">Key Points:</p>
+                                <ul className="text-sm text-gray-700 space-y-1">
                                   {dialogue.keyPoints.map((point, i) => (
                                     <li key={i}>• {point}</li>
                                   ))}

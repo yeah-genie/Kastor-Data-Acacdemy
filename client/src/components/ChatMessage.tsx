@@ -100,12 +100,12 @@ export function ChatMessage({ message, index }: ChatMessageProps) {
         transition={{ delay: index * 0.2, duration: 0.3 }}
         className="flex justify-center my-3"
       >
-        <div className="bg-amber-50 border border-amber-200 text-amber-900 px-4 py-3 rounded-lg max-w-[85%] shadow-sm">
+        <div className="bg-amber-50 border border-amber-200 text-amber-900 px-4 py-3 rounded-lg max-w-[90%] md:max-w-[85%] shadow-sm">
           <div className="flex items-start gap-2">
-            <div className="text-lg">💡</div>
+            <div className="text-xl md:text-lg">💡</div>
             <div className="flex-1">
-              <div className="text-xs font-semibold text-amber-700 mb-1">Kastor's Hint</div>
-              <p className="text-sm leading-relaxed">{message.text}</p>
+              <div className="text-sm md:text-xs font-semibold text-amber-700 mb-1">Kastor's Hint</div>
+              <p className="text-base md:text-sm leading-relaxed">{message.text}</p>
             </div>
           </div>
         </div>
@@ -127,10 +127,10 @@ export function ChatMessage({ message, index }: ChatMessageProps) {
           <img 
             src={avatarUrl} 
             alt={getSpeakerName()} 
-            className={`w-8 h-8 rounded-full object-cover ${isDetective ? 'object-top' : 'object-center'}`}
+            className={`w-10 h-10 md:w-8 md:h-8 rounded-full object-cover ${isDetective ? 'object-top' : 'object-center'}`}
           />
         ) : (
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold ${
+          <div className={`w-10 h-10 md:w-8 md:h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold ${
             isDetective ? "bg-blue-500" : isNarrator ? "bg-purple-500" : "bg-gray-500"
           }`}>
             {isDetective ? "👮" : isNarrator ? <FileText className="w-4 h-4" /> : <User className="w-4 h-4" />}
@@ -139,16 +139,16 @@ export function ChatMessage({ message, index }: ChatMessageProps) {
       </div>
 
       {/* Message bubble */}
-      <div className={`flex flex-col max-w-[75%] ${isDetective ? "items-end" : "items-start"}`}>
-        <div className="text-xs text-gray-500 mb-1 px-2">
+      <div className={`flex flex-col max-w-[80%] md:max-w-[75%] ${isDetective ? "items-end" : "items-start"}`}>
+        <div className="text-xs md:text-[11px] text-gray-500 mb-1 px-2">
           {getSpeakerName()} • {message.timestamp || new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
         </div>
-        <div className={`rounded-2xl px-4 py-2 ${
+        <div className={`rounded-2xl px-4 py-3 md:py-2 ${
           isDetective 
             ? "bg-blue-500 text-white rounded-tr-sm" 
             : "bg-white text-gray-800 border border-gray-200 rounded-tl-sm"
         }`}>
-          <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
+          <p className="text-base md:text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
         </div>
       </div>
     </motion.div>
