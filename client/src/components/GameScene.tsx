@@ -42,6 +42,8 @@ export function GameScene() {
   const [pendingClue, setPendingClue] = useState<any>(null);
   const [showHint, setShowHint] = useState(false);
   const [currentHint, setCurrentHint] = useState<string>("");
+  const [showCharacterCardsSlider, setShowCharacterCardsSlider] = useState(false);
+  const [showQuestion, setShowQuestion] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -65,6 +67,8 @@ export function GameScene() {
       }
       
       setVisibleMessages(autoVisibleCount);
+      setShowCharacterCardsSlider(false);
+      setShowQuestion(false);
       recordNodeVisited(currentNode);
       
       if (currentNode.includes('_interview')) {
@@ -93,6 +97,12 @@ export function GameScene() {
       }
       
       setVisibleMessages(nextVisible);
+    } else if (currentStoryNode.showCharacterCards && !showCharacterCardsSlider) {
+      setShowCharacterCardsSlider(true);
+    } else if (currentStoryNode.showCharacterCards && showCharacterCardsSlider && !showQuestion) {
+      setShowQuestion(true);
+    } else if (!currentStoryNode.showCharacterCards && currentStoryNode.question && !showQuestion) {
+      setShowQuestion(true);
     } else if (currentStoryNode.autoAdvance && !currentStoryNode.question) {
       setCurrentNode(currentStoryNode.autoAdvance.nextNode);
     }
@@ -216,7 +226,7 @@ export function GameScene() {
               <DataVisualization key={index} visualization={viz} />
             ))}
 
-            {currentStoryNode.showCharacterCards && (
+            {currentStoryNode.showCharacterCards && showCharacterCardsSlider && (
               <div onClick={(e) => e.stopPropagation()}>
                 <CharacterCardsSlider 
                   characters={evidenceCollected.filter(e => e.type === "CHARACTER") as CharacterEvidence[]}
@@ -224,7 +234,7 @@ export function GameScene() {
               </div>
             )}
 
-            {currentStoryNode.question && (
+            {currentStoryNode.question && showQuestion && (
               <div onClick={(e) => e.stopPropagation()}>
                 <ChoiceButtons
                   question={currentStoryNode.question.text}
@@ -234,6 +244,16 @@ export function GameScene() {
               </div>
             )}
           </>
+        )}
+        
+        {visibleMessages === currentStoryNode.messages.length && 
+         !currentStoryNode.autoAdvance && 
+         ((currentStoryNode.showCharacterCards && !showCharacterCardsSlider) || 
+          (currentStoryNode.showCharacterCards && showCharacterCardsSlider && !showQuestion) ||
+          (!currentStoryNode.showCharacterCards && currentStoryNode.question && !showQuestion)) && (
+          <div className="text-center py-2">
+            <span className="text-gray-400 text-sm">Tap to continue...</span>
+          </div>
         )}
         
         <div ref={chatEndRef} />
