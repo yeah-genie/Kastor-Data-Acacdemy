@@ -13,7 +13,7 @@ export interface Message {
 }
 
 export interface DataVisualization {
-  type: "chart" | "table" | "log" | "bar" | "timeline" | "ip-matching" | "winrate-prediction";
+  type: "chart" | "table" | "log" | "bar" | "timeline" | "ip-matching" | "winrate-prediction" | "evidence-board";
   title: string;
   data: any;
   interactive?: boolean;
@@ -329,15 +329,39 @@ export const case1Story: Record<string, StoryNode> = {
         },
       }
     ],
-    question: {
-      id: "q7",
-      text: "🎯 What does this tell us?",
-      choices: [
-        { id: "c17", text: "Maya's account was used after she left", isCorrect: true, nextNode: "stage4_start", feedback: "Someone used her account after 10:47 PM.", evidenceAwarded: case1Evidence.ip_analysis, pointsAwarded: 15 },
-        { id: "c18", text: "Chris's computer made the changes", isCorrect: true, nextNode: "stage4_start", feedback: "IP 192.168.1.47 belongs to Chris.", evidenceAwarded: case1Evidence.ip_analysis, pointsAwarded: 15 },
-        { id: "c19", text: "Chris used Maya's account without permission", isCorrect: true, nextNode: "stage4_start", feedback: "Let's confront him with this evidence.", evidenceAwarded: case1Evidence.ip_analysis, pointsAwarded: 20 },
-      ],
-    },
+    autoAdvance: { nextNode: "evidence_connection", delay: 1000 },
+  },
+
+  evidence_connection: {
+    id: "evidence_connection",
+    phase: "stage3",
+    messages: [
+      { id: "m39b", speaker: "narrator", text: "Now connect the evidence! Link the data together to form the conclusion." },
+    ],
+    dataVisualizations: [{
+      type: "evidence-board",
+      title: "Connect the Evidence",
+      data: {
+        title: "Who is the Suspect?",
+        instructions: "Connect the logs, IP address, and CCTV data to identify the suspect.",
+        nodes: [
+          { id: "log1", label: "admin01 login at 11:12 PM", type: "evidence", color: "#3b82f6" },
+          { id: "log2", label: "Data modified at 11:15 PM", type: "evidence", color: "#3b82f6" },
+          { id: "ip1", label: "IP: 192.168.1.47", type: "data", color: "#8b5cf6" },
+          { id: "cctv1", label: "CCTV: Maya left at 10:47 PM", type: "data", color: "#8b5cf6" },
+          { id: "chris1", label: "Computer belongs to Chris", type: "data", color: "#8b5cf6" },
+          { id: "conclusion1", label: "Chris used Maya's account", type: "conclusion", color: "#10b981" },
+        ],
+        correctConnections: [
+          { from: "log1", to: "ip1" },
+          { from: "ip1", to: "chris1" },
+          { from: "chris1", to: "conclusion1" },
+          { from: "cctv1", to: "conclusion1" },
+          { from: "log2", to: "conclusion1" },
+        ],
+      },
+    }],
+    autoAdvance: { nextNode: "stage4_start", delay: 2500 },
   },
 
   stage4_start: {
@@ -414,7 +438,7 @@ export const case1Story: Record<string, StoryNode> = {
     phase: "stage5",
     messages: [
       { id: "m50", speaker: "system", text: "⚖️ STAGE 5: INSIGHT & RESOLUTION" },
-      { id: "m51", speaker: "system", text: "🎯 Conference room\nTime to confront the suspect" },
+      { id: "m51", speaker: "system", text: "🎯 Conference room\nTime to confront the suspect", photo: "/conference-room.jpg" },
       { id: "m52", speaker: "maya", text: "I've called Chris to the conference room as you requested.", timestamp: "10:00 AM" },
     ],
     autoAdvance: { nextNode: "confront_chris", delay: 1000 },

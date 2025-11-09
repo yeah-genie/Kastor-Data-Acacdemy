@@ -2,7 +2,7 @@ import { Evidence } from "@/lib/stores/useDetectiveGame";
 
 const mayaImage = "/characters/maya.jpg";
 const chrisImage = "/characters/chris.jpg";
-const ryanImage = "/characters/ryan.jpg";
+const ryanImage = "/ryan-profile.jpg";
 const officeImage = "/office-scene.jpg";
 
 export const case1Evidence: Record<string, Evidence> = {

@@ -1,10 +1,33 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { DataVisualization as DataVizType } from "@/data/case1-story";
-import { BarChart3, Table2, FileText, X, Clock, Network, TrendingUp } from "lucide-react";
-import { useState, useEffect } from "react";
+import { BarChart3, Table2, FileText, X, Clock, Network, TrendingUp, Link2 } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
 import { IPMatchingPuzzle } from "./IPMatchingPuzzle";
 import { WinRatePrediction } from "./WinRatePrediction";
+import { EvidenceConnectionBoard } from "./EvidenceConnectionBoard";
+
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    window.addEventListener('orientationchange', checkMobile);
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener('orientationchange', checkMobile);
+    };
+  }, []);
+
+  return isMobile;
+};
 
 interface DataVisualizationProps {
   visualization: DataVizType;
@@ -18,6 +41,29 @@ export function DataVisualization({ visualization }: DataVisualizationProps) {
     timeRange: 'all' as string,
   });
   const [puzzleCompleted, setPuzzleCompleted] = useState(false);
+  const isMobile = useIsMobile();
+  const [chartHeight, setChartHeight] = useState(300);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const updateHeight = () => {
+      if (!isMobile) {
+        setChartHeight(300);
+      } else {
+        const vh = window.innerHeight;
+        setChartHeight(Math.min(Math.max(vh * 0.4, 220), 280));
+      }
+    };
+    
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    window.addEventListener('orientationchange', updateHeight);
+    return () => {
+      window.removeEventListener('resize', updateHeight);
+      window.removeEventListener('orientationchange', updateHeight);
+    };
+  }, [isMobile]);
 
   useEffect(() => {
     setSelectedPoint(null);
@@ -47,39 +93,42 @@ export function DataVisualization({ visualization }: DataVisualizationProps) {
 
     return (
       <>
-        <ResponsiveContainer width="100%" height={250}>
-          <LineChart 
-            data={chartData} 
-            margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
-            onClick={handlePointClick}
-            style={{ cursor: interactive ? 'pointer' : 'default' }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-            <XAxis dataKey="name" stroke="#6b7280" style={{ fontSize: '12px' }} />
-            <YAxis stroke="#6b7280" domain={[0, 100]} style={{ fontSize: '12px' }} />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: '#ffffff',
-                border: '1px solid #e5e7eb',
-                borderRadius: '8px',
-                color: '#111827',
-                fontSize: '12px'
-              }}
-            />
-            <Legend wrapperStyle={{ fontSize: '12px' }} />
-            {data.datasets.map((dataset: any, index: number) => (
-              <Line
-                key={index}
-                type="monotone"
-                dataKey={dataset.label}
-                stroke={dataset.color}
-                strokeWidth={2}
-                dot={{ r: 4, cursor: interactive ? 'pointer' : 'default' }}
-                activeDot={{ r: 6, cursor: interactive ? 'pointer' : 'default' }}
+        <div className="relative w-full" style={{ minHeight: chartHeight, overflowX: 'hidden' }}>
+          <ResponsiveContainer width="100%" height={chartHeight}>
+            <LineChart 
+              data={chartData} 
+              margin={{ top: 5, right: isMobile ? 8 : 20, left: 0, bottom: 5 }}
+              onClick={handlePointClick}
+              style={{ cursor: interactive ? 'pointer' : 'default' }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis dataKey="name" stroke="#6b7280" style={{ fontSize: isMobile ? '10px' : '12px' }} />
+              <YAxis stroke="#6b7280" domain={[0, 100]} style={{ fontSize: isMobile ? '10px' : '12px' }} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#ffffff',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '8px',
+                  color: '#111827',
+                  fontSize: isMobile ? '11px' : '12px'
+                }}
+                wrapperStyle={{ touchAction: 'none' }}
               />
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
+              <Legend wrapperStyle={{ fontSize: isMobile ? '10px' : '12px' }} />
+              {data.datasets.map((dataset: any, index: number) => (
+                <Line
+                  key={index}
+                  type="monotone"
+                  dataKey={dataset.label}
+                  stroke={dataset.color}
+                  strokeWidth={2}
+                  dot={{ r: isMobile ? 6 : 4, cursor: interactive ? 'pointer' : 'default' }}
+                  activeDot={{ r: isMobile ? 8 : 6, cursor: interactive ? 'pointer' : 'default' }}
+                />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
         
         {interactive && (
           <div className="mt-2 text-xs text-gray-500 text-center">
@@ -305,31 +354,33 @@ export function DataVisualization({ visualization }: DataVisualizationProps) {
     });
 
     return (
-      <ResponsiveContainer width="100%" height={250}>
-        <BarChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-          <XAxis dataKey="name" stroke="#6b7280" style={{ fontSize: '12px' }} />
-          <YAxis stroke="#6b7280" style={{ fontSize: '12px' }} label={{ value: 'Hours', angle: -90, position: 'insideLeft', style: { fontSize: '12px' } }} />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: '#ffffff',
-              border: '1px solid #e5e7eb',
-              borderRadius: '8px',
-              color: '#111827',
-              fontSize: '12px'
-            }}
-          />
-          <Legend wrapperStyle={{ fontSize: '12px' }} />
-          {data.datasets.map((dataset: any, index: number) => (
-            <Bar
-              key={index}
-              dataKey={dataset.label}
-              fill={dataset.color}
-              radius={[8, 8, 0, 0]}
+      <div className="relative w-full" style={{ minHeight: chartHeight, overflowX: 'hidden' }}>
+        <ResponsiveContainer width="100%" height={chartHeight}>
+          <BarChart data={chartData} margin={{ top: 5, right: isMobile ? 8 : 20, left: 0, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <XAxis dataKey="name" stroke="#6b7280" style={{ fontSize: isMobile ? '10px' : '12px' }} />
+            <YAxis stroke="#6b7280" style={{ fontSize: isMobile ? '10px' : '12px' }} label={{ value: 'Hours', angle: -90, position: 'insideLeft', style: { fontSize: isMobile ? '10px' : '12px' } }} />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: '#ffffff',
+                border: '1px solid #e5e7eb',
+                borderRadius: '8px',
+                color: '#111827',
+                fontSize: isMobile ? '11px' : '12px'
+              }}
             />
-          ))}
-        </BarChart>
-      </ResponsiveContainer>
+            <Legend wrapperStyle={{ fontSize: isMobile ? '10px' : '12px' }} />
+            {data.datasets.map((dataset: any, index: number) => (
+              <Bar
+                key={index}
+                dataKey={dataset.label}
+                fill={dataset.color}
+                radius={[8, 8, 0, 0]}
+              />
+            ))}
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     );
   };
 
@@ -412,6 +463,22 @@ export function DataVisualization({ visualization }: DataVisualizationProps) {
     );
   };
 
+  const renderEvidenceBoard = () => {
+    const { data } = visualization;
+    
+    return (
+      <EvidenceConnectionBoard
+        nodes={data.nodes}
+        correctConnections={data.correctConnections}
+        title={data.title}
+        instructions={data.instructions}
+        onComplete={(correct) => {
+          setPuzzleCompleted(true);
+        }}
+      />
+    );
+  };
+
   const getIcon = () => {
     switch (visualization.type) {
       case "chart":
@@ -428,6 +495,8 @@ export function DataVisualization({ visualization }: DataVisualizationProps) {
         return <Network className="w-4 h-4" />;
       case "winrate-prediction":
         return <TrendingUp className="w-4 h-4" />;
+      case "evidence-board":
+        return <Link2 className="w-4 h-4" />;
     }
   };
 
@@ -451,6 +520,7 @@ export function DataVisualization({ visualization }: DataVisualizationProps) {
         {visualization.type === "timeline" && renderTimeline()}
         {visualization.type === "ip-matching" && renderIPMatching()}
         {visualization.type === "winrate-prediction" && renderWinRatePrediction()}
+        {visualization.type === "evidence-board" && renderEvidenceBoard()}
       </div>
     </motion.div>
   );
