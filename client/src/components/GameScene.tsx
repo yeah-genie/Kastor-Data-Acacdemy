@@ -11,6 +11,7 @@ import { ChoiceButtons } from "./ChoiceButtons";
 import { DetectiveNotebook } from "./DetectiveNotebook";
 import { EvidenceNotebook } from "./EvidenceNotebook";
 import { EvidenceUnlockModal } from "./EvidenceUnlockModal";
+import { EvidencePresentationModal } from "./EvidencePresentationModal";
 import { ClueAnimation } from "./ClueAnimation";
 import { ResolutionScene } from "./ResolutionScene";
 import { HintDialog } from "./HintDialog";
@@ -47,6 +48,7 @@ export function GameScene() {
   const [currentHint, setCurrentHint] = useState<string>("");
   const [showCharacterCardsSlider, setShowCharacterCardsSlider] = useState(false);
   const [showQuestion, setShowQuestion] = useState(false);
+  const [showEvidencePresentation, setShowEvidencePresentation] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const [celebrationData, setCelebrationData] = useState<{ caseNumber: number; caseTitle: string } | null>(null);
   const [handledCelebrationId, setHandledCelebrationId] = useState<string | null>(null);
@@ -102,6 +104,7 @@ export function GameScene() {
       setVisibleMessages(autoVisibleCount);
       setShowCharacterCardsSlider(false);
       setShowQuestion(false);
+      setShowEvidencePresentation(false);
       setHandledCelebrationId(null);
       recordNodeVisited(currentNode);
       
@@ -133,13 +136,51 @@ export function GameScene() {
       setVisibleMessages(nextVisible);
     } else if (currentStoryNode.showCharacterCards && !showCharacterCardsSlider) {
       setShowCharacterCardsSlider(true);
-    } else if (currentStoryNode.showCharacterCards && showCharacterCardsSlider && !showQuestion) {
+    } else if (currentStoryNode.showCharacterCards && showCharacterCardsSlider && !showQuestion && !showEvidencePresentation) {
+      if (currentStoryNode.question) {
+        setShowQuestion(true);
+      } else if (currentStoryNode.evidencePresentation) {
+        setShowEvidencePresentation(true);
+      }
+    } else if (!currentStoryNode.showCharacterCards && currentStoryNode.question && !showQuestion && !showEvidencePresentation) {
       setShowQuestion(true);
-    } else if (!currentStoryNode.showCharacterCards && currentStoryNode.question && !showQuestion) {
-      setShowQuestion(true);
-    } else if (currentStoryNode.autoAdvance && !currentStoryNode.question) {
+    } else if (!currentStoryNode.showCharacterCards && !currentStoryNode.question && currentStoryNode.evidencePresentation && !showEvidencePresentation) {
+      setShowEvidencePresentation(true);
+    } else if (currentStoryNode.autoAdvance && !currentStoryNode.question && !currentStoryNode.evidencePresentation) {
       setCurrentNode(currentStoryNode.autoAdvance.nextNode);
     }
+  };
+  
+  const handleEvidencePresentCorrect = () => {
+    if (!currentStoryNode || !currentStoryNode.evidencePresentation) return;
+    
+    const presentation = currentStoryNode.evidencePresentation;
+    
+    if (presentation.pointsAwarded) {
+      addScore(presentation.pointsAwarded);
+    }
+    
+    playSuccess();
+    
+    setTimeout(() => {
+      setCurrentNode(presentation.nextNode);
+      setShowEvidencePresentation(false);
+    }, 500);
+  };
+  
+  const handleEvidencePresentWrong = () => {
+    if (!currentStoryNode || !currentStoryNode.evidencePresentation) return;
+    
+    const presentation = currentStoryNode.evidencePresentation;
+    
+    if (presentation.penaltyPoints) {
+      addScore(-presentation.penaltyPoints);
+    }
+    
+    if (presentation.wrongNode) {
+      setCurrentNode(presentation.wrongNode);
+    }
+    setShowEvidencePresentation(false);
   };
 
   const handleChoiceSelected = (choice: any) => {
@@ -332,6 +373,21 @@ export function GameScene() {
       />
       
       <EvidenceUnlockModal />
+      
+      {currentStoryNode?.evidencePresentation && (
+        <EvidencePresentationModal 
+          isOpen={showEvidencePresentation}
+          prompt={currentStoryNode.evidencePresentation.prompt}
+          npcStatement={currentStoryNode.evidencePresentation.npcStatement}
+          npcCharacter={currentStoryNode.evidencePresentation.npcCharacter}
+          correctEvidenceId={currentStoryNode.evidencePresentation.correctEvidenceId}
+          correctFeedback={currentStoryNode.evidencePresentation.correctFeedback}
+          wrongFeedback={currentStoryNode.evidencePresentation.wrongFeedback}
+          onCorrect={handleEvidencePresentCorrect}
+          onWrong={handleEvidencePresentWrong}
+          onClose={() => setShowEvidencePresentation(false)}
+        />
+      )}
       
       {pendingClue && (
         <ClueAnimation clue={pendingClue} onComplete={handleClueAnimationComplete} />

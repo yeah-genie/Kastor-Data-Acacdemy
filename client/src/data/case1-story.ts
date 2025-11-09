@@ -48,6 +48,19 @@ export interface StoryNode {
       pointsAwarded?: number;
     }[];
   };
+  evidencePresentation?: {
+    id: string;
+    prompt: string;
+    npcStatement?: string;
+    npcCharacter?: string;
+    correctEvidenceId: string;
+    correctFeedback: string;
+    wrongFeedback: string;
+    nextNode: string;
+    wrongNode?: string;
+    pointsAwarded?: number;
+    penaltyPoints?: number;
+  };
   autoAdvance?: {
     nextNode: string;
     delay: number;
@@ -345,11 +358,11 @@ export const case1Story: Record<string, StoryNode> = {
         ],
       },
     }],
-    autoAdvance: { nextNode: "stage4_start", delay: 2500 },
+    autoAdvance: { nextNode: "confront_chris_intro", delay: 2500 },
   },
 
-  stage4_start: {
-    id: "stage4_start",
+  confront_chris_intro: {
+    id: "confront_chris_intro",
     phase: "stage4",
     messages: [
       { id: "m40", speaker: "system", text: "🧩 STAGE 4: EVIDENCE ANALYSIS" },
@@ -362,6 +375,79 @@ export const case1Story: Record<string, StoryNode> = {
       { id: "m47", speaker: "detective", text: "4. The IP address (192.168.1.47) belongs to Chris's computer", timestamp: "9:32 AM" },
       { id: "m48", speaker: "detective", text: "5. Chris mentioned working on an AI 'research project' that needed game data", timestamp: "9:32 AM" },
       { id: "m49", speaker: "narrator", text: "Chris used Maya's credentials to boost Shadow Reaper's power. But why would he do that?" },
+    ],
+    autoAdvance: { nextNode: "confront_chris_denial", delay: 1000 },
+  },
+
+  confront_chris_denial: {
+    id: "confront_chris_denial",
+    phase: "stage4",
+    messages: [
+      { id: "m50", speaker: "system", text: "📞 Video call with Chris Anderson", timestamp: "9:35 AM" },
+      { id: "m51", speaker: "detective", text: "Chris, I need to ask you about November 8th. Where were you at 11:15 PM?", timestamp: "9:35 AM" },
+      { id: "m52", speaker: "chris", text: "Me? I went home around 9 PM. I was exhausted from the overtime. 😅", timestamp: "9:36 AM" },
+      { id: "m53", speaker: "detective", text: "So you weren't in the office after 9 PM?", timestamp: "9:36 AM" },
+      { id: "m54", speaker: "chris", text: "Absolutely not. I was at home watching Netflix. You can check my viewing history if you want! 📺", timestamp: "9:37 AM" },
+      { id: "m55", speaker: "narrator", text: "He's lying. You have evidence that proves he was in the office. Which evidence should you present?" },
+    ],
+    evidencePresentation: {
+      id: "ep1",
+      prompt: "Chris claims he left at 9 PM. Which evidence proves he's lying?",
+      npcStatement: "I went home around 9 PM. I was exhausted from the overtime.",
+      npcCharacter: "Chris Anderson",
+      correctEvidenceId: "server_logs",
+      correctFeedback: "The server logs show admin01 (using Chris's IP) accessed the database at 11:15 PM!",
+      wrongFeedback: "That evidence doesn't directly contradict his alibi. Think about what proves he was in the office...",
+      nextNode: "chris_caught",
+      wrongNode: "evidence_hint",
+      pointsAwarded: 20,
+      penaltyPoints: 5,
+    },
+  },
+
+  evidence_hint: {
+    id: "evidence_hint",
+    phase: "stage4",
+    messages: [
+      { id: "m56", speaker: "narrator", text: "Wait, that evidence doesn't directly prove Chris was in the office. Look for evidence that shows his computer was used at 11:15 PM." },
+      { id: "m57", speaker: "detective", text: "Let me review the evidence again...", timestamp: "9:38 AM" },
+    ],
+    evidencePresentation: {
+      id: "ep1_retry",
+      prompt: "Try again - which evidence shows Chris's computer was used at 11:15 PM?",
+      npcStatement: "I went home around 9 PM. I was exhausted from the overtime.",
+      npcCharacter: "Chris Anderson",
+      correctEvidenceId: "server_logs",
+      correctFeedback: "Exactly! The server logs clearly show activity from Chris's IP at 11:15 PM!",
+      wrongFeedback: "Think about the server access logs that Ryan provided...",
+      nextNode: "chris_caught",
+      pointsAwarded: 15,
+      penaltyPoints: 10,
+    },
+  },
+
+  chris_caught: {
+    id: "chris_caught",
+    phase: "stage4",
+    messages: [
+      { id: "m58", speaker: "detective", text: "*Presents Server Access Logs* These logs show that admin01 accessed the database at 11:15 PM from IP 192.168.1.47 - your computer.", timestamp: "9:38 AM" },
+      { id: "m59", speaker: "chris", text: "...", timestamp: "9:39 AM" },
+      { id: "m60", speaker: "chris", text: "*Long pause* ...Okay. You got me. 😔", timestamp: "9:40 AM" },
+      { id: "m61", speaker: "chris", text: "I did access the database that night. But it's not what you think!", timestamp: "9:40 AM" },
+      { id: "m62", speaker: "narrator", text: "Chris is finally being honest. Let's hear his explanation..." },
+    ],
+    autoAdvance: { nextNode: "stage4_start", delay: 1000 },
+  },
+
+  stage4_start: {
+    id: "stage4_start",
+    phase: "stage4",
+    messages: [
+      { id: "m63", speaker: "chris", text: "I've been developing an AI matchmaking system. To train it, I needed real game data.", timestamp: "9:41 AM" },
+      { id: "m64", speaker: "chris", text: "I thought if I made Shadow Reaper overpowered, it would create extreme data points that would help my AI learn faster.", timestamp: "9:42 AM" },
+      { id: "m65", speaker: "chris", text: "I knew Maya's password because I saw her type it once. I planned to revert the changes after collecting enough data.", timestamp: "9:43 AM" },
+      { id: "m66", speaker: "chris", text: "But when I checked the next morning, the whole community had erupted. I panicked and couldn't figure out how to fix it without revealing what I'd done. 😰", timestamp: "9:44 AM" },
+      { id: "m67", speaker: "narrator", text: "So Chris manipulated the game balance for his personal AI project, using Maya's credentials to cover his tracks." },
     ],
     dataVisualizations: [{
       type: "chart",
