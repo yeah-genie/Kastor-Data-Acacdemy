@@ -4,7 +4,7 @@ import { BookOpen, Volume2, VolumeX } from "lucide-react";
 import { useDetectiveGame } from "@/lib/stores/useDetectiveGame";
 import { useAudio } from "@/lib/stores/useAudio";
 import { type StoryNode } from "@/data/case1-story";
-import { getStory, getCaseMetadata } from "@/data/stories";
+import { getStory, getCaseMetadata, caseMetadata } from "@/data/stories";
 import { ChatMessage } from "./ChatMessage";
 import { DataVisualization } from "./DataVisualization";
 import { ChoiceButtons } from "./ChoiceButtons";
@@ -108,74 +108,86 @@ export function GameScene() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white">
-      <div className="fixed top-0 left-0 right-0 bg-slate-900/95 border-b border-slate-700 px-4 py-3 flex items-center justify-between z-30">
+    <div className="min-h-screen bg-gray-100 flex flex-col">
+      {/* Chat Header */}
+      <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="text-2xl">🔍</div>
+          <button className="text-gray-600">←</button>
+          <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
+            🔍
+          </div>
           <div>
-            <h1 className="font-bold text-amber-300">KASTOR</h1>
-            <p className="text-xs text-slate-400">Data Detective</p>
+            <h1 className="font-semibold text-gray-900">
+              {caseMetadata[currentCase]?.title || "Case Investigation"}
+            </h1>
+            <p className="text-xs text-gray-500">
+              {phase === "briefing" && "Briefing"} 
+              {phase === "investigation" && "Investigation"}
+              {phase === "resolution" && "Resolution"}
+            </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
           <button
             onClick={toggleMute}
-            className="p-2 rounded-lg bg-slate-700 hover:bg-slate-600 transition-colors"
+            className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600"
           >
             {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
           </button>
           
           <button
             onClick={() => setShowNotebook(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-700 hover:bg-amber-600 transition-colors"
+            className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600"
           >
-            <BookOpen className="w-4 h-4" />
-            <span className="text-sm font-semibold">Notes</span>
+            <BookOpen className="w-5 h-5" />
           </button>
         </div>
       </div>
 
-      <div className="pt-20 pb-6 px-4 max-w-4xl mx-auto">
-        <div className="bg-slate-800/50 border border-slate-700 rounded-lg px-4 py-2 mb-4 text-center">
-          <span className="text-amber-400 font-semibold text-sm">
-            {phase === "briefing" && "📋 Briefing"}
-            {phase === "investigation" && "🔎 Investigation"}
-            {phase === "resolution" && "⚖️ Resolution"}
-          </span>
-        </div>
+      {/* Chat Messages Area */}
+      <div 
+        className="flex-1 overflow-y-auto px-4 py-4 space-y-3 cursor-pointer"
+        onClick={handleChatClick}
+      >
+        {currentStoryNode.messages.slice(0, visibleMessages).map((message, index) => (
+          <ChatMessage key={message.id} message={message} index={index} />
+        ))}
+        
+        {visibleMessages < currentStoryNode.messages.length && (
+          <div className="text-center py-2">
+            <span className="text-gray-400 text-sm">Tap to continue...</span>
+          </div>
+        )}
 
-        <div 
-          className="space-y-4 cursor-pointer"
-          onClick={handleChatClick}
-        >
-          {currentStoryNode.messages.slice(0, visibleMessages).map((message, index) => (
-            <ChatMessage key={message.id} message={message} index={index} />
-          ))}
-          
-          {visibleMessages < currentStoryNode.messages.length && (
-            <div className="text-center py-4">
-              <span className="text-slate-400 text-sm">Tap to continue...</span>
-            </div>
-          )}
+        {visibleMessages === currentStoryNode.messages.length && (
+          <>
+            {currentStoryNode.dataVisualizations?.map((viz, index) => (
+              <DataVisualization key={index} visualization={viz} />
+            ))}
 
-          {visibleMessages === currentStoryNode.messages.length && (
-            <>
-              {currentStoryNode.dataVisualizations?.map((viz, index) => (
-                <DataVisualization key={index} visualization={viz} />
-              ))}
+            {currentStoryNode.question && (
+              <div onClick={(e) => e.stopPropagation()}>
+                <ChoiceButtons
+                  question={currentStoryNode.question.text}
+                  choices={currentStoryNode.question.choices}
+                  onChoiceSelected={handleChoiceSelected}
+                />
+              </div>
+            )}
+          </>
+        )}
+      </div>
 
-              {currentStoryNode.question && (
-                <div onClick={(e) => e.stopPropagation()}>
-                  <ChoiceButtons
-                    question={currentStoryNode.question.text}
-                    choices={currentStoryNode.question.choices}
-                    onChoiceSelected={handleChoiceSelected}
-                  />
-                </div>
-              )}
-            </>
-          )}
+      {/* Bottom Input Area (placeholder for future) */}
+      <div className="bg-white border-t border-gray-200 px-4 py-3">
+        <div className="flex items-center gap-2">
+          <button className="p-2 text-gray-400">+</button>
+          <div className="flex-1 bg-gray-100 rounded-full px-4 py-2">
+            <span className="text-gray-400 text-sm">Continue investigating...</span>
+          </div>
+          <button className="p-2 text-gray-400">🎤</button>
+          <button className="p-2 text-blue-500">📤</button>
         </div>
       </div>
 

@@ -4,6 +4,10 @@ import { useDetectiveGame } from "@/lib/stores/useDetectiveGame";
 import { caseMetadata } from "@/data/stories";
 import { useState } from "react";
 
+const case1Image = "/attached_assets/stock_images/ancient_scroll_parch_fd3ce574.jpg";
+const case2Image = "/attached_assets/stock_images/dark_forest_trees_my_45f390b2.jpg";
+const case3Image = "/attached_assets/stock_images/antique_clock_time_m_285541ce.jpg";
+
 export function StartMenu() {
   const { startCase, unlockedCases, achievements, getProgress, getCurrentXP, getCurrentLevel } = useDetectiveGame();
   const [activeTab, setActiveTab] = useState<"missions" | "profile">("missions");
@@ -70,12 +74,14 @@ export function StartMenu() {
                     >
                       {/* Mission Image */}
                       <div className="relative h-40 bg-gradient-to-br from-gray-800 to-gray-600 overflow-hidden">
-                        <div className="absolute inset-0 flex items-center justify-center text-6xl">
-                          {caseId === 1 ? "📜" : caseId === 2 ? "🌲" : "🕰️"}
-                        </div>
+                        <img 
+                          src={caseId === 1 ? case1Image : caseId === 2 ? case2Image : case3Image} 
+                          alt={metadata.title}
+                          className="w-full h-full object-cover"
+                        />
                         {!isUnlocked && (
-                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                            <div className="text-white text-sm font-semibold bg-black/60 px-4 py-2 rounded-lg">
+                          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                            <div className="text-white text-sm font-semibold bg-black/70 px-4 py-2 rounded-lg">
                               🔒 Locked
                             </div>
                           </div>
