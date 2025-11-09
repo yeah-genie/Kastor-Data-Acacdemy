@@ -51,6 +51,11 @@ export function StartMenu() {
     }
   };
 
+  const handleResumeClose = () => {
+    setShowResumeModal(false);
+    setSelectedCase(null);
+  };
+
   const isCaseUnlocked = (caseId: number) => {
     return unlockedCases.includes(caseId);
   };
@@ -211,6 +216,7 @@ export function StartMenu() {
         isOpen={showResumeModal}
         onContinue={handleResumeContinue}
         onStartOver={handleResumeStartOver}
+        onClose={handleResumeClose}
       />
     </div>
   );
