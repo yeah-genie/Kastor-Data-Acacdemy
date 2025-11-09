@@ -109,49 +109,59 @@ export function StartMenu() {
                         isUnlocked ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
                       }`}
                     >
-                      {/* Mission Image */}
-                      <div className="relative h-48 bg-gradient-to-br from-gray-800 to-gray-600">
-                        <img 
-                          src={caseId === 1 ? case1Image : caseId === 2 ? case2Image : case3Image} 
-                          alt={metadata.title}
-                          className="w-full h-full object-cover"
+                      {/* Wrapper for image and info with shared gradient */}
+                      <div className="relative">
+                        {/* Mission Image */}
+                        <div className="relative h-48 bg-gradient-to-br from-gray-800 to-gray-600">
+                          <img 
+                            src={caseId === 1 ? case1Image : caseId === 2 ? case2Image : case3Image} 
+                            alt={metadata.title}
+                            className="w-full h-full object-cover"
+                          />
+                          
+                          {!isUnlocked && (
+                            <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                              <div className="text-white text-sm font-semibold bg-black/70 px-4 py-2 rounded-lg">
+                                🔒 Locked
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Gradient overlay spanning image bottom to text top */}
+                        <div 
+                          className="absolute left-0 right-0 h-20 pointer-events-none"
+                          style={{ 
+                            bottom: '0px',
+                            background: 'linear-gradient(0deg, #FFFFFF 0%, transparent 100%)'
+                          }}
                         />
-                        {/* Gradient overlay at bottom */}
-                        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white to-transparent" />
-                        
-                        {!isUnlocked && (
-                          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                            <div className="text-white text-sm font-semibold bg-black/70 px-4 py-2 rounded-lg">
-                              🔒 Locked
-                            </div>
-                          </div>
-                        )}
-                      </div>
 
-                      {/* Mission Info */}
-                      <div className="p-4 -mt-1">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                          {metadata.title}
-                        </h3>
-                        <p className="text-sm text-gray-600 mb-3">
-                          {isUnlocked ? metadata.subtitle : "Complete previous missions to unlock"}
-                        </p>
+                        {/* Mission Info */}
+                        <div className="p-4 relative bg-white">
+                          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                            {metadata.title}
+                          </h3>
+                          <p className="text-sm text-gray-600 mb-3">
+                            {isUnlocked ? metadata.subtitle : "Complete previous missions to unlock"}
+                          </p>
 
-                        {/* Progress Bar */}
-                        {isUnlocked && (
-                          <div>
-                            <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-                              <span>Progress</span>
-                              <span className="font-semibold text-blue-600">{Math.round(progress)}%</span>
+                          {/* Progress Bar */}
+                          {isUnlocked && (
+                            <div>
+                              <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+                                <span>Progress</span>
+                                <span className="font-semibold text-blue-600">{Math.round(progress)}%</span>
+                              </div>
+                              <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div
+                                  className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                                  style={{ width: `${progress}%` }}
+                                />
+                              </div>
                             </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2">
-                              <div
-                                className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                                style={{ width: `${progress}%` }}
-                              />
-                            </div>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
                     </motion.div>
                   );
