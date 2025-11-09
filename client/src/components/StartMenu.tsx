@@ -116,8 +116,9 @@ export function StartMenu() {
                           alt={metadata.title}
                           className="w-full h-full object-cover"
                         />
-                        {/* Blur gradient overlay at bottom - smooth transition to white */}
-                        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-white via-white/60 to-transparent backdrop-blur-sm" />
+                        {/* Blur gradient overlay at bottom */}
+                        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-white/90 via-white/40 to-transparent" 
+                             style={{ backdropFilter: 'blur(8px)' }} />
                         
                         {!isUnlocked && (
                           <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
