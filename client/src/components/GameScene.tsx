@@ -57,7 +57,7 @@ export function GameScene() {
       
       let autoVisibleCount = 0;
       for (const message of node.messages) {
-        if (message.speaker === "system" || message.speaker === "narrator") {
+        if (message.speaker === "system") {
           autoVisibleCount++;
         } else {
           break;
@@ -87,8 +87,7 @@ export function GameScene() {
       
       while (
         nextVisible < currentStoryNode.messages.length &&
-        (currentStoryNode.messages[nextVisible].speaker === "system" ||
-         currentStoryNode.messages[nextVisible].speaker === "narrator")
+        currentStoryNode.messages[nextVisible].speaker === "system"
       ) {
         nextVisible++;
       }
