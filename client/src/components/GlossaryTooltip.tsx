@@ -4,10 +4,15 @@ interface GlossaryTooltipProps {
   word: string;
   definition: string;
   children: React.ReactNode;
+  variant?: "detective" | "normal";
 }
 
-export function GlossaryTooltip({ word, definition, children }: GlossaryTooltipProps) {
+export function GlossaryTooltip({ word, definition, children, variant = "normal" }: GlossaryTooltipProps) {
   const [isOpen, setIsOpen] = useState(false);
+
+  const textColor = variant === "detective" 
+    ? "text-white decoration-white/60 hover:decoration-white" 
+    : "text-blue-600 decoration-blue-400 hover:decoration-blue-600";
 
   return (
     <>
@@ -15,7 +20,7 @@ export function GlossaryTooltip({ word, definition, children }: GlossaryTooltipP
         <button
           onClick={() => setIsOpen(!isOpen)}
           onBlur={() => setTimeout(() => setIsOpen(false), 200)}
-          className="underline decoration-dotted underline-offset-2 decoration-blue-400 hover:decoration-blue-600 cursor-help text-blue-600 font-medium inline"
+          className={`underline decoration-dotted underline-offset-2 cursor-help font-medium inline ${textColor}`}
         >
           {children}
         </button>
@@ -36,7 +41,7 @@ export function GlossaryTooltip({ word, definition, children }: GlossaryTooltipP
   );
 }
 
-export function parseTextWithGlossary(text: string): React.ReactNode[] {
+export function parseTextWithGlossary(text: string, variant: "detective" | "normal" = "normal"): React.ReactNode[] {
   const glossary: Record<string, string> = {
     "overpowered": "A character or item that is too strong compared to others in the game",
     "win rate": "The percentage of games won by players using a specific character",
@@ -77,7 +82,7 @@ export function parseTextWithGlossary(text: string): React.ReactNode[] {
       if (index === 0) {
         const actualWord = remainingText.substring(0, word.length);
         parts.push(
-          <GlossaryTooltip key={`glossary-${keyIndex++}`} word={word} definition={glossary[word]}>
+          <GlossaryTooltip key={`glossary-${keyIndex++}`} word={word} definition={glossary[word]} variant={variant}>
             {actualWord}
           </GlossaryTooltip>
         );

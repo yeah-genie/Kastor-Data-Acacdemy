@@ -152,7 +152,7 @@ export function ChatMessage({ message, index }: ChatMessageProps) {
             : "bg-white text-gray-800 border border-gray-200 rounded-tl-sm"
         }`}>
           <p className="text-base md:text-sm leading-relaxed whitespace-pre-wrap">
-            {parseTextWithGlossary(message.text)}
+            {parseTextWithGlossary(message.text, isDetective ? "detective" : "normal")}
           </p>
         </div>
       </div>
