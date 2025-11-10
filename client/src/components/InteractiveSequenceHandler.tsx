@@ -86,6 +86,15 @@ export function InteractiveSequenceHandler({ sequence, onComplete }: Interactive
         />
       );
 
+    case "log_filtering":
+      // Placeholder for log filtering - auto-complete for now
+      setTimeout(onComplete, 100);
+      return (
+        <div className="p-8 text-center">
+          <p className="text-gray-600">Log filtering in progress...</p>
+        </div>
+      );
+
     default:
       return null;
   }

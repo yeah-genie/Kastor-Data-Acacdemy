@@ -29,13 +29,6 @@ export interface Message {
   timestamp?: string;
   characterName?: string;
   photo?: string;
-  evidenceNotification?: {
-    title: string;
-    icon?: string;
-  };
-  logicThought?: {
-    title: string;
-  };
 }
 
 export interface DataVisualization {
@@ -148,15 +141,7 @@ export const case1EpisodeInteractive: Record<string, StoryNode> = {
       { id: "m17", speaker: "system", text: "Subject: URGENT! Please help!" },
       { id: "m18", speaker: "maya", text: "The Shadow character's win rate jumped from 50% to 85% overnight!" },
       { id: "m19", speaker: "maya", text: "We didn't release any patches... This is a disaster!" },
-      {
-        id: "m20",
-        speaker: "system",
-        text: "",
-        evidenceNotification: {
-          title: "EVIDENCE ADDED: Maya's Request Email",
-          icon: "📧"
-        }
-      },
+      { id: "m20", speaker: "system", text: "📧 EVIDENCE ADDED: Maya's Request Email" },
     ],
     question: {
       id: "q1",
@@ -197,24 +182,8 @@ export const case1EpisodeInteractive: Record<string, StoryNode> = {
       { id: "m29", speaker: "maya", text: "But we didn't release any official patches!" },
       { id: "m30", speaker: "kastor", text: "Interesting. Can you send us the data?" },
       { id: "m31", speaker: "maya", text: "Yes! I'll send it right now!" },
-      {
-        id: "m32",
-        speaker: "system",
-        text: "",
-        evidenceNotification: {
-          title: "EVIDENCE ADDED: Maya's Testimony - 'No Official Patch'",
-          icon: "💬"
-        }
-      },
-      {
-        id: "m33",
-        speaker: "system",
-        text: "",
-        evidenceNotification: {
-          title: "EVIDENCE ADDED: Character Performance Data",
-          icon: "📊"
-        }
-      },
+      { id: "m32", speaker: "system", text: "💬 EVIDENCE ADDED: Maya's Testimony - 'No Official Patch'" },
+      { id: "m33", speaker: "system", text: "📊 EVIDENCE ADDED: Character Performance Data" },
     ],
     question: {
       id: "q2",
@@ -324,26 +293,11 @@ export const case1EpisodeInteractive: Record<string, StoryNode> = {
       { id: "m44", speaker: "system", text: "Day 27: Win Rate 50.2% (Normal)" },
       { id: "m45", speaker: "system", text: "Day 28: Win Rate 84.7% (ABNORMAL!)" },
       { id: "m46", speaker: "system", text: "Day 29: Win Rate 85.1% (Sustained)" },
-      {
-        id: "m47",
-        speaker: "system",
-        text: "",
-        evidenceNotification: {
-          title: "EVIDENCE ADDED: Shadow Win Rate Spike Graph",
-          icon: "📈"
-        }
-      },
+      { id: "m47", speaker: "system", text: "📈 EVIDENCE ADDED: Shadow Win Rate Spike Graph" },
       { id: "m48", speaker: "kastor", text: "Exactly! Something's definitely fishy." },
       { id: "m49", speaker: "detective", text: "Phoenix went up a bit too though?" },
       { id: "m50", speaker: "kastor", text: "That's a healthy increase. Shadow's is a rocket launch." },
-      {
-        id: "m51",
-        speaker: "system",
-        text: "",
-        logicThought: {
-          title: "LOGIC THOUGHT UNLOCKED: Shadow's Unnatural Power Spike"
-        }
-      },
+      { id: "m51", speaker: "system", text: "💡 LOGIC THOUGHT UNLOCKED: Shadow's Unnatural Power Spike" },
       { id: "m52", speaker: "kastor", text: "Not bad for a rookie. Took you 10 minutes." },
     ],
     autoAdvance: { nextNode: "document_check", delay: 1000 },
@@ -377,15 +331,7 @@ export const case1EpisodeInteractive: Record<string, StoryNode> = {
     phase: "stage2",
     messages: [
       { id: "m54", speaker: "detective", text: "It says Shadow wasn't changed." },
-      {
-        id: "m55",
-        speaker: "system",
-        text: "",
-        evidenceNotification: {
-          title: "EVIDENCE ADDED: Official Patch Notes - Day 28",
-          icon: "📄"
-        }
-      },
+      { id: "m55", speaker: "system", text: "📄 EVIDENCE ADDED: Official Patch Notes - Day 28" },
       { id: "m56", speaker: "kastor", text: "But the win rate went up. Suspicious. Let's check the server logs!" },
     ],
     autoAdvance: { nextNode: "logs_check", delay: 500 },
@@ -419,23 +365,8 @@ export const case1EpisodeInteractive: Record<string, StoryNode> = {
     messages: [
       { id: "m58", speaker: "detective", text: "Wait, someone modified it!" },
       { id: "m59", speaker: "kastor", text: "And at 11 PM. Plus they tried to delete the logs." },
-      {
-        id: "m60",
-        speaker: "system",
-        text: "",
-        evidenceNotification: {
-          title: "EVIDENCE ADDED: Server Log - Unauthorized Modification",
-          icon: "📝"
-        }
-      },
-      {
-        id: "m61",
-        speaker: "system",
-        text: "",
-        logicThought: {
-          title: "LOGIC THOUGHT UNLOCKED: Someone Tampered After Hours"
-        }
-      },
+      { id: "m60", speaker: "system", text: "📝 EVIDENCE ADDED: Server Log - Unauthorized Modification" },
+      { id: "m61", speaker: "system", text: "💡 LOGIC THOUGHT UNLOCKED: Someone Tampered After Hours" },
     ],
     autoAdvance: { nextNode: "logic_connection_intro", delay: 500 },
   },
@@ -470,14 +401,7 @@ export const case1EpisodeInteractive: Record<string, StoryNode> = {
     messages: [
       { id: "m63", speaker: "detective", text: "The official patch notes say Shadow wasn't changed..." },
       { id: "m64", speaker: "detective", text: "But the win rate proves it WAS changed!" },
-      {
-        id: "m65",
-        speaker: "system",
-        text: "",
-        logicThought: {
-          title: "NEW LOGIC UNLOCKED: Unauthorized Patch Occurred"
-        }
-      },
+      { id: "m65", speaker: "system", text: "💡 NEW LOGIC UNLOCKED: Unauthorized Patch Occurred" },
       { id: "m66", speaker: "detective", text: "Someone modified Shadow's data secretly after work hours!" },
       { id: "m67", speaker: "kastor", text: "Bingo! Now we need to find out WHO." },
       { id: "m68", speaker: "detective", text: "Maya should know who admin01 is!" },
@@ -496,27 +420,11 @@ export const case1EpisodeInteractive: Record<string, StoryNode> = {
       { id: "m73", speaker: "maya", text: "...What? Then someone secretly...?" },
       { id: "m74", speaker: "maya", text: "admin01... Hold on, let me check." },
       { id: "m75", speaker: "maya", text: "admin01 is Ryan Nakamura. He's our balance designer..." },
-      {
-        id: "m76",
-        speaker: "system",
-        text: "",
-        evidenceNotification: {
-          title: "PROFILE ADDED: Ryan Nakamura - Balance Designer",
-          icon: "👤"
-        }
-      },
+      { id: "m76", speaker: "system", text: "👤 PROFILE ADDED: Ryan Nakamura - Balance Designer" },
       { id: "m77", speaker: "detective", text: "Did he work late that night?" },
       { id: "m78", speaker: "maya", text: "No! Day 28 was a no-overtime day!" },
       { id: "m79", speaker: "maya", text: "From home... did he log in secretly?" },
-      {
-        id: "m80",
-        speaker: "system",
-        text: "",
-        evidenceNotification: {
-          title: "EVIDENCE UPDATED: Maya's Testimony - 'Ryan Shouldn't Have Been Working'",
-          icon: "💬"
-        }
-      },
+      { id: "m80", speaker: "system", text: "💬 EVIDENCE UPDATED: Maya's Testimony - 'Ryan Shouldn't Have Been Working'" },
       { id: "m81", speaker: "kastor", text: "Highly likely. We need to dig deeper." },
     ],
     autoAdvance: { nextNode: "timeline_intro", delay: 1000 },
@@ -552,15 +460,7 @@ export const case1EpisodeInteractive: Record<string, StoryNode> = {
     id: "timeline_result",
     phase: "stage3",
     messages: [
-      {
-        id: "m84",
-        speaker: "system",
-        text: "",
-        evidenceNotification: {
-          title: "EVIDENCE ADDED: Ryan's Activity Timeline",
-          icon: "⏰"
-        }
-      },
+      { id: "m84", speaker: "system", text: "⏰ EVIDENCE ADDED: Ryan's Activity Timeline" },
       { id: "m85", speaker: "detective", text: "He logged back in from home after leaving work!" },
       { id: "m86", speaker: "kastor", text: "This was planned. But wait..." },
       { id: "m87", speaker: "kastor", text: "There's also admin02. Logged in at 10:30 PM." },
@@ -619,15 +519,7 @@ export const case1EpisodeInteractive: Record<string, StoryNode> = {
       { id: "m103", speaker: "daniel", text: "Oh, yes! There was an emergency server check." },
       { id: "m104", speaker: "detective", text: "What did you do?" },
       { id: "m105", speaker: "daniel", text: "Just checked the server status. About 10 minutes?" },
-      {
-        id: "m106",
-        speaker: "system",
-        text: "",
-        evidenceNotification: {
-          title: "TESTIMONY ADDED: Daniel's Statement",
-          icon: "💬"
-        }
-      },
+      { id: "m106", speaker: "system", text: "💬 TESTIMONY ADDED: Daniel's Statement" },
     ],
     autoAdvance: { nextNode: "daniel_question_2", delay: 500 },
   },
@@ -644,15 +536,7 @@ export const case1EpisodeInteractive: Record<string, StoryNode> = {
       { id: "m112", speaker: "daniel", text: "That can't be right... Ryan's a good kid!" },
       { id: "m113", speaker: "detective", text: "Are you sure?" },
       { id: "m114", speaker: "daniel", text: "Yes! I've been his mentor for a year. He's hardworking and kind!" },
-      {
-        id: "m115",
-        speaker: "system",
-        text: "",
-        evidenceNotification: {
-          title: "PROFILE ADDED: Daniel Schmidt - Senior Admin, Ryan's Mentor",
-          icon: "👤"
-        }
-      },
+      { id: "m115", speaker: "system", text: "👤 PROFILE ADDED: Daniel Schmidt - Senior Admin, Ryan's Mentor" },
       { id: "m116", speaker: "kastor", text: "Understood. Thanks for your help." },
       { id: "m117", speaker: "narrator", text: "[Call ends]" },
       { id: "m118", speaker: "detective", text: "Daniel seems to know nothing." },
@@ -694,15 +578,7 @@ export const case1EpisodeInteractive: Record<string, StoryNode> = {
     id: "found_noctis",
     phase: "stage4",
     messages: [
-      {
-        id: "m123",
-        speaker: "system",
-        text: "",
-        evidenceNotification: {
-          title: "EVIDENCE ADDED: Noctis Player Profile",
-          icon: "🎮"
-        }
-      },
+      { id: "m123", speaker: "system", text: "🎮 EVIDENCE ADDED: Noctis Player Profile" },
       { id: "m124", speaker: "detective", text: "Started playing 3 minutes after the modification!" },
       { id: "m125", speaker: "kastor", text: "Suspicious timing. But there's another Shadow player." },
       { id: "m126", speaker: "system", text: "IGN: ShadowFan99" },
@@ -799,15 +675,7 @@ export const case1EpisodeInteractive: Record<string, StoryNode> = {
       { id: "m150", speaker: "system", text: "19:02 - Login" },
       { id: "m151", speaker: "system", text: "20:58 - Logout ✓" },
       { id: "m152", speaker: "system", text: "[No further activity]" },
-      {
-        id: "m153",
-        speaker: "system",
-        text: "",
-        evidenceNotification: {
-          title: "EVIDENCE ADDED: Alex's Alibi - Logged out at 9 PM",
-          icon: "✅"
-        }
-      },
+      { id: "m153", speaker: "system", text: "✅ EVIDENCE ADDED: Alex's Alibi - Logged out at 9 PM" },
       { id: "m154", speaker: "detective", text: "You're right. You logged out at 9 PM." },
       { id: "m155", speaker: "alex", text: "See? It wasn't me! I just played the game!" },
       { id: "m156", speaker: "detective", text: "Understood. Thank you." },
@@ -952,15 +820,7 @@ export const case1EpisodeInteractive: Record<string, StoryNode> = {
       { id: "m181", speaker: "ryan", text: "I love Shadow but my skill wasn't good enough." },
       { id: "m182", speaker: "ryan", text: "I thought a small buff wouldn't hurt anyone." },
       { id: "m183", speaker: "ryan", text: "I didn't think it would cause this much chaos." },
-      {
-        id: "m184",
-        speaker: "system",
-        text: "",
-        evidenceNotification: {
-          title: "EVIDENCE ADDED: Ryan's Confession",
-          icon: "📝"
-        }
-      },
+      { id: "m184", speaker: "system", text: "📝 EVIDENCE ADDED: Ryan's Confession" },
     ],
     question: {
       id: "q6",
@@ -1094,9 +954,12 @@ export const case1EpisodeInteractive: Record<string, StoryNode> = {
     autoAdvance: { nextNode: "case_evaluation", delay: 1500 },
   },
 
-  // Scene 8 - Case Evaluation with S RANK
-  case_evaluation: {
-    id: "case_evaluation",
+  // Scene 8 - Case Evaluation (Dynamic based on performance)
+  // NOTE: GameScene should route to appropriate rank node based on player performance
+
+  // S RANK (90-100% score, all evidence, all logic, all contradictions)
+  case_evaluation_s: {
+    id: "case_evaluation_s",
     phase: "stage5",
     messages: [
       { id: "m202", speaker: "narrator", text: "[CASE EVALUATION SCREEN]" },
@@ -1108,20 +971,151 @@ export const case1EpisodeInteractive: Record<string, StoryNode> = {
       { id: "m208", speaker: "system", text: "" },
       { id: "m209", speaker: "system", text: "FINAL GRADE: S RANK 🏆" },
     ],
-    autoAdvance: { nextNode: "case_closed", delay: 2000 },
+    autoAdvance: { nextNode: "case_closed_s", delay: 2000 },
+  },
+
+  case_closed_s: {
+    id: "case_closed_s",
+    phase: "stage5",
+    messages: [
+      { id: "m210", speaker: "kastor", text: "...Wow. Perfect score on your first case." },
+      { id: "m211", speaker: "kastor", text: "All evidence collected, every logic connection made, every contradiction caught." },
+      { id: "m212", speaker: "detective", text: "I just followed the data!" },
+      { id: "m213", speaker: "kastor", text: "Hah, 'just followed the data' you say... That's exactly what a detective should do." },
+      { id: "m214", speaker: "kastor", text: "I'll admit, I'm impressed. Maybe you're not such a rookie after all~" },
+      { id: "m215", speaker: "detective", text: "Thank you!" },
+      { id: "m216", speaker: "kastor", text: "Don't get cocky though. This was just Case #001. They get harder from here." },
+      { id: "m217", speaker: "kastor", text: "Ready for the next one?" },
+      { id: "m218", speaker: "detective", text: "Bring it on!" },
+      { id: "m219", speaker: "kastor", text: "That's the spirit. Welcome to the detective life~" },
+      { id: "m220", speaker: "system", text: "[CASE #001 COMPLETE - S RANK]" },
+      { id: "m221", speaker: "system", text: "[NEXT CASE UNLOCKED]" },
+    ],
+  },
+
+  // A RANK (75-89% score, most evidence, most logic)
+  case_evaluation_a: {
+    id: "case_evaluation_a",
+    phase: "stage5",
+    messages: [
+      { id: "m222", speaker: "narrator", text: "[CASE EVALUATION SCREEN]" },
+      { id: "m223", speaker: "system", text: "Evidence Collected: 10/12 ✓" },
+      { id: "m224", speaker: "system", text: "Logic Connections Made: 4/5 ✓" },
+      { id: "m225", speaker: "system", text: "Contradictions Found: 3/3 ✓" },
+      { id: "m226", speaker: "system", text: "Interview Accuracy: 90%" },
+      { id: "m227", speaker: "system", text: "Time Taken: Good" },
+      { id: "m228", speaker: "system", text: "" },
+      { id: "m229", speaker: "system", text: "FINAL GRADE: A RANK ⭐" },
+    ],
+    autoAdvance: { nextNode: "case_closed_a", delay: 2000 },
+  },
+
+  case_closed_a: {
+    id: "case_closed_a",
+    phase: "stage5",
+    messages: [
+      { id: "m230", speaker: "kastor", text: "Not bad. You solved the case and caught the culprit." },
+      { id: "m231", speaker: "kastor", text: "But you missed a couple pieces of evidence along the way." },
+      { id: "m232", speaker: "detective", text: "I got the important stuff though, right?" },
+      { id: "m233", speaker: "kastor", text: "Sure. But in detective work, it's the 'unimportant' details that often make the difference." },
+      { id: "m234", speaker: "kastor", text: "A rank is solid for a first case. Just remember - every piece of data matters." },
+      { id: "m235", speaker: "detective", text: "I'll remember that." },
+      { id: "m236", speaker: "kastor", text: "Good. Now let's see if you can get S rank next time~" },
+      { id: "m237", speaker: "system", text: "[CASE #001 COMPLETE - A RANK]" },
+      { id: "m238", speaker: "system", text: "[NEXT CASE UNLOCKED]" },
+    ],
+  },
+
+  // B RANK (60-74% score, basic evidence, some mistakes)
+  case_evaluation_b: {
+    id: "case_evaluation_b",
+    phase: "stage5",
+    messages: [
+      { id: "m239", speaker: "narrator", text: "[CASE EVALUATION SCREEN]" },
+      { id: "m240", speaker: "system", text: "Evidence Collected: 8/12" },
+      { id: "m241", speaker: "system", text: "Logic Connections Made: 3/5" },
+      { id: "m242", speaker: "system", text: "Contradictions Found: 2/3" },
+      { id: "m243", speaker: "system", text: "Interview Accuracy: 75%" },
+      { id: "m244", speaker: "system", text: "Time Taken: Acceptable" },
+      { id: "m245", speaker: "system", text: "" },
+      { id: "m246", speaker: "system", text: "FINAL GRADE: B RANK" },
+    ],
+    autoAdvance: { nextNode: "case_closed_b", delay: 2000 },
+  },
+
+  case_closed_b: {
+    id: "case_closed_b",
+    phase: "stage5",
+    messages: [
+      { id: "m247", speaker: "kastor", text: "Well... you solved it. The culprit confessed, case closed." },
+      { id: "m248", speaker: "kastor", text: "But you left a lot on the table. Missed evidence, incomplete logic chains..." },
+      { id: "m249", speaker: "detective", text: "But I still caught Ryan!" },
+      { id: "m250", speaker: "kastor", text: "Yeah, you got there eventually. But a good detective doesn't just stumble to the answer." },
+      { id: "m251", speaker: "kastor", text: "You need to be thorough. Check everything, connect all the dots." },
+      { id: "m252", speaker: "detective", text: "...I'll do better next time." },
+      { id: "m253", speaker: "kastor", text: "That's all I ask. B rank isn't bad for a rookie, but you've got room to grow~" },
+      { id: "m254", speaker: "kastor", text: "Ready to try again with the next case?" },
+      { id: "m255", speaker: "detective", text: "Yes!" },
+      { id: "m256", speaker: "system", text: "[CASE #001 COMPLETE - B RANK]" },
+      { id: "m257", speaker: "system", text: "[NEXT CASE UNLOCKED]" },
+    ],
+  },
+
+  // C RANK (below 60% score, minimal evidence, many mistakes)
+  case_evaluation_c: {
+    id: "case_evaluation_c",
+    phase: "stage5",
+    messages: [
+      { id: "m258", speaker: "narrator", text: "[CASE EVALUATION SCREEN]" },
+      { id: "m259", speaker: "system", text: "Evidence Collected: 6/12" },
+      { id: "m260", speaker: "system", text: "Logic Connections Made: 2/5" },
+      { id: "m261", speaker: "system", text: "Contradictions Found: 1/3" },
+      { id: "m262", speaker: "system", text: "Interview Accuracy: 50%" },
+      { id: "m263", speaker: "system", text: "Time Taken: Slow" },
+      { id: "m264", speaker: "system", text: "" },
+      { id: "m265", speaker: "system", text: "FINAL GRADE: C RANK" },
+    ],
+    autoAdvance: { nextNode: "case_closed_c", delay: 2000 },
+  },
+
+  case_closed_c: {
+    id: "case_closed_c",
+    phase: "stage5",
+    messages: [
+      { id: "m266", speaker: "kastor", text: "...So. You technically solved the case." },
+      { id: "m267", speaker: "kastor", text: "But honestly? It was rough to watch." },
+      { id: "m268", speaker: "detective", text: "Hey, I still caught the culprit!" },
+      { id: "m269", speaker: "kastor", text: "Barely. You missed half the evidence, made wrong assumptions, and got lucky with the confession." },
+      { id: "m270", speaker: "kastor", text: "If Ryan had been smarter about covering his tracks, you would've been lost." },
+      { id: "m271", speaker: "detective", text: "..." },
+      { id: "m272", speaker: "kastor", text: "Look, I'm not saying you're hopeless. Everyone starts somewhere." },
+      { id: "m273", speaker: "kastor", text: "But you need to slow down, check your data, and think through the logic." },
+      { id: "m274", speaker: "kastor", text: "Detectives don't guess. We follow evidence~" },
+      { id: "m275", speaker: "detective", text: "I understand... I'll try harder next time." },
+      { id: "m276", speaker: "kastor", text: "Good. That's the right attitude. Let's see improvement on Case #002, okay?" },
+      { id: "m277", speaker: "system", text: "[CASE #001 COMPLETE - C RANK]" },
+      { id: "m278", speaker: "system", text: "[NEXT CASE UNLOCKED]" },
+    ],
+  },
+
+  // Default fallback (for compatibility)
+  case_evaluation: {
+    id: "case_evaluation",
+    phase: "stage5",
+    messages: [
+      { id: "m279", speaker: "narrator", text: "[CASE EVALUATION SCREEN]" },
+      { id: "m280", speaker: "narrator", text: "[Calculating performance...]" },
+    ],
+    autoAdvance: { nextNode: "case_closed_s", delay: 1000 },
   },
 
   case_closed: {
     id: "case_closed",
     phase: "stage5",
     messages: [
-      { id: "m210", speaker: "kastor", text: "First case solved perfectly! 100 points!" },
-      { id: "m211", speaker: "detective", text: "I feel accomplished!" },
-      { id: "m212", speaker: "kastor", text: "That's the detective high! Ready for the next case?" },
-      { id: "m213", speaker: "detective", text: "Already?!" },
-      { id: "m214", speaker: "kastor", text: "Detectives are busy~ Get used to it!" },
-      { id: "m215", speaker: "system", text: "[CASE #001 COMPLETE]" },
-      { id: "m216", speaker: "system", text: "[NEXT CASE UNLOCKED]" },
+      { id: "m281", speaker: "kastor", text: "Case solved. Good work~" },
+      { id: "m282", speaker: "system", text: "[CASE #001 COMPLETE]" },
+      { id: "m283", speaker: "system", text: "[NEXT CASE UNLOCKED]" },
     ],
   },
 };
