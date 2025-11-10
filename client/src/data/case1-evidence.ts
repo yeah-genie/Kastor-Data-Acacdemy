@@ -27,6 +27,9 @@ export const case1Evidence: Record<string, Evidence> = {
     suspicionLevel: 2,
     timestamp: Date.now() - 2,
     unlockedByNode: "meet_team",
+    connections: [
+      { to: "maya_dialogue", label: "Interview" }
+    ],
   },
   
   chris_profile: {
@@ -40,6 +43,9 @@ export const case1Evidence: Record<string, Evidence> = {
     suspicionLevel: 4,
     timestamp: Date.now() - 1,
     unlockedByNode: "meet_team",
+    connections: [
+      { to: "chris_dialogue", label: "Interview" }
+    ],
   },
   
   ryan_profile: {
@@ -53,6 +59,9 @@ export const case1Evidence: Record<string, Evidence> = {
     suspicionLevel: 3,
     timestamp: Date.now(),
     unlockedByNode: "meet_team",
+    connections: [
+      { to: "ryan_dialogue", label: "Interview" }
+    ],
   },
   
   maya_profile_updated: {
@@ -111,6 +120,9 @@ export const case1Evidence: Record<string, Evidence> = {
     ],
     timestamp: Date.now(),
     unlockedByNode: "maya_interview",
+    connections: [
+      { to: "server_logs", label: "Mentions admin01" }
+    ],
   },
   
   chris_dialogue: {
@@ -127,6 +139,9 @@ export const case1Evidence: Record<string, Evidence> = {
     ],
     timestamp: Date.now(),
     unlockedByNode: "chris_interview",
+    connections: [
+      { to: "winrate_chart", label: "Win rate anomaly" }
+    ],
   },
   
   ryan_dialogue: {
@@ -143,6 +158,9 @@ export const case1Evidence: Record<string, Evidence> = {
     ],
     timestamp: Date.now(),
     unlockedByNode: "ryan_interview",
+    connections: [
+      { to: "server_logs", label: "Provided logs" }
+    ],
   },
   
   server_logs: {
@@ -160,6 +178,10 @@ export const case1Evidence: Record<string, Evidence> = {
     },
     timestamp: Date.now(),
     unlockedByNode: "ryan_interview",
+    connections: [
+      { to: "ip_analysis", label: "IP trace" },
+      { to: "winrate_chart", label: "Attack power change" }
+    ],
   },
   
   ip_analysis: {
@@ -178,6 +200,9 @@ export const case1Evidence: Record<string, Evidence> = {
     },
     timestamp: Date.now(),
     unlockedByNode: "ip_discovery",
+    connections: [
+      { to: "chris_profile", label: "Matches Chris IP" }
+    ],
   },
   
   winrate_chart: {

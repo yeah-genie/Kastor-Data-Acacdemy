@@ -20,6 +20,7 @@ export interface EvidenceBase {
   title: string;
   timestamp: number;
   unlockedByNode: string;
+  connections?: Array<{ to: string; label?: string }>;
 }
 
 export interface CharacterEvidence extends EvidenceBase {
@@ -345,6 +346,18 @@ export const useDetectiveGame = create<DetectiveGameState>()(
             hasNewEvidence: true,
           };
         });
+        
+        if (ev.connections && ev.connections.length > 0) {
+          ev.connections.forEach(conn => {
+            const connectionExists = get().evidenceBoardConnections.some(
+              c => (c.from === ev.id && c.to === conn.to) || (c.from === conn.to && c.to === ev.id)
+            );
+            
+            if (!connectionExists) {
+              get().addEvidenceConnection(ev.id, conn.to, conn.label);
+            }
+          });
+        }
       });
       get().saveCurrentProgress();
     },
