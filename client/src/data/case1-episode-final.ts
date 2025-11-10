@@ -24,6 +24,13 @@ export interface Message {
     points?: number;
   };
   timestamp?: string;
+  email?: {
+    from: string;
+    subject: string;
+    body: string;
+  };
+  image?: string; // Unsplash image for narrator actions
+  soundEffect?: string; // Sound effect to play
 }
 
 export interface DataVisualization {
@@ -67,11 +74,20 @@ export const case1EpisodeFinal: Record<string, StoryNode> = {
     id: "start",
     phase: "stage1",
     messages: [
-      { id: "m1", speaker: "system", text: "Episode 1: The Missing Balance Patch" },
       { id: "m2", speaker: "system", text: "Data Detective Academy - Case #001" },
-      { id: "m3", speaker: "narrator", text: "[Setting: A run-down detective office. Dust on the desk. Papers everywhere.]" },
+      {
+        id: "m3",
+        speaker: "narrator",
+        text: "[Setting: A run-down detective office. Dust on the desk. Papers everywhere.]",
+        image: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80"
+      },
       { id: "m4", speaker: "kastor", text: "Zzzzz..." },
-      { id: "m5", speaker: "narrator", text: "[Door opens - You enter]" },
+      {
+        id: "m5",
+        speaker: "narrator",
+        text: "[Door opens - You enter]",
+        soundEffect: "door-open"
+      },
     ],
     autoAdvance: { nextNode: "office_intro", delay: 1000 },
   },
@@ -82,7 +98,12 @@ export const case1EpisodeFinal: Record<string, StoryNode> = {
     messages: [
       { id: "m6", speaker: "detective", text: "...Is this the right place?" },
       { id: "m7", speaker: "kastor", text: "Hm?" },
-      { id: "m8", speaker: "narrator", text: "[Kastor wakes up and stretches]" },
+      {
+        id: "m8",
+        speaker: "narrator",
+        text: "[Kastor wakes up and stretches]",
+        soundEffect: "yawn"
+      },
       { id: "m9", speaker: "kastor", text: "Oh! New person?" },
       { id: "m10", speaker: "detective", text: "I'm the new detective." },
       { id: "m11", speaker: "kastor", text: "Detective? You don't look like one." },
@@ -122,22 +143,37 @@ export const case1EpisodeFinal: Record<string, StoryNode> = {
     id: "email_arrives",
     phase: "stage1",
     messages: [
-      { id: "m26", speaker: "narrator", text: "[DING! - Email notification]" },
+      { id: "m26", speaker: "narrator", text: "[DING! - Email notification]", soundEffect: "notification" },
       { id: "m27", speaker: "kastor", text: "Ooh! Mail!" },
       { id: "m28", speaker: "detective", text: "Already?" },
       { id: "m29", speaker: "kastor", text: "Yep! You're lucky! No cases = boring." },
       { id: "m30", speaker: "detective", text: "Is that... good luck?" },
       { id: "m31", speaker: "kastor", text: "Obviously! Now click it!" },
-      { id: "m32", speaker: "narrator", text: "[EMAIL OPENS]" },
-      { id: "m33", speaker: "system", text: "FROM: Maya Zhang" },
-      { id: "m34", speaker: "system", text: "SUBJECT: URGENT! Need Help!" },
-      { id: "m35", speaker: "maya", text: "Hello detectives! I'm Maya, director of Legend Arena." },
-      { id: "m36", speaker: "maya", text: "We have a HUGE problem! 😰" },
-      { id: "m37", speaker: "maya", text: "Our character Shadow's win rate jumped from 50% to 85% in ONE DAY!" },
-      { id: "m38", speaker: "maya", text: "We didn't patch him! I have no idea why this happened!" },
-      { id: "m39", speaker: "maya", text: "Players are furious! The community is exploding!" },
-      { id: "m40", speaker: "maya", text: "If we lose player trust... the game is finished!" },
-      { id: "m41", speaker: "maya", text: "PLEASE HELP US!" },
+      {
+        id: "m33",
+        speaker: "system",
+        text: "",
+        email: {
+          from: "Maya Zhang <maya.zhang@legendarena.com>",
+          subject: "🚨 URGENT! Need Help!",
+          body: `Hello detectives! I'm Maya, director of Legend Arena.
+
+We have a HUGE problem! 😰
+
+Our character Shadow's win rate jumped from 50% to 85% in ONE DAY!
+
+We didn't patch him! I have no idea why this happened!
+
+Players are furious! The community is exploding!
+
+If we lose player trust... the game is finished!
+
+PLEASE HELP US!
+
+- Maya Zhang
+Director, Legend Arena`
+        }
+      },
     ],
     autoAdvance: { nextNode: "first_hypothesis", delay: 1000 },
   },
@@ -264,7 +300,12 @@ export const case1EpisodeFinal: Record<string, StoryNode> = {
     phase: "stage2",
     messages: [
       { id: "m84", speaker: "kastor", text: "Alright! Data time!" },
-      { id: "m85", speaker: "narrator", text: "[Screen shows graph with three colored lines]" },
+      {
+        id: "m85",
+        speaker: "narrator",
+        text: "[Screen shows graph with three colored lines]",
+        image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80"
+      },
       { id: "m86", speaker: "detective", text: "Three lines..." },
       { id: "m87", speaker: "kastor", text: "Yep! Shadow, Phoenix, Viper. See anything weird?" },
       { id: "m88", speaker: "detective", text: "Um..." },
@@ -359,7 +400,12 @@ export const case1EpisodeFinal: Record<string, StoryNode> = {
     phase: "stage2",
     messages: [
       { id: "m108", speaker: "kastor", text: "Next! Official patch notes!" },
-      { id: "m109", speaker: "narrator", text: "[Document appears on screen]" },
+      {
+        id: "m109",
+        speaker: "narrator",
+        text: "[Document appears on screen]",
+        image: "https://images.unsplash.com/photo-1568667256549-094345857637?w=800&q=80"
+      },
     ],
     interactiveSequence: {
       type: "document_examination",
@@ -394,7 +440,12 @@ export const case1EpisodeFinal: Record<string, StoryNode> = {
     id: "server_logs",
     phase: "stage2",
     messages: [
-      { id: "m116", speaker: "narrator", text: "[Server logs appear]" },
+      {
+        id: "m116",
+        speaker: "narrator",
+        text: "[Server logs appear]",
+        image: "https://images.unsplash.com/photo-1629654297299-c8506221ca97?w=800&q=80"
+      },
     ],
     interactiveSequence: {
       type: "document_examination",
@@ -494,7 +545,12 @@ export const case1EpisodeFinal: Record<string, StoryNode> = {
     phase: "stage3",
     messages: [
       { id: "m143", speaker: "kastor", text: "Time to track Kaito's movements!" },
-      { id: "m144", speaker: "narrator", text: "[Filtering admin01 activities...]" },
+      {
+        id: "m144",
+        speaker: "narrator",
+        text: "[Filtering admin01 activities...]",
+        image: "https://images.unsplash.com/photo-1501139083538-0139583c060f?w=800&q=80"
+      },
     ],
     interactiveSequence: {
       type: "timeline_reconstruction",
@@ -543,7 +599,12 @@ export const case1EpisodeFinal: Record<string, StoryNode> = {
     id: "admin02_discover",
     phase: "stage3",
     messages: [
-      { id: "m156", speaker: "narrator", text: "[Scrolling through logs...]" },
+      {
+        id: "m156",
+        speaker: "narrator",
+        text: "[Scrolling through logs...]",
+        image: "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=800&q=80"
+      },
       { id: "m157", speaker: "kastor", text: "Wait. There's admin02 too." },
       { id: "m158", speaker: "system", text: "ADMIN02 ACTIVITY:" },
       { id: "m159", speaker: "system", text: "22:30 - Login (Office)" },

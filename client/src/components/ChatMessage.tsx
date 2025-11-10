@@ -1,11 +1,12 @@
 import { motion } from "framer-motion";
-import { User, FileText } from "lucide-react";
-import { Message } from "@/data/case1-story";
-import { useEffect } from "react";
+import { User, FileText, Mail } from "lucide-react";
+import { Message } from "@/data/case1-episode-final";
+import { useEffect, useState } from "react";
 import { useAudio } from "@/lib/stores/useAudio";
 import { useDetectiveGame } from "@/lib/stores/useDetectiveGame";
 import { parseTextWithGlossary } from "./GlossaryTooltip";
 import { TypewriterText } from "./TypewriterText";
+import { EmailNotificationModal } from "./EmailNotificationModal";
 
 interface ChatMessageProps {
   message: Message;
@@ -16,25 +17,52 @@ interface ChatMessageProps {
 }
 
 function shouldUseTypewriter(speaker: string): boolean {
-  return ["detective", "maya", "chris", "ryan", "client"].includes(speaker);
+  // No typewriter for any character - only emails use typewriter
+  return false;
 }
 
 export function ChatMessage({ message, index, onTypingStateChange, onTypingComplete, onCharacterTyped }: ChatMessageProps) {
   const { playMessageSound } = useAudio();
   const { typewriterSpeed } = useDetectiveGame();
-  
+  const [showEmailModal, setShowEmailModal] = useState(false);
+
   useEffect(() => {
     playMessageSound();
+
+    // Play sound effect if specified
+    if (message.soundEffect) {
+      playSoundEffect(message.soundEffect);
+    }
   }, []);
+
+  const playSoundEffect = (effect: string) => {
+    try {
+      const audio = new Audio(`/sounds/${effect}.mp3`);
+      audio.volume = 0.5;
+      audio.play().catch(() => {
+        // Silently fail if sound can't play
+      });
+    } catch (error) {
+      // Silently fail if sound file doesn't exist
+    }
+  };
   
   const getSpeakerName = () => {
     if (message.characterName) return message.characterName;
-    
+
     switch (message.speaker) {
       case "detective":
         return "Detective";
+      case "kastor":
+        return "Kastor";
       case "maya":
         return "Maya";
+      case "kaito":
+        return "Kaito";
+      case "lukas":
+        return "Lukas";
+      case "diego":
+        return "Diego";
       case "chris":
         return "Chris";
       case "ryan":
@@ -52,8 +80,16 @@ export function ChatMessage({ message, index, onTypingStateChange, onTypingCompl
     switch (message.speaker) {
       case "detective":
         return "/detective.jpg";
+      case "kastor":
+        return "/detective.jpg"; // Using detective image for Kastor temporarily
       case "maya":
         return "/characters/maya.jpg";
+      case "kaito":
+        return "/characters/kaito.jpg";
+      case "lukas":
+        return "/characters/lukas.jpg";
+      case "diego":
+        return "/characters/diego.jpg";
       case "chris":
         return "/characters/chris.jpg";
       case "ryan":
@@ -66,31 +102,79 @@ export function ChatMessage({ message, index, onTypingStateChange, onTypingCompl
   const isDetective = message.speaker === "detective";
   const isSystem = message.speaker === "system";
   const isNarrator = message.speaker === "narrator";
-  const isCharacter = ["maya", "chris", "ryan"].includes(message.speaker);
+  const isKastor = message.speaker === "kastor";
+  const isCharacter = ["maya", "chris", "ryan", "kaito", "lukas", "diego", "kastor"].includes(message.speaker);
   const avatarUrl = getSpeakerAvatar();
   const useTypewriter = shouldUseTypewriter(message.speaker);
 
-  // System messages (centered notifications)
+  // Check if message is a thought (starts with "(" and ends with ")")
+  const isThought = message.text?.trim().startsWith("(") && message.text?.trim().endsWith(")");
+
+  // System messages (centered notifications) or Email
   if (isSystem) {
+    // Email notification - clickable to open modal
+    if (message.email) {
+      return (
+        <>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, y: -20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ delay: index * 0.2, duration: 0.5, type: "spring" }}
+            className="flex justify-center my-4"
+          >
+            <motion.button
+              onClick={() => setShowEmailModal(true)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white px-6 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center gap-3 cursor-pointer"
+            >
+              <motion.div
+                animate={{ rotate: [0, -10, 10, -10, 0] }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                <Mail className="w-6 h-6" />
+              </motion.div>
+              <div className="text-left">
+                <div className="text-sm font-semibold">📧 New Email</div>
+                <div className="text-xs opacity-90">From: {message.email.from.split('<')[0].trim()}</div>
+                <div className="text-xs opacity-90 font-bold mt-1">{message.email.subject}</div>
+              </div>
+            </motion.button>
+          </motion.div>
+
+          <EmailNotificationModal
+            isOpen={showEmailModal}
+            onClose={() => setShowEmailModal(false)}
+            from={message.email.from}
+            subject={message.email.subject}
+            body={message.email.body}
+          />
+        </>
+      );
+    }
+
+    // Regular system message
     return (
       <>
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: index * 0.2, duration: 0.3 }}
-          className="flex justify-center my-2"
-        >
-          <div className="bg-gray-200 text-gray-600 px-4 py-2 rounded-full text-xs font-semibold text-center whitespace-pre-wrap">
-            <TypewriterText
-              text={message.text || ""}
-              speed={typewriterSpeed}
-              onTypingStateChange={undefined}
-              bypassTypewriter={true}
-              glossaryMode="none"
-            />
-          </div>
-        </motion.div>
-        
+        {message.text && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: index * 0.2, duration: 0.3 }}
+            className="flex justify-center my-2"
+          >
+            <div className="bg-gray-200 text-gray-600 px-4 py-2 rounded-full text-xs font-semibold text-center whitespace-pre-wrap">
+              <TypewriterText
+                text={message.text}
+                speed={typewriterSpeed}
+                onTypingStateChange={undefined}
+                bypassTypewriter={true}
+                glossaryMode="none"
+              />
+            </div>
+          </motion.div>
+        )}
+
         {message.photo && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -98,9 +182,9 @@ export function ChatMessage({ message, index, onTypingStateChange, onTypingCompl
             transition={{ delay: index * 0.2 + 0.3, duration: 0.4 }}
             className="flex justify-center my-3"
           >
-            <img 
-              src={message.photo} 
-              alt="Scene" 
+            <img
+              src={message.photo}
+              alt="Scene"
               className="max-w-[85%] rounded-3xl shadow-lg border-2 border-gray-200"
             />
           </motion.div>
@@ -109,27 +193,45 @@ export function ChatMessage({ message, index, onTypingStateChange, onTypingCompl
     );
   }
 
-  // Kastor hint box
+  // Kastor hint box / Narrator actions
   if (isNarrator) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: index * 0.2, duration: 0.3 }}
-        className="flex justify-center my-3"
-      >
-        <div className="bg-amber-50 border border-amber-200 text-amber-900 px-4 py-3 rounded-lg max-w-[90%] md:max-w-[85%] shadow-sm">
-          <div className="flex items-start gap-2">
-            <div className="text-xl md:text-lg">💡</div>
-            <div className="flex-1">
-              <div className="text-sm md:text-xs font-semibold text-amber-700 mb-1">Kastor's Hint</div>
-              <p className="text-base md:text-sm leading-relaxed break-words whitespace-pre-wrap">
-                {parseTextWithGlossary(message.text || "")}
-              </p>
+      <>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.2, duration: 0.3 }}
+          className="flex justify-center my-3"
+        >
+          <div className="bg-amber-50 border border-amber-200 text-amber-900 px-4 py-3 rounded-lg max-w-[90%] md:max-w-[85%] shadow-sm">
+            <div className="flex items-start gap-2">
+              <div className="text-xl md:text-lg">💡</div>
+              <div className="flex-1">
+                <div className="text-sm md:text-xs font-semibold text-amber-700 mb-1">Kastor's Hint</div>
+                <p className="text-base md:text-sm leading-relaxed break-words whitespace-pre-wrap">
+                  {parseTextWithGlossary(message.text || "")}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
+
+        {/* Image for narrator actions */}
+        {message.image && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.2 + 0.3, duration: 0.4 }}
+            className="flex justify-center my-3"
+          >
+            <img
+              src={message.image}
+              alt="Scene"
+              className="max-w-[85%] rounded-2xl shadow-lg border-2 border-gray-200"
+            />
+          </motion.div>
+        )}
+      </>
     );
   }
 
@@ -164,9 +266,13 @@ export function ChatMessage({ message, index, onTypingStateChange, onTypingCompl
           {getSpeakerName()} • {message.timestamp || new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
         </div>
         <div className={`rounded-2xl px-4 py-3 md:py-2 ${
-          isDetective 
-            ? "bg-blue-500 text-white rounded-tr-sm" 
-            : "bg-white text-gray-800 border border-gray-200 rounded-tl-sm"
+          isThought
+            ? isDetective
+              ? "bg-blue-100 text-gray-600 border-2 border-dashed border-blue-300 rounded-tr-sm italic"
+              : "bg-gray-50 text-gray-500 border-2 border-dashed border-gray-300 rounded-tl-sm italic"
+            : isDetective
+              ? "bg-blue-500 text-white rounded-tr-sm"
+              : "bg-white text-gray-800 border border-gray-200 rounded-tl-sm"
         }`}>
           <p className="text-base md:text-sm leading-relaxed whitespace-pre-wrap">
             <TypewriterText
