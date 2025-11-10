@@ -65,7 +65,7 @@ export function StartMenu() {
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-amber-700 rounded-full flex items-center justify-center text-white font-bold text-lg">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-sm">
             K
           </div>
           <div>
@@ -73,10 +73,12 @@ export function StartMenu() {
             <p className="text-xs text-gray-500">Data Detective</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="text-right">
+        <div className="flex items-center gap-3">
+          <div className="px-3 py-1.5 bg-gray-100 rounded-lg border border-gray-200">
             <p className="text-xs text-gray-500">Level {currentLevel}</p>
-            <p className="text-sm font-semibold text-gray-900">{currentXP} XP</p>
+          </div>
+          <div className="px-3 py-1.5 bg-gray-100 rounded-lg border border-gray-200">
+            <p className="text-sm font-semibold text-gray-900">{currentXP} <span className="text-xs text-gray-500">XP</span></p>
           </div>
         </div>
       </div>

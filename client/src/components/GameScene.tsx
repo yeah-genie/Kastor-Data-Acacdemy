@@ -320,10 +320,10 @@ export function GameScene() {
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="px-3 py-1.5 bg-gradient-to-r from-amber-400 to-amber-600 rounded-full shadow-sm">
+          <div className="px-3 py-1.5 bg-gray-100 rounded-lg border border-gray-200">
             <div className="flex items-center gap-1.5">
-              <span className="text-white text-xs font-bold">⭐</span>
-              <span className="text-white text-sm font-bold">{score}</span>
+              <span className="text-gray-600 text-xs">Score</span>
+              <span className="text-gray-900 text-sm font-bold">{score}</span>
             </div>
           </div>
           
