@@ -96,7 +96,7 @@ export function GhostAccountSelection({ data, onComplete }: GhostAccountSelectio
           Select {data.maxSelections} accounts that appear to be bots
         </p>
         <p className="text-sm text-gray-500 mt-2">
-          💡 Hint: Check account age (< 7 days) and friend count (0)
+          💡 Hint: Check account age (&lt; 7 days) and friend count (0)
         </p>
       </div>
 

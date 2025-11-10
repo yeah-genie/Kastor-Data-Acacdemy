@@ -1,5 +1,5 @@
 import { case1EpisodeFinal } from "./case1-episode-final";
-import { case2Story } from "./case2-story";
+import { case2EpisodeFull } from "./case2-episode-full";
 import { case3Story } from "./case3-story";
 import type { StoryNode } from "./case1-episode-final";
 
@@ -46,7 +46,7 @@ export const caseMetadata: Record<number, CaseMetadata> = {
 
 export const stories: Record<number, Record<string, StoryNode>> = {
   1: case1EpisodeFinal,
-  2: case2Story,
+  2: case2EpisodeFull,
   3: case3Story,
 };
 
