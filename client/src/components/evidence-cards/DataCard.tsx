@@ -16,11 +16,11 @@ export const DataCard = forwardRef<HTMLDivElement, DataCardProps>(
 
     if (collapsed) {
       return (
-        <div className="flex items-center gap-3 p-4 min-w-[140px]">
-          <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0 shadow-sm">
-            <BarChart3 className="w-6 h-6 text-green-600" />
+        <div className="flex items-center gap-4 p-5 min-w-[180px] max-w-[220px]">
+          <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0 shadow-md border-2 border-green-300">
+            <BarChart3 className="w-7 h-7 text-green-600" />
           </div>
-          <p className="text-base font-bold text-gray-900 line-clamp-2 flex-1">{evidence.title}</p>
+          <p className="text-lg font-bold text-gray-900 line-clamp-2 flex-1 leading-tight">{evidence.title}</p>
         </div>
       );
     }

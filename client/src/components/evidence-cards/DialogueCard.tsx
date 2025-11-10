@@ -15,13 +15,13 @@ export const DialogueCard = forwardRef<HTMLDivElement, DialogueCardProps>(
     if (collapsed) {
       const preview = evidence.keyPoints[0] || evidence.summary;
       return (
-        <div className="flex gap-3 p-4 min-w-[160px] max-w-[220px]">
-          <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0 shadow-sm">
-            <MessageSquare className="w-6 h-6 text-purple-600" />
+        <div className="flex gap-4 p-5 min-w-[200px] max-w-[260px]">
+          <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center flex-shrink-0 shadow-md border-2 border-purple-300">
+            <MessageSquare className="w-7 h-7 text-purple-600" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-purple-600 mb-1 truncate">{evidence.character}</p>
-            <p className="text-sm text-gray-700 line-clamp-2">{preview}</p>
+            <p className="text-base font-bold text-purple-600 mb-1.5 truncate">{evidence.character}</p>
+            <p className="text-sm text-gray-700 line-clamp-2 leading-tight">{preview}</p>
           </div>
         </div>
       );

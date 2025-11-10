@@ -59,20 +59,20 @@ function EvidenceNode({ data, id }: { data: EvidenceNodeData; id: string }) {
   
   return (
     <div className="relative cursor-pointer" onClick={handleClick}>
-      <Handle type="target" position={Position.Top} className="!bg-blue-500 !w-5 !h-5 !border-2 !border-white" />
+      <Handle type="target" position={Position.Top} className="!bg-blue-500 !w-6 !h-6 !border-3 !border-white !shadow-md" />
       
       <motion.div 
-        className={`rounded-2xl shadow-lg ${
+        className={`rounded-2xl shadow-xl ${
           isSelected 
-            ? "bg-blue-100 border-2 border-blue-500" 
-            : "bg-white border border-gray-200"
+            ? "bg-blue-50 border-3 border-blue-500" 
+            : "bg-white border-2 border-gray-300"
         }`}
         initial={false}
         animate={{ 
-          scale: isSelected ? 1.05 : 1,
+          scale: isSelected ? 1.08 : 1,
           boxShadow: isSelected 
-            ? "0 20px 25px -5px rgba(59, 130, 246, 0.2), 0 10px 10px -5px rgba(59, 130, 246, 0.1)" 
-            : "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)"
+            ? "0 20px 25px -5px rgba(59, 130, 246, 0.3), 0 10px 10px -5px rgba(59, 130, 246, 0.2)" 
+            : "0 10px 15px -3px rgba(0, 0, 0, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.1)"
         }}
         transition={{ 
           type: "spring", 
@@ -87,7 +87,7 @@ function EvidenceNode({ data, id }: { data: EvidenceNodeData; id: string }) {
         {evidence.type === "DOCUMENT" && <DocumentCard evidence={evidence as DocumentEvidence} collapsed={isCollapsed} />}
       </motion.div>
       
-      <Handle type="source" position={Position.Bottom} className="!bg-blue-500 !w-5 !h-5 !border-2 !border-white" />
+      <Handle type="source" position={Position.Bottom} className="!bg-blue-500 !w-6 !h-6 !border-3 !border-white !shadow-md" />
     </div>
   );
 }
@@ -148,7 +148,9 @@ function EvidenceBoardInner({ onClose, onSwitchToList }: EvidenceBoardProps) {
       source: conn.from,
       target: conn.to,
       label: conn.label,
-      style: { stroke: '#3b82f6', strokeWidth: 3 },
+      style: { stroke: '#3b82f6', strokeWidth: 4 },
+      labelStyle: { fontSize: 14, fontWeight: 600 },
+      labelBgStyle: { fill: '#dbeafe', fillOpacity: 0.9 },
       animated: true,
     }));
   }, [evidenceBoardConnections]);
