@@ -1,16 +1,36 @@
 import { BaseEvidenceCard } from "./BaseEvidenceCard";
 import { CharacterEvidence } from "@/lib/stores/useDetectiveGame";
-import { Star } from "lucide-react";
+import { Star, User } from "lucide-react";
 import { forwardRef } from "react";
 
 interface CharacterCardProps {
   evidence: CharacterEvidence;
   delay?: number;
   isHighlighted?: boolean;
+  collapsed?: boolean;
 }
 
 export const CharacterCard = forwardRef<HTMLDivElement, CharacterCardProps>(
-  ({ evidence, delay = 0, isHighlighted = false }, ref) => {
+  ({ evidence, delay = 0, isHighlighted = false, collapsed = false }, ref) => {
+    if (collapsed) {
+      return (
+        <div className="flex flex-col items-center justify-center p-3 min-w-[100px]">
+          {evidence.photo ? (
+            <img 
+              src={evidence.photo} 
+              alt={evidence.name} 
+              className="w-12 h-12 rounded-full object-cover border-2 border-blue-400 mb-2" 
+            />
+          ) : (
+            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center border-2 border-blue-400 mb-2">
+              <User className="w-6 h-6 text-blue-600" />
+            </div>
+          )}
+          <p className="text-sm font-semibold text-gray-900 text-center line-clamp-2">{evidence.name}</p>
+        </div>
+      );
+    }
+
     return (
       <BaseEvidenceCard delay={delay} isHighlighted={isHighlighted} ref={ref}>
         <div className="flex flex-col">

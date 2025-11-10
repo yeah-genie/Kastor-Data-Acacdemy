@@ -131,6 +131,8 @@ interface DetectiveGameState {
   sessionMetrics: SessionMetrics;
   evidenceBoardPositions: Record<string, EvidenceNodePosition>;
   evidenceBoardConnections: EvidenceConnection[];
+  selectedNodeId: string | null;
+  collapsedNodes: Set<string>;
   highlightedEvidenceId: string | null;
   typewriterSpeed: TypewriterSpeed;
 
@@ -163,6 +165,9 @@ interface DetectiveGameState {
   addEvidenceConnection: (from: string, to: string, label?: string) => void;
   removeEvidenceConnection: (connectionId: string) => void;
   getNodePosition: (evidenceId: string) => EvidenceNodePosition | null;
+  selectNode: (evidenceId: string | null) => void;
+  toggleNodeCollapse: (evidenceId: string) => void;
+  isNodeCollapsed: (evidenceId: string) => boolean;
   openHintNotebook: (evidenceId: string) => void;
   clearHintHighlight: () => void;
   setTypewriterSpeed: (speed: TypewriterSpeed) => void;
@@ -224,6 +229,8 @@ export const useDetectiveGame = create<DetectiveGameState>()(
     },
     evidenceBoardPositions: {},
     evidenceBoardConnections: [],
+    selectedNodeId: null,
+    collapsedNodes: new Set(),
     highlightedEvidenceId: null,
     typewriterSpeed: (localStorage.getItem('typewriterSpeed') as TypewriterSpeed) || 'normal',
 
@@ -650,6 +657,26 @@ export const useDetectiveGame = create<DetectiveGameState>()(
     getNodePosition: (evidenceId) => {
       const position = get().evidenceBoardPositions[evidenceId];
       return position || null;
+    },
+
+    selectNode: (evidenceId) => {
+      set({ selectedNodeId: evidenceId });
+    },
+
+    toggleNodeCollapse: (evidenceId) => {
+      set((state) => {
+        const newCollapsedNodes = new Set(state.collapsedNodes);
+        if (newCollapsedNodes.has(evidenceId)) {
+          newCollapsedNodes.delete(evidenceId);
+        } else {
+          newCollapsedNodes.add(evidenceId);
+        }
+        return { collapsedNodes: newCollapsedNodes };
+      });
+    },
+
+    isNodeCollapsed: (evidenceId) => {
+      return get().collapsedNodes.has(evidenceId);
     },
 
     openHintNotebook: (evidenceId) => {

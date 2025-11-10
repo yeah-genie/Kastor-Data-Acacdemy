@@ -6,10 +6,23 @@ interface PhotoCardProps {
   evidence: PhotoEvidence;
   delay?: number;
   isHighlighted?: boolean;
+  collapsed?: boolean;
 }
 
 export const PhotoCard = forwardRef<HTMLDivElement, PhotoCardProps>(
-  ({ evidence, delay = 0, isHighlighted = false }, ref) => {
+  ({ evidence, delay = 0, isHighlighted = false, collapsed = false }, ref) => {
+    if (collapsed) {
+      return (
+        <div className="p-2">
+          <img 
+            src={evidence.imageUrl} 
+            alt={evidence.caption} 
+            className="w-20 h-20 object-cover rounded-lg" 
+          />
+        </div>
+      );
+    }
+
     return (
       <BaseEvidenceCard delay={delay} isHighlighted={isHighlighted} ref={ref} className="overflow-hidden p-0">
         <img 

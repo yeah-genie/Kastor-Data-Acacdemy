@@ -7,10 +7,24 @@ interface DialogueCardProps {
   evidence: DialogueEvidence;
   delay?: number;
   isHighlighted?: boolean;
+  collapsed?: boolean;
 }
 
 export const DialogueCard = forwardRef<HTMLDivElement, DialogueCardProps>(
-  ({ evidence, delay = 0, isHighlighted = false }, ref) => {
+  ({ evidence, delay = 0, isHighlighted = false, collapsed = false }, ref) => {
+    if (collapsed) {
+      const preview = evidence.keyPoints[0] || evidence.summary;
+      return (
+        <div className="flex gap-2 p-3 min-w-[140px] max-w-[200px]">
+          <MessageSquare className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-xs font-semibold text-purple-600 mb-1">{evidence.character}</p>
+            <p className="text-xs text-gray-700 line-clamp-2">{preview}</p>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <BaseEvidenceCard delay={delay} isHighlighted={isHighlighted} ref={ref}>
         <div className="flex items-center gap-2 mb-3">

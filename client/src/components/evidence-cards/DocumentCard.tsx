@@ -7,10 +7,20 @@ interface DocumentCardProps {
   evidence: DocumentEvidence;
   delay?: number;
   isHighlighted?: boolean;
+  collapsed?: boolean;
 }
 
 export const DocumentCard = forwardRef<HTMLDivElement, DocumentCardProps>(
-  ({ evidence, delay = 0, isHighlighted = false }, ref) => {
+  ({ evidence, delay = 0, isHighlighted = false, collapsed = false }, ref) => {
+    if (collapsed) {
+      return (
+        <div className="flex items-center gap-2 p-3 min-w-[120px]">
+          <FileText className="w-6 h-6 text-orange-600 flex-shrink-0" />
+          <p className="text-sm font-semibold text-gray-900 line-clamp-2">{evidence.title}</p>
+        </div>
+      );
+    }
+
     return (
       <BaseEvidenceCard delay={delay} isHighlighted={isHighlighted} ref={ref}>
         <div className="flex items-center gap-2 mb-2">

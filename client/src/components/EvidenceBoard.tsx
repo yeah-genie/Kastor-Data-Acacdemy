@@ -43,19 +43,33 @@ interface EvidenceNodeData extends Record<string, unknown> {
   evidence: Evidence;
 }
 
-function EvidenceNode({ data }: { data: EvidenceNodeData }) {
+function EvidenceNode({ data, id }: { data: EvidenceNodeData; id: string }) {
   const { evidence } = data;
+  const { selectedNodeId, isNodeCollapsed, selectNode, toggleNodeCollapse } = useDetectiveGame();
+  
+  const isSelected = selectedNodeId === id;
+  const isCollapsed = isNodeCollapsed(id);
+  
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    selectNode(id);
+    toggleNodeCollapse(id);
+  };
   
   return (
-    <div className="relative">
+    <div className="relative cursor-pointer" onClick={handleClick}>
       <Handle type="target" position={Position.Top} className="!bg-blue-500 !w-3 !h-3" />
       
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-200">
-        {evidence.type === "CHARACTER" && <CharacterCard evidence={evidence as CharacterEvidence} />}
-        {evidence.type === "DATA" && <DataCard evidence={evidence as DataEvidence} />}
-        {evidence.type === "DIALOGUE" && <DialogueCard evidence={evidence as DialogueEvidence} />}
-        {evidence.type === "PHOTO" && <PhotoCard evidence={evidence as PhotoEvidence} />}
-        {evidence.type === "DOCUMENT" && <DocumentCard evidence={evidence as DocumentEvidence} />}
+      <div className={`rounded-2xl shadow-lg transition-all ${
+        isSelected 
+          ? "bg-blue-100 border-2 border-blue-500" 
+          : "bg-white border border-gray-200"
+      }`}>
+        {evidence.type === "CHARACTER" && <CharacterCard evidence={evidence as CharacterEvidence} collapsed={isCollapsed} />}
+        {evidence.type === "DATA" && <DataCard evidence={evidence as DataEvidence} collapsed={isCollapsed} />}
+        {evidence.type === "DIALOGUE" && <DialogueCard evidence={evidence as DialogueEvidence} collapsed={isCollapsed} />}
+        {evidence.type === "PHOTO" && <PhotoCard evidence={evidence as PhotoEvidence} collapsed={isCollapsed} />}
+        {evidence.type === "DOCUMENT" && <DocumentCard evidence={evidence as DocumentEvidence} collapsed={isCollapsed} />}
       </div>
       
       <Handle type="source" position={Position.Bottom} className="!bg-blue-500 !w-3 !h-3" />

@@ -7,11 +7,21 @@ interface DataCardProps {
   evidence: DataEvidence;
   delay?: number;
   isHighlighted?: boolean;
+  collapsed?: boolean;
 }
 
 export const DataCard = forwardRef<HTMLDivElement, DataCardProps>(
-  ({ evidence, delay = 0, isHighlighted = false }, ref) => {
+  ({ evidence, delay = 0, isHighlighted = false, collapsed = false }, ref) => {
     const [highlightedIndices, setHighlightedIndices] = useState<number[]>([]);
+
+    if (collapsed) {
+      return (
+        <div className="flex items-center gap-2 p-3 min-w-[120px]">
+          <BarChart3 className="w-6 h-6 text-green-600 flex-shrink-0" />
+          <p className="text-sm font-semibold text-gray-900 line-clamp-2">{evidence.title}</p>
+        </div>
+      );
+    }
 
     const toggleHighlight = (index: number) => {
       setHighlightedIndices(prev => 
