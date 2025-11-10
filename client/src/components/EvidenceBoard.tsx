@@ -273,8 +273,7 @@ export function EvidenceBoard({ isOpen, onClose, onSwitchToList }: EvidenceBoard
               <div className="flex items-center gap-4">
                 <div className="hidden md:flex items-center gap-4 text-sm">
                   <div className="px-3 py-1 bg-gray-100 rounded-lg">
-                    <span className="text-gray-600">Score: </span>
-                    <span className="font-bold text-gray-900">{score}</span>
+                    <span className="font-bold text-gray-900">{score} XP</span>
                   </div>
                   <div className="px-3 py-1 bg-gray-100 rounded-lg">
                     <span className="text-gray-600">Evidence: </span>

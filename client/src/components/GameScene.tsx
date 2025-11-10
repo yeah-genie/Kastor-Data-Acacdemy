@@ -89,16 +89,21 @@ export function GameScene() {
       setHandledCelebrationId(celebrationMessage.id);
     }
     
-    const hasQuestion = visibleMessagesList.some(msg => msg.isQuestion);
-    if (hasQuestion && !showQuestion) {
-      setShowQuestion(true);
+    if (visibleMessages === currentStoryNode.messages.length) {
+      if (currentStoryNode.question && !showQuestion) {
+        setShowQuestion(true);
+      }
+      
+      if (currentStoryNode.evidencePresentation && !showEvidencePresentation) {
+        setShowEvidencePresentation(true);
+      }
     }
     
     const hasCharacterCards = visibleMessagesList.some(msg => msg.isCharacterCards);
     if (hasCharacterCards && !showCharacterCardsSlider) {
       setShowCharacterCardsSlider(true);
     }
-  }, [visibleMessages, currentStoryNode, handledCelebrationId, showQuestion, showCharacterCardsSlider]);
+  }, [visibleMessages, currentStoryNode, handledCelebrationId, showQuestion, showCharacterCardsSlider, showEvidencePresentation]);
 
   useEffect(() => {
     const story = getStory(currentCase);

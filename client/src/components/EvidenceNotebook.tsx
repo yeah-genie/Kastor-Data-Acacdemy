@@ -164,7 +164,7 @@ export function EvidenceNotebook({ isOpen, onClose }: EvidenceNotebookProps) {
             <div className="bg-white px-4 py-2 md:px-6 md:py-3 border-b border-gray-200">
               <div className="flex items-center justify-between text-sm md:text-base">
                 <div className="flex items-center gap-3 md:gap-4 flex-wrap">
-                  <span className="text-gray-600">Score: <span className="text-blue-600 font-bold">{score}</span></span>
+                  <span className="text-blue-600 font-bold">{score} XP</span>
                   <span className="text-gray-600">Evidence: <span className="text-gray-800 font-bold">{evidenceCollected.length}</span></span>
                   <span className="text-gray-600">Hints: <span className="text-amber-600 font-bold">{hintsUsed}/{maxHints}</span></span>
                 </div>
@@ -213,42 +213,34 @@ export function EvidenceNotebook({ isOpen, onClose }: EvidenceNotebookProps) {
                           characters.map((char, idx) => (
                             <motion.div
                               key={char.id}
-                              initial={{ opacity: 0, x: -20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: idx * 0.1 }}
-                              className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm"
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: idx * 0.05 }}
+                              className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm hover:shadow-md hover:border-blue-300 transition-all cursor-pointer"
                             >
-                              <div className="flex flex-col">
-                                <div className="flex gap-3 md:gap-4 mb-3">
-                                  {char.photo && (
-                                    <img src={char.photo} alt={char.name} className="w-20 h-20 md:w-24 md:h-24 rounded-2xl object-cover object-center border-2 border-blue-400 shadow-lg" />
-                                  )}
-                                  <div className="flex-1">
-                                    <h4 className="font-bold text-lg md:text-xl text-gray-900 mb-1">{char.name}</h4>
-                                    <p className="text-sm md:text-base text-blue-600 font-semibold mb-2">{char.role}</p>
-                                    {char.suspicionLevel !== undefined && (
-                                      <div className="flex items-center gap-2">
-                                        <span className="text-xs md:text-sm text-gray-600 font-medium">Suspicion Level:</span>
-                                        <div className="flex gap-1">
-                                          {[...Array(5)].map((_, i) => (
-                                            <Star key={i} className={`w-4 h-4 ${i < (char.suspicionLevel || 0) ? 'fill-red-400 text-red-400' : 'text-gray-300'}`} />
-                                          ))}
-                                        </div>
+                              <div className="flex gap-3 md:gap-4 items-start">
+                                {char.photo && (
+                                  <img 
+                                    src={char.photo} 
+                                    alt={char.name} 
+                                    className="w-14 h-14 md:w-16 md:h-16 rounded-full object-cover object-center border-2 border-blue-400 shadow-md flex-shrink-0" 
+                                  />
+                                )}
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-bold text-base md:text-lg text-gray-900 mb-0.5">{char.name}</h4>
+                                  <p className="text-xs md:text-sm text-blue-600 font-semibold mb-2">{char.role}</p>
+                                  <p className="text-sm text-gray-600 leading-relaxed line-clamp-2">{char.description}</p>
+                                  {char.suspicionLevel !== undefined && (
+                                    <div className="flex items-center gap-2 mt-2">
+                                      <span className="text-xs text-gray-500">Suspicion:</span>
+                                      <div className="flex gap-0.5">
+                                        {[...Array(5)].map((_, i) => (
+                                          <Star 
+                                            key={i} 
+                                            className={`w-3 h-3 ${i < (char.suspicionLevel || 0) ? 'fill-red-400 text-red-400' : 'text-gray-300'}`} 
+                                          />
+                                        ))}
                                       </div>
-                                    )}
-                                  </div>
-                                </div>
-                                
-                                <div className="space-y-2">
-                                  <div className="bg-gray-50 rounded-lg p-3 border border-gray-200 shadow-sm">
-                                    <p className="text-xs md:text-sm font-bold text-blue-600 mb-1.5">PROFILE</p>
-                                    <p className="text-sm md:text-base text-gray-700 leading-relaxed">{char.description}</p>
-                                  </div>
-                                  
-                                  {char.personality && (
-                                    <div className="bg-gray-50 rounded-lg p-3 border border-gray-200 shadow-sm">
-                                      <p className="text-xs md:text-sm font-bold text-purple-600 mb-1.5">PERSONALITY</p>
-                                      <p className="text-sm md:text-base text-gray-700 leading-relaxed">{char.personality}</p>
                                     </div>
                                   )}
                                 </div>
