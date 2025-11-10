@@ -74,6 +74,28 @@ export function ChatMessage({ message, index, onTypingStateChange, onTypingCompl
         return "Kastor";
       case "system":
         return "System";
+      // Episode 2 characters
+      case "marcus":
+        return "Marcus Chen";
+      case "elena":
+        return "Elena Kovač";
+      case "nina":
+        return "Nina Reyes";
+      case "camille":
+        return "Camille Beaumont";
+      // Episode 3 characters
+      case "jake":
+        return "Jake Morrison";
+      case "alex":
+        return "Alex Torres";
+      case "harrison":
+        return "Harrison Webb";
+      case "luna":
+        return "Luna Park";
+      case "fixer":
+        return "???";
+      default:
+        return "Unknown";
     }
   };
   
@@ -95,6 +117,26 @@ export function ChatMessage({ message, index, onTypingStateChange, onTypingCompl
         return "/characters/chris.jpg";
       case "ryan":
         return "/characters/ryan.jpg";
+      // Episode 2 characters
+      case "marcus":
+        return "/characters/marcus.jpg";
+      case "elena":
+        return "/characters/elena.jpg";
+      case "nina":
+        return "/characters/nina.jpg";
+      case "camille":
+        return "/characters/camille.jpg";
+      // Episode 3 characters
+      case "jake":
+        return "/characters/jake.jpg";
+      case "alex":
+        return "/characters/alex.jpg";
+      case "harrison":
+        return "/characters/harrison.jpg";
+      case "luna":
+        return "/characters/luna.jpg";
+      case "fixer":
+        return "/characters/fixer.jpg";
       default:
         return null;
     }
@@ -104,7 +146,7 @@ export function ChatMessage({ message, index, onTypingStateChange, onTypingCompl
   const isSystem = message.speaker === "system";
   const isNarrator = message.speaker === "narrator";
   const isKastor = message.speaker === "kastor";
-  const isCharacter = ["maya", "chris", "ryan", "kaito", "lukas", "diego", "kastor"].includes(message.speaker);
+  const isCharacter = ["maya", "chris", "ryan", "kaito", "lukas", "diego", "kastor", "marcus", "elena", "nina", "camille", "jake", "alex", "harrison", "luna", "fixer"].includes(message.speaker);
   const avatarUrl = getSpeakerAvatar();
   const useTypewriter = shouldUseTypewriter(message.speaker);
 
