@@ -4,6 +4,8 @@ import { TimelineReconstruction } from "./TimelineReconstruction";
 import { TestimonyPress } from "./TestimonyPress";
 import { EvidenceChainPresentation } from "./EvidenceChainPresentation";
 import { DocumentExamination } from "./DocumentExamination";
+import { DatabaseSearch } from "./DatabaseSearch";
+import { CaseReportAssembly } from "./CaseReportAssembly";
 import { InteractiveSequence } from "@/data/case1-story-new";
 
 interface InteractiveSequenceHandlerProps {
@@ -61,6 +63,25 @@ export function InteractiveSequenceHandler({ sequence, onComplete }: Interactive
         <DocumentExamination
           title={sequence.data.title}
           sections={sequence.data.sections}
+          onComplete={onComplete}
+        />
+      );
+
+    case "database_search":
+      return (
+        <DatabaseSearch
+          searchType={sequence.data.searchType}
+          searchValue={sequence.data.searchValue}
+          results={sequence.data.results}
+          onComplete={onComplete}
+        />
+      );
+
+    case "case_report_assembly":
+      return (
+        <CaseReportAssembly
+          fields={sequence.data.fields}
+          evidenceChecklist={sequence.data.evidenceChecklist}
           onComplete={onComplete}
         />
       );

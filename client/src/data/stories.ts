@@ -1,7 +1,7 @@
-import { case1Story } from "./case1-story";
+import { case1EpisodeInteractive } from "./case1-episode-interactive";
 import { case2Story } from "./case2-story";
 import { case3Story } from "./case3-story";
-import type { StoryNode } from "./case1-story";
+import type { StoryNode } from "./case1-episode-interactive";
 
 export interface CaseMetadata {
   id: number;
@@ -45,13 +45,13 @@ export const caseMetadata: Record<number, CaseMetadata> = {
 };
 
 export const stories: Record<number, Record<string, StoryNode>> = {
-  1: case1Story,
+  1: case1EpisodeInteractive,
   2: case2Story,
   3: case3Story,
 };
 
 export function getStory(caseId: number): Record<string, StoryNode> {
-  return stories[caseId] || case1Story;
+  return stories[caseId] || case1EpisodeInteractive;
 }
 
 export function getCaseMetadata(caseId: number): CaseMetadata {
