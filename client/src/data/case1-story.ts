@@ -143,7 +143,6 @@ export const case1Story: Record<string, StoryNode> = {
       { id: "m14b", speaker: "chris", text: "Good morning! 👋", timestamp: "8:06 AM" },
       { id: "m15", speaker: "maya", text: "And Ryan Torres, our Junior Server Engineer. He manages our server logs and database access.", timestamp: "8:06 AM" },
       { id: "m15b", speaker: "ryan", text: "Hello, Detective. 🖐️", timestamp: "8:06 AM" },
-      { id: "m15c", speaker: "system", text: "📋 Team profiles have been updated in your notebook!" },
       { id: "cards1", speaker: "system", isCharacterCards: true },
       { id: "q2", speaker: "system", isQuestion: true },
     ],
