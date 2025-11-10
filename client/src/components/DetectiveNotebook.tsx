@@ -16,18 +16,12 @@ export function DetectiveNotebook({ isOpen, onClose, onShowHint, hintAvailable }
     <AnimatePresence>
       {isOpen && (
         <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+          <div
             className="fixed inset-0 bg-black/70 z-40"
             onClick={onClose}
           />
           
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 50 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 50 }}
+          <div
             className="fixed inset-4 md:inset-10 bg-gradient-to-br from-amber-900/90 to-slate-900/90 border-2 border-amber-600/50 rounded-lg z-50 overflow-hidden flex flex-col"
           >
             <div className="bg-amber-800/50 border-b border-amber-600/50 px-6 py-4 flex items-center justify-between">
@@ -126,7 +120,7 @@ export function DetectiveNotebook({ isOpen, onClose, onShowHint, hintAvailable }
                 Close Notes
               </button>
             </div>
-          </motion.div>
+          </div>
         </>
       )}
     </AnimatePresence>

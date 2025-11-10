@@ -258,18 +258,12 @@ export function EvidenceBoard({ isOpen, onClose, onSwitchToList }: EvidenceBoard
     <AnimatePresence>
       {isOpen && (
         <>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+          <div
             className="fixed inset-0 bg-black/70 z-40"
             onClick={onClose}
           />
           
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
+          <div
             className="fixed inset-3 md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[90vw] md:h-[85vh] md:max-w-6xl bg-white rounded-2xl z-50 overflow-hidden flex flex-col shadow-2xl border border-gray-200"
           >
             <div className="bg-white px-4 py-3 md:px-6 md:py-4 flex items-center justify-between border-b border-gray-200">
@@ -387,7 +381,7 @@ export function EvidenceBoard({ isOpen, onClose, onSwitchToList }: EvidenceBoard
                 </DndContext>
               </div>
             </div>
-          </motion.div>
+          </div>
 
           <Drawer open={!!selectedEvidence} onOpenChange={(open) => !open && setSelectedEvidence(null)}>
             <DrawerContent>
