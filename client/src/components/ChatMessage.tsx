@@ -117,13 +117,7 @@ export function ChatMessage({ message, index, onTypingStateChange }: ChatMessage
             <div className="flex-1">
               <div className="text-sm md:text-xs font-semibold text-amber-700 mb-1">Kastor's Hint</div>
               <p className="text-base md:text-sm leading-relaxed break-words whitespace-pre-wrap">
-                <TypewriterText
-                  text={message.text || ""}
-                  speed={typewriterSpeed}
-                  onTypingStateChange={onTypingStateChange}
-                  bypassTypewriter={false}
-                  glossaryMode="normal"
-                />
+                {parseTextWithGlossary(message.text || "")}
               </p>
             </div>
           </div>
@@ -171,8 +165,8 @@ export function ChatMessage({ message, index, onTypingStateChange }: ChatMessage
             <TypewriterText
               text={message.text || ""}
               speed={typewriterSpeed}
-              onTypingStateChange={undefined}
-              bypassTypewriter={true}
+              onTypingStateChange={isDetective ? undefined : onTypingStateChange}
+              bypassTypewriter={isDetective}
               glossaryMode={isDetective ? "detective" : "normal"}
             />
           </p>

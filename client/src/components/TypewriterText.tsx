@@ -29,8 +29,8 @@ export function TypewriterText({
 
   const speedMs = {
     off: 0,
-    fast: 15,
-    normal: 30,
+    fast: 30,
+    normal: 50,
   };
 
   const currentSpeed = speedMs[speed];
