@@ -6,9 +6,10 @@ interface ResumeGameModalProps {
   onContinue: () => void;
   onStartOver: () => void;
   onClose: () => void;
+  isBackButton?: boolean;
 }
 
-export function ResumeGameModal({ isOpen, onContinue, onStartOver, onClose }: ResumeGameModalProps) {
+export function ResumeGameModal({ isOpen, onContinue, onStartOver, onClose, isBackButton = false }: ResumeGameModalProps) {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -29,8 +30,8 @@ export function ResumeGameModal({ isOpen, onContinue, onStartOver, onClose }: Re
           >
             <div className="text-center mb-6">
               <div className="text-5xl mb-4">🔍</div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                Detective, the case is not finished.
+              <h2 className="text-2xl font-bold text-gray-800 mb-2 leading-relaxed">
+                Detective,<br />the case is not finished.
               </h2>
               <p className="text-gray-600">
                 Would you like to continue where you left off?
@@ -43,7 +44,7 @@ export function ResumeGameModal({ isOpen, onContinue, onStartOver, onClose }: Re
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg"
               >
                 <Play className="w-5 h-5" />
-                Continue
+                {isBackButton ? "Continue, Detective" : "Continue"}
               </button>
               
               <button
@@ -51,7 +52,7 @@ export function ResumeGameModal({ isOpen, onContinue, onStartOver, onClose }: Re
                 className="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-4 px-6 rounded-xl transition-colors flex items-center justify-center gap-2"
               >
                 <RotateCcw className="w-5 h-5" />
-                Start Over
+                {isBackButton ? "Exit" : "Start Over"}
               </button>
             </div>
           </motion.div>

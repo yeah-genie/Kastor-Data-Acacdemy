@@ -670,6 +670,7 @@ export function GameScene() {
         onContinue={handleBackModalContinue}
         onStartOver={handleBackModalStartOver}
         onClose={handleBackModalContinue}
+        isBackButton={true}
       />
     </div>
   );
