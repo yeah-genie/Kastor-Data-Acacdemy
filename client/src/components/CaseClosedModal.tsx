@@ -13,6 +13,8 @@ interface CaseClosedModalProps {
 
 export function CaseClosedModal({ isOpen, onClose, caseNumber, caseTitle }: CaseClosedModalProps) {
   const calculateGrade = useDetectiveGame((state) => state.calculateGrade);
+  const completeCase = useDetectiveGame((state) => state.completeCase);
+  const setPhase = useDetectiveGame((state) => state.setPhase);
   const hintsUsed = useDetectiveGame((state) => state.hintsUsed);
   const evidenceCollected = useDetectiveGame((state) => state.evidenceCollected);
   const sessionMetrics = useDetectiveGame((state) => state.sessionMetrics);
@@ -27,8 +29,12 @@ export function CaseClosedModal({ isOpen, onClose, caseNumber, caseTitle }: Case
     if (isOpen) {
       const calculatedGrade = calculateGrade();
       setGrade(calculatedGrade);
+
+      // Complete the case and unlock next episode
+      const stars = calculatedGrade === 'S' ? 3 : calculatedGrade === 'A' ? 2 : calculatedGrade === 'B' ? 1 : 0;
+      completeCase(stars);
     }
-  }, [isOpen, calculateGrade]);
+  }, [isOpen, calculateGrade, completeCase]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -68,6 +74,19 @@ export function CaseClosedModal({ isOpen, onClose, caseNumber, caseTitle }: Case
   const evidenceRate = sessionMetrics.totalEvidenceInCase > 0
     ? Math.round((evidenceCollected.length / sessionMetrics.totalEvidenceInCase) * 100)
     : 100;
+
+  const handleContinue = () => {
+    onClose();
+    setPhase("menu");
+
+    // Scroll to next case after a short delay
+    setTimeout(() => {
+      const nextCaseElement = document.querySelector(`[data-case-id="${caseNumber + 1}"]`);
+      if (nextCaseElement) {
+        nextCaseElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 500);
+  };
 
   return (
     <AnimatePresence>
@@ -239,7 +258,7 @@ export function CaseClosedModal({ isOpen, onClose, caseNumber, caseTitle }: Case
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.2 }}
-                onClick={onClose}
+                onClick={handleContinue}
                 className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg"
               >
                 Continue to Next Case

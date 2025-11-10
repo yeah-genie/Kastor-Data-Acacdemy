@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
-import { FileText, User } from "lucide-react";
+import { FileText, User, Unlock } from "lucide-react";
 import { useDetectiveGame } from "@/lib/stores/useDetectiveGame";
 import { caseMetadata } from "@/data/stories";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { ResumeGameModal } from "./ResumeGameModal";
 
 const case1Image = "/cases/case1.jpg";
@@ -14,9 +14,29 @@ export function StartMenu() {
   const [activeTab, setActiveTab] = useState<"missions" | "profile">("missions");
   const [showResumeModal, setShowResumeModal] = useState(false);
   const [selectedCase, setSelectedCase] = useState<number | null>(null);
+  const [justUnlockedCase, setJustUnlockedCase] = useState<number | null>(null);
+  const previousUnlockedCases = useRef<number[]>([]);
 
   const currentXP = getCurrentXP();
   const currentLevel = getCurrentLevel();
+
+  // Detect newly unlocked cases
+  useEffect(() => {
+    const newlyUnlocked = unlockedCases.find(
+      caseId => !previousUnlockedCases.current.includes(caseId)
+    );
+
+    if (newlyUnlocked) {
+      setJustUnlockedCase(newlyUnlocked);
+
+      // Clear the animation after 3 seconds
+      setTimeout(() => {
+        setJustUnlockedCase(null);
+      }, 3000);
+    }
+
+    previousUnlockedCases.current = [...unlockedCases];
+  }, [unlockedCases]);
 
   const getCaseProgress = (caseId: number) => {
     const details = getCaseProgressDetails(caseId);
@@ -112,14 +132,33 @@ export function StartMenu() {
                   const isUnlocked = isCaseUnlocked(caseId);
                   const progress = getCaseProgress(caseId);
 
+                  const isJustUnlocked = justUnlockedCase === caseId;
+
                   return (
                     <motion.div
                       key={caseId}
+                      data-case-id={caseId}
                       whileTap={isUnlocked ? { scale: 0.98 } : {}}
                       onClick={() => isUnlocked && handleCaseClick(caseId)}
-                      className={`bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200 ${
-                        isUnlocked ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
-                      }`}
+                      initial={false}
+                      animate={
+                        isJustUnlocked
+                          ? {
+                              scale: [1, 1.05, 1],
+                              boxShadow: [
+                                "0 1px 3px rgba(0,0,0,0.1)",
+                                "0 20px 40px rgba(99, 102, 241, 0.4)",
+                                "0 1px 3px rgba(0,0,0,0.1)",
+                              ],
+                            }
+                          : {}
+                      }
+                      transition={{ duration: 1, ease: "easeInOut" }}
+                      className={`bg-white rounded-xl overflow-hidden shadow-sm border-2 ${
+                        isJustUnlocked
+                          ? "border-indigo-400"
+                          : "border-gray-200"
+                      } ${isUnlocked ? "cursor-pointer" : "opacity-50 cursor-not-allowed"}`}
                     >
                       {/* Mission Image */}
                       <div className="relative h-48 bg-gradient-to-br from-gray-800 to-gray-600 overflow-hidden">
@@ -137,6 +176,24 @@ export function StartMenu() {
                               🔒 Locked
                             </div>
                           </div>
+                        )}
+
+                        {isJustUnlocked && (
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: [0, 1, 1, 0], scale: [0.8, 1.2, 1.2, 0.8] }}
+                            transition={{ duration: 2, times: [0, 0.3, 0.7, 1] }}
+                            className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center"
+                          >
+                            <motion.div
+                              initial={{ rotate: -180, scale: 0 }}
+                              animate={{ rotate: 0, scale: 1 }}
+                              transition={{ duration: 0.5, type: "spring" }}
+                              className="text-white text-6xl"
+                            >
+                              <Unlock className="w-16 h-16 drop-shadow-lg" />
+                            </motion.div>
+                          </motion.div>
                         )}
                       </div>
 
