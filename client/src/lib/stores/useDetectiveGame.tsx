@@ -58,6 +58,26 @@ export interface DocumentEvidence extends EvidenceBase {
 
 export type Evidence = CharacterEvidence | DataEvidence | DialogueEvidence | PhotoEvidence | DocumentEvidence;
 
+export interface EvidenceNodePosition {
+  evidenceId: string;
+  x: number;
+  y: number;
+  zIndex?: number;
+}
+
+export interface EvidenceConnection {
+  id: string;
+  from: string;
+  to: string;
+  label?: string;
+  confidence?: number;
+}
+
+export interface EvidenceBoardState {
+  nodePositions: Map<string, EvidenceNodePosition>;
+  connections: EvidenceConnection[];
+}
+
 export interface Choice {
   id: string;
   text: string;
@@ -105,6 +125,8 @@ interface DetectiveGameState {
   visitedNodeIds: string[];
   visitedCharacters: string[];
   sessionMetrics: SessionMetrics;
+  evidenceBoardPositions: Record<string, EvidenceNodePosition>;
+  evidenceBoardConnections: EvidenceConnection[];
 
   setPhase: (phase: GamePhase) => void;
   setCurrentNode: (node: StoryNode) => void;
@@ -131,9 +153,40 @@ interface DetectiveGameState {
   recordDecision: (questionId: string, choiceId: string, isCorrect: boolean) => void;
   calculateGrade: () => Grade;
   initSessionMetrics: (totalEvidenceCount: number) => void;
+  setNodePosition: (evidenceId: string, x: number, y: number, zIndex?: number) => void;
+  addEvidenceConnection: (from: string, to: string, label?: string) => void;
+  removeEvidenceConnection: (connectionId: string) => void;
+  getNodePosition: (evidenceId: string) => EvidenceNodePosition | null;
 }
 
 const initialProgress = loadProgress() || getInitialProgress();
+
+let debounceSaveTimeout: ReturnType<typeof setTimeout> | null = null;
+
+const debouncedSaveBoardState = (delay = 500) => {
+  if (debounceSaveTimeout) {
+    clearTimeout(debounceSaveTimeout);
+  }
+  debounceSaveTimeout = setTimeout(() => {
+    const state = useDetectiveGame.getState();
+    state.saveCurrentProgress();
+  }, delay);
+};
+
+const calculateDefaultNodePosition = (index: number): { x: number; y: number } => {
+  const cols = 4;
+  const padding = 0.1;
+  const cellWidth = (1 - padding * 2) / cols;
+  const cellHeight = 0.2;
+  
+  const col = index % cols;
+  const row = Math.floor(index / cols);
+  
+  const x = padding + col * cellWidth + cellWidth / 2;
+  const y = padding + row * cellHeight + cellHeight / 2;
+  
+  return { x: Math.min(x, 0.9), y: Math.min(y, 0.9) };
+};
 
 export const useDetectiveGame = create<DetectiveGameState>()(
   subscribeWithSelector((set, get) => ({
@@ -160,6 +213,8 @@ export const useDetectiveGame = create<DetectiveGameState>()(
       decisions: [],
       totalEvidenceInCase: 0,
     },
+    evidenceBoardPositions: {},
+    evidenceBoardConnections: [],
 
     initSessionMetrics: (totalEvidenceCount) => {
       set({
@@ -244,16 +299,26 @@ export const useDetectiveGame = create<DetectiveGameState>()(
         set((state) => {
           const existingIndex = state.evidenceCollected.findIndex(e => e.id === ev.id);
           let newEvidenceCollected;
+          let newBoardPositions = { ...state.evidenceBoardPositions };
           
           if (existingIndex !== -1) {
             newEvidenceCollected = [...state.evidenceCollected];
             newEvidenceCollected[existingIndex] = ev;
           } else {
             newEvidenceCollected = [...state.evidenceCollected, ev];
+            
+            if (!state.evidenceBoardPositions[ev.id]) {
+              const position = calculateDefaultNodePosition(newEvidenceCollected.length - 1);
+              newBoardPositions[ev.id] = {
+                evidenceId: ev.id,
+                ...position,
+              };
+            }
           }
           
           return {
             evidenceCollected: newEvidenceCollected,
+            evidenceBoardPositions: newBoardPositions,
             recentEvidenceId: ev.id,
             isEvidenceModalOpen: showModal,
             hasNewEvidence: true,
@@ -314,6 +379,8 @@ export const useDetectiveGame = create<DetectiveGameState>()(
           decisions: [],
           totalEvidenceInCase: 0,
         },
+        evidenceBoardPositions: {},
+        evidenceBoardConnections: [],
       });
       get().saveCurrentProgress();
     },
@@ -337,6 +404,8 @@ export const useDetectiveGame = create<DetectiveGameState>()(
           hintsUsed: savedCaseProgress.hintsUsed,
           visitedNodeIds: savedCaseProgress.visitedNodeIds || [],
           visitedCharacters: [],
+          evidenceBoardPositions: savedCaseProgress.evidenceBoardState?.nodePositions || {},
+          evidenceBoardConnections: savedCaseProgress.evidenceBoardState?.connections || [],
         });
       } else {
         set({
@@ -351,6 +420,8 @@ export const useDetectiveGame = create<DetectiveGameState>()(
           hintsUsed: 0,
           visitedNodeIds: [],
           visitedCharacters: [],
+          evidenceBoardPositions: {},
+          evidenceBoardConnections: [],
         });
         get().initSessionMetrics(totalEvidenceCount);
       }
@@ -430,6 +501,10 @@ export const useDetectiveGame = create<DetectiveGameState>()(
             hintsUsed: state.hintsUsed,
             visitedNodeIds: uniqueVisitedNodes,
             lastUpdated: Date.now(),
+            evidenceBoardState: {
+              nodePositions: state.evidenceBoardPositions,
+              connections: state.evidenceBoardConnections,
+            },
           },
         },
         unlockedCases: state.unlockedCases,
@@ -519,6 +594,51 @@ export const useDetectiveGame = create<DetectiveGameState>()(
     
     getCurrentLevel: () => {
       return Math.floor(get().totalScore / 100) + 1;
+    },
+
+    setNodePosition: (evidenceId, x, y, zIndex) => {
+      set((state) => ({
+        evidenceBoardPositions: {
+          ...state.evidenceBoardPositions,
+          [evidenceId]: { evidenceId, x, y, zIndex },
+        },
+      }));
+      debouncedSaveBoardState();
+    },
+
+    addEvidenceConnection: (from, to, label) => {
+      set((state) => {
+        const connectionId = `${from}-${to}-${Date.now()}`;
+        const alreadyExists = state.evidenceBoardConnections.some(
+          (conn) =>
+            (conn.from === from && conn.to === to) ||
+            (conn.from === to && conn.to === from)
+        );
+        
+        if (alreadyExists) return {};
+        
+        return {
+          evidenceBoardConnections: [
+            ...state.evidenceBoardConnections,
+            { id: connectionId, from, to, label },
+          ],
+        };
+      });
+      debouncedSaveBoardState();
+    },
+
+    removeEvidenceConnection: (connectionId) => {
+      set((state) => ({
+        evidenceBoardConnections: state.evidenceBoardConnections.filter(
+          (conn) => conn.id !== connectionId
+        ),
+      }));
+      debouncedSaveBoardState();
+    },
+
+    getNodePosition: (evidenceId) => {
+      const position = get().evidenceBoardPositions[evidenceId];
+      return position || null;
     },
   }))
 );

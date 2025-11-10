@@ -1,3 +1,8 @@
+export interface EvidenceBoardState {
+  nodePositions: Record<string, { evidenceId: string; x: number; y: number; zIndex?: number }>;
+  connections: Array<{ id: string; from: string; to: string; label?: string; confidence?: number }>;
+}
+
 export interface GameProgress {
   currentCase: number;
   caseProgress: {
@@ -11,6 +16,7 @@ export interface GameProgress {
       hintsUsed: number;
       visitedNodeIds?: string[];
       lastUpdated?: number;
+      evidenceBoardState?: EvidenceBoardState;
     };
   };
   unlockedCases: number[];
