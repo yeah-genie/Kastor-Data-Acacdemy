@@ -4,6 +4,8 @@
 
 Kastor is an interactive educational game that teaches data analysis and investigation skills through detective-style case solving. Players take on the role of a data detective, investigating game-related incidents by analyzing charts, logs, and data patterns. The application features a chat-based narrative interface with multiple cases of increasing difficulty, teaching concepts like data integrity, log analysis, and pattern recognition.
 
+The game includes an interactive Evidence Board where players can organize evidence nodes, drag them around, and create connections between related pieces to visualize relationships. The board uses a clean, modern design consistent with the chat interface style.
+
 The game is built as a full-stack web application with a React frontend and Express backend, designed to run on Replit with support for PostgreSQL database persistence.
 
 ## User Preferences
@@ -29,6 +31,15 @@ Preferred communication style: Simple, everyday language.
 **Data Visualization**: Recharts library for rendering interactive charts and graphs that present case data to players
 
 **Design Pattern**: Component-based architecture with clear separation between game logic (stores), presentation (components), and data (case story files)
+
+**Evidence Board System**: Interactive node-based interface using @dnd-kit for drag-and-drop functionality. Features:
+- Draggable evidence nodes with type-based color coding (blue/green/purple/pink/orange)
+- SVG-based connection lines between related evidence
+- Percentage-based positioning (0-1 coordinates) for responsive layout
+- Auto-layout grid system for new evidence placement
+- ResizeObserver for dynamic dimension measurement
+- Board state persisted to localStorage with debounced saves
+- Clean, minimal UI design matching chat interface (slate color scheme)
 
 ### Backend Architecture
 

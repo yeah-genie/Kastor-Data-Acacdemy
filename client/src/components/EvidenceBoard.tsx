@@ -41,12 +41,12 @@ function EvidenceNode({ evidence, position, boardWidth, boardHeight, onClick, is
 
   const getNodeColor = () => {
     switch (evidence.type) {
-      case "CHARACTER": return "bg-blue-100 border-blue-400 text-blue-900";
-      case "DATA": return "bg-green-100 border-green-400 text-green-900";
-      case "DIALOGUE": return "bg-purple-100 border-purple-400 text-purple-900";
-      case "PHOTO": return "bg-pink-100 border-pink-400 text-pink-900";
-      case "DOCUMENT": return "bg-orange-100 border-orange-400 text-orange-900";
-      default: return "bg-gray-100 border-gray-400 text-gray-900";
+      case "CHARACTER": return "bg-blue-500 text-white";
+      case "DATA": return "bg-green-500 text-white";
+      case "DIALOGUE": return "bg-purple-500 text-white";
+      case "PHOTO": return "bg-pink-500 text-white";
+      case "DOCUMENT": return "bg-orange-500 text-white";
+      default: return "bg-slate-500 text-white";
     }
   };
 
@@ -70,16 +70,16 @@ function EvidenceNode({ evidence, position, boardWidth, boardHeight, onClick, is
         e.stopPropagation();
         onClick(evidence);
       }}
-      initial={{ scale: 0, rotate: -10 }}
-      animate={{ scale: 1, rotate: 0 }}
-      whileHover={{ scale: 1.05, rotate: 2 }}
-      className={`w-32 md:w-40 cursor-move select-none ${getNodeColor()} border-2 rounded-lg p-3 shadow-lg hover:shadow-xl transition-shadow`}
+      initial={{ scale: 0 }}
+      animate={{ scale: 1 }}
+      whileHover={{ scale: 1.05 }}
+      className={`w-32 md:w-40 cursor-move select-none ${getNodeColor()} rounded-lg p-3 shadow-md hover:shadow-lg transition-all`}
     >
       <div className="flex items-center gap-2 mb-2">
         {getIcon()}
-        <span className="text-xs font-bold uppercase tracking-wide">{evidence.type}</span>
+        <span className="text-xs font-bold opacity-90">{evidence.type}</span>
       </div>
-      <p className="text-sm font-semibold line-clamp-2">{evidence.title}</p>
+      <p className="text-sm font-medium line-clamp-2">{evidence.title}</p>
     </motion.div>
   );
 }
@@ -118,25 +118,24 @@ function ConnectionLayer({ connections, nodePositions, boardWidth, boardHeight, 
               y1={y1}
               x2={x2}
               y2={y2}
-              stroke="#ef4444"
+              stroke="#64748b"
               strokeWidth="2"
-              strokeDasharray="5,5"
             />
             <circle
               cx={(x1 + x2) / 2}
               cy={(y1 + y2) / 2}
-              r="8"
+              r="10"
               fill="white"
-              stroke="#ef4444"
+              stroke="#64748b"
               strokeWidth="2"
               className="pointer-events-auto cursor-pointer hover:fill-red-100"
               onClick={() => onRemoveConnection(conn.id)}
             />
             <text
               x={(x1 + x2) / 2}
-              y={(y1 + y2) / 2 + 3}
-              fill="#ef4444"
-              fontSize="12"
+              y={(y1 + y2) / 2 + 4}
+              fill="#64748b"
+              fontSize="14"
               fontWeight="bold"
               textAnchor="middle"
               className="pointer-events-none"
@@ -245,26 +244,22 @@ export function EvidenceBoard({ isOpen, onClose, onSwitchToList }: EvidenceBoard
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed inset-3 md:inset-8 lg:inset-12 bg-gradient-to-br from-amber-50 to-amber-100 border-8 border-amber-900 rounded-lg z-50 overflow-hidden flex flex-col shadow-2xl"
-            style={{
-              backgroundImage: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23d97706" fill-opacity="0.05"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
-            }}
+            className="fixed inset-3 md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[90vw] md:h-[85vh] md:max-w-6xl bg-white rounded-2xl z-50 overflow-hidden flex flex-col shadow-2xl border border-slate-200"
           >
-            <div className="bg-gradient-to-r from-amber-800 to-amber-900 px-4 py-3 md:px-6 md:py-4 flex items-center justify-between border-b-4 border-amber-950 shadow-lg">
+            <div className="bg-slate-800 px-4 py-3 md:px-6 md:py-4 flex items-center justify-between border-b border-slate-700">
               <div className="flex items-center gap-2 md:gap-3">
-                <div className="w-3 h-3 bg-red-500 rounded-full shadow-inner"></div>
-                <h2 className="text-lg md:text-xl font-bold text-amber-50 tracking-wide">Evidence Board</h2>
+                <h2 className="text-lg md:text-xl font-bold text-white">Evidence Board</h2>
               </div>
               <div className="flex items-center gap-4">
-                <div className="hidden md:flex items-center gap-6 text-sm text-amber-100">
-                  <span>Score: <span className="font-bold">{score}</span></span>
-                  <span>Evidence: <span className="font-bold">{evidenceCollected.length}</span></span>
-                  <span>Hints: <span className="font-bold">{hintsUsed}/{maxHints}</span></span>
+                <div className="hidden md:flex items-center gap-6 text-sm text-slate-300">
+                  <span>Score: <span className="font-bold text-white">{score}</span></span>
+                  <span>Evidence: <span className="font-bold text-white">{evidenceCollected.length}</span></span>
+                  <span>Hints: <span className="font-bold text-white">{hintsUsed}/{maxHints}</span></span>
                 </div>
                 {onSwitchToList && (
                   <button
                     onClick={onSwitchToList}
-                    className="px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 bg-amber-700 text-amber-50 hover:bg-amber-600 transition-colors"
+                    className="px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 bg-slate-700 text-white hover:bg-slate-600 transition-colors"
                     title="Switch to List View"
                   >
                     <List className="w-4 h-4" />
@@ -273,46 +268,46 @@ export function EvidenceBoard({ isOpen, onClose, onSwitchToList }: EvidenceBoard
                 )}
                 <button
                   onClick={onClose}
-                  className="text-amber-100 hover:text-white text-2xl font-bold min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors"
+                  className="text-slate-300 hover:text-white text-2xl font-bold min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors"
                 >
                   ×
                 </button>
               </div>
             </div>
 
-            <div className="bg-amber-900/20 px-4 py-2 flex items-center justify-between border-b-2 border-amber-800">
+            <div className="bg-slate-50 px-4 py-2 flex items-center justify-between border-b border-slate-200">
               <div className="flex gap-2">
                 <button
                   onClick={() => {
                     setConnectMode(!connectMode);
                     setFirstSelectedId(null);
                   }}
-                  className={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                     connectMode
-                      ? 'bg-red-600 text-white'
-                      : 'bg-amber-800 text-amber-50 hover:bg-amber-700'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
                   }`}
                 >
                   {connectMode ? '✓ Connect Mode' : '🔗 Connect Evidence'}
                 </button>
                 {firstSelectedId && (
-                  <span className="px-4 py-2 bg-blue-600 text-white rounded text-sm">
+                  <span className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg text-sm font-medium">
                     Select second evidence to connect
                   </span>
                 )}
               </div>
-              <div className="text-sm text-amber-900 font-medium">
-                {evidenceCollected.length} evidence pieces • {evidenceBoardConnections.length} connections
+              <div className="text-sm text-slate-600 font-medium">
+                {evidenceCollected.length} evidence • {evidenceBoardConnections.length} connections
               </div>
             </div>
 
-            <div className="flex-1 relative overflow-hidden">
+            <div className="flex-1 relative overflow-hidden bg-slate-100">
               <div
                 ref={boardRef}
                 className="absolute inset-4 md:inset-8"
                 style={{
-                  backgroundImage: 'linear-gradient(rgba(245, 158, 11, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(245, 158, 11, 0.1) 1px, transparent 1px)',
-                  backgroundSize: '20px 20px',
+                  backgroundImage: 'radial-gradient(circle, #cbd5e1 1px, transparent 1px)',
+                  backgroundSize: '24px 24px',
                 }}
               >
                 <DndContext
