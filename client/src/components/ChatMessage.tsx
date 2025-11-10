@@ -7,6 +7,7 @@ import { useDetectiveGame } from "@/lib/stores/useDetectiveGame";
 import { parseTextWithGlossary } from "./GlossaryTooltip";
 import { TypewriterText } from "./TypewriterText";
 import { EmailNotificationModal } from "./EmailNotificationModal";
+import { VoicemailPlayer } from "./VoicemailPlayer";
 
 interface ChatMessageProps {
   message: Message;
@@ -153,6 +154,19 @@ export function ChatMessage({ message, index, onTypingStateChange, onTypingCompl
       );
     }
 
+    // Voicemail player
+    if (message.voicemail) {
+      return (
+        <VoicemailPlayer
+          from={message.voicemail.from}
+          timestamp={message.voicemail.timestamp}
+          text={message.voicemail.text}
+          index={index}
+          autoPlay={message.voicemail.autoPlay}
+        />
+      );
+    }
+
     // Regular system message
     return (
       <>
@@ -193,7 +207,7 @@ export function ChatMessage({ message, index, onTypingStateChange, onTypingCompl
     );
   }
 
-  // Kastor hint box / Narrator actions
+  // Narrator scene description (gray box)
   if (isNarrator) {
     return (
       <>
@@ -203,16 +217,10 @@ export function ChatMessage({ message, index, onTypingStateChange, onTypingCompl
           transition={{ delay: index * 0.2, duration: 0.3 }}
           className="flex justify-center my-3"
         >
-          <div className="bg-amber-50 border border-amber-200 text-amber-900 px-4 py-3 rounded-lg max-w-[90%] md:max-w-[85%] shadow-sm">
-            <div className="flex items-start gap-2">
-              <div className="text-xl md:text-lg">💡</div>
-              <div className="flex-1">
-                <div className="text-sm md:text-xs font-semibold text-amber-700 mb-1">Kastor's Hint</div>
-                <p className="text-base md:text-sm leading-relaxed break-words whitespace-pre-wrap">
-                  {parseTextWithGlossary(message.text || "")}
-                </p>
-              </div>
-            </div>
+          <div className="bg-gray-100 border border-gray-300 text-gray-700 px-4 py-3 rounded-lg max-w-[90%] md:max-w-[85%] shadow-sm">
+            <p className="text-sm md:text-xs leading-relaxed break-words whitespace-pre-wrap italic">
+              {parseTextWithGlossary(message.text || "")}
+            </p>
           </div>
         </motion.div>
 

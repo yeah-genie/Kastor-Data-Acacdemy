@@ -15,13 +15,16 @@ export interface InteractiveSequence {
 
 export interface Message {
   id: string;
-  speaker: "detective" | "kastor" | "maya" | "kaito" | "lukas" | "diego" | "system" | "narrator";
+  speaker: "detective" | "kastor" | "maya" | "kaito" | "lukas" | "diego" | "system" | "narrator" | "chris" | "ryan" | "client";
   text: string;
   avatar?: string;
+  characterName?: string; // Override for display name
   celebration?: {
     type: "mini" | "major";
     title: string;
     points?: number;
+    caseNumber?: number;
+    caseTitle?: string;
   };
   timestamp?: string;
   email?: {
@@ -29,7 +32,14 @@ export interface Message {
     subject: string;
     body: string;
   };
+  voicemail?: {
+    from: string;
+    timestamp: string;
+    text: string;
+    autoPlay?: boolean;
+  };
   image?: string; // Unsplash image for narrator actions
+  photo?: string; // Photo attachment
   soundEffect?: string; // Sound effect to play
   reaction?: string; // Reaction sticker emoji (e.g., "👍", "🤔", "⚠️")
 }
@@ -1048,7 +1058,17 @@ Director, Legend Arena`
       { id: "m328", speaker: "kastor", text: "Of course! More numbers = more fun!" },
       { id: "m329", speaker: "detective", text: "(He's weird... but kind of fun.)" },
       { id: "m330", speaker: "system", text: "[EPISODE 1 - COMPLETE]" },
-      { id: "m331", speaker: "system", text: "[NEXT CASE UNLOCKED]" },
+      {
+        id: "m331",
+        speaker: "system",
+        text: "🎉 CASE CLOSED!",
+        celebration: {
+          type: "major",
+          title: "The Missing Balance Patch",
+          caseNumber: 1,
+          caseTitle: "The Missing Balance Patch"
+        }
+      },
     ],
   },
 
@@ -1079,7 +1099,17 @@ Director, Legend Arena`
       { id: "m343", speaker: "detective", text: "I'll do better next time." },
       { id: "m344", speaker: "kastor", text: "That's the spirit! Ready for Case #002?" },
       { id: "m345", speaker: "system", text: "[CASE #001 COMPLETE - A RANK]" },
-      { id: "m346", speaker: "system", text: "[NEXT CASE UNLOCKED]" },
+      {
+        id: "m346",
+        speaker: "system",
+        text: "🎉 CASE CLOSED!",
+        celebration: {
+          type: "major",
+          title: "The Missing Balance Patch",
+          caseNumber: 1,
+          caseTitle: "The Missing Balance Patch"
+        }
+      },
     ],
   },
 
@@ -1111,7 +1141,17 @@ Director, Legend Arena`
       { id: "m359", speaker: "detective", text: "I'll improve!" },
       { id: "m360", speaker: "kastor", text: "Good! Next case awaits!" },
       { id: "m361", speaker: "system", text: "[CASE #001 COMPLETE - B RANK]" },
-      { id: "m362", speaker: "system", text: "[NEXT CASE UNLOCKED]" },
+      {
+        id: "m362",
+        speaker: "system",
+        text: "🎉 CASE CLOSED!",
+        celebration: {
+          type: "major",
+          title: "The Missing Balance Patch",
+          caseNumber: 1,
+          caseTitle: "The Missing Balance Patch"
+        }
+      },
     ],
   },
 
@@ -1144,7 +1184,17 @@ Director, Legend Arena`
       { id: "m376", speaker: "detective", text: "I'll do better next time!" },
       { id: "m377", speaker: "kastor", text: "That's all I ask! Let's go!" },
       { id: "m378", speaker: "system", text: "[CASE #001 COMPLETE - C RANK]" },
-      { id: "m379", speaker: "system", text: "[NEXT CASE UNLOCKED]" },
+      {
+        id: "m379",
+        speaker: "system",
+        text: "🎉 CASE CLOSED!",
+        celebration: {
+          type: "major",
+          title: "The Missing Balance Patch",
+          caseNumber: 1,
+          caseTitle: "The Missing Balance Patch"
+        }
+      },
     ],
   },
 };
