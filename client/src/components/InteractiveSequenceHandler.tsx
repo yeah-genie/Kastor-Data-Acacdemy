@@ -6,6 +6,7 @@ import { EvidenceChainPresentation } from "./EvidenceChainPresentation";
 import { DocumentExamination } from "./DocumentExamination";
 import { DatabaseSearch } from "./DatabaseSearch";
 import { CaseReportAssembly } from "./CaseReportAssembly";
+import { LogFilteringSequence } from "./interactive/LogFilteringSequence";
 import { InteractiveSequence } from "@/data/case1-story-new";
 
 interface InteractiveSequenceHandlerProps {
@@ -87,12 +88,15 @@ export function InteractiveSequenceHandler({ sequence, onComplete }: Interactive
       );
 
     case "log_filtering":
-      // Placeholder for log filtering - auto-complete for now
-      setTimeout(onComplete, 100);
       return (
-        <div className="p-8 text-center">
-          <p className="text-gray-600">Log filtering in progress...</p>
-        </div>
+        <LogFilteringSequence
+          data={sequence.data}
+          onComplete={(userSelections) => {
+            // userSelections contains the IDs of logs the user kept
+            // You can validate or store these if needed
+            onComplete();
+          }}
+        />
       );
 
     default:
