@@ -323,7 +323,7 @@ export function GameScene() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <div className="px-3 py-1.5 bg-gray-100 rounded-lg border border-gray-200">
             <div className="flex items-center gap-1.5">
               <span className="text-gray-600 text-xs">Score</span>
@@ -355,7 +355,8 @@ export function GameScene() {
 
       {/* Chat Messages Area */}
       <div 
-        className="flex-1 overflow-y-auto px-4 py-4 space-y-3"
+        onClick={handleChatClick}
+        className="flex-1 overflow-y-auto px-4 py-4 space-y-3 cursor-pointer"
       >
         {currentStoryNode.messages.slice(0, visibleMessages)
           .filter(message => !message.celebration)
