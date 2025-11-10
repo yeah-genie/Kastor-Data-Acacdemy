@@ -314,7 +314,9 @@ export function GameScene() {
     } else if (currentStoryNode.showCharacterCards && !showCharacterCardsSlider) {
       setShowCharacterCardsSlider(true);
     } else if (currentStoryNode.autoAdvance && !currentStoryNode.question && !currentStoryNode.evidencePresentation && !(currentStoryNode.dataVisualizations && currentStoryNode.dataVisualizations.length > 0)) {
-      setCurrentNode(currentStoryNode.autoAdvance.nextNode);
+      setTimeout(() => {
+        setCurrentNode(currentStoryNode.autoAdvance!.nextNode);
+      }, currentStoryNode.autoAdvance.delay || 500);
     }
   };
   
