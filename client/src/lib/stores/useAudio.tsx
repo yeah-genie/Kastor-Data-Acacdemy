@@ -58,18 +58,30 @@ export const useAudio = create<AudioState>((set, get) => ({
   },
   
   playSuccess: () => {
-    const { successSound, isMuted } = get();
-    if (successSound) {
-      // If sound is muted, don't play anything
-      if (isMuted) {
-        console.log("Success sound skipped (muted)");
-        return;
-      }
+    const { isMuted } = get();
+    if (isMuted) {
+      console.log("Success sound skipped (muted)");
+      return;
+    }
+    
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
       
-      successSound.currentTime = 0;
-      successSound.play().catch(error => {
-        console.log("Success sound play prevented:", error);
-      });
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.value = 800;
+      oscillator.type = 'sine';
+      
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.15);
+    } catch (error) {
+      console.log("Success sound play prevented:", error);
     }
   },
   
