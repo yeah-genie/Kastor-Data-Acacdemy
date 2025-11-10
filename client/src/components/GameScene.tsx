@@ -74,6 +74,11 @@ export function GameScene() {
   const [choicesRevealed, setChoicesRevealed] = useState(false);
   const [dataRevealed, setDataRevealed] = useState(false);
   const revealTimersRef = useRef<number[]>([]);
+  const [isAwaitingAdvance, setIsAwaitingAdvance] = useState(false);
+
+  const shouldUseTypewriter = (speaker: string): boolean => {
+    return ["detective", "maya", "chris", "ryan", "client"].includes(speaker);
+  };
 
   const getStageNumberFromNode = (nodeId: string): number | null => {
     const summaryMap: Record<string, number> = {
@@ -181,6 +186,7 @@ export function GameScene() {
       setHintRevealed(false);
       setChoicesRevealed(false);
       setDataRevealed(false);
+      setIsAwaitingAdvance(false);
       
       recordNodeVisited(currentNode);
       
@@ -200,6 +206,7 @@ export function GameScene() {
     if (typing) {
       activeTypingCount.current += 1;
       setIsTyping(true);
+      setIsAwaitingAdvance(false);
     } else {
       activeTypingCount.current -= 1;
       if (activeTypingCount.current <= 0) {
@@ -208,6 +215,19 @@ export function GameScene() {
       }
     }
   };
+  
+  const handleTypingComplete = () => {
+    setIsAwaitingAdvance(true);
+  };
+  
+  useEffect(() => {
+    if (!currentStoryNode || visibleMessages === 0) return;
+    
+    const lastMessage = currentStoryNode.messages[visibleMessages - 1];
+    if (lastMessage && !shouldUseTypewriter(lastMessage.speaker)) {
+      setIsAwaitingAdvance(true);
+    }
+  }, [visibleMessages, currentStoryNode]);
   
   useEffect(() => {
     if (!currentStoryNode) return;
@@ -262,50 +282,27 @@ export function GameScene() {
   const handleChatClick = () => {
     if (!currentStoryNode) return;
     
-    if (isTyping) {
+    if (isTyping || !isAwaitingAdvance) {
       return;
     }
     
     if (visibleMessages < currentStoryNode.messages.length) {
       const nextMessage = currentStoryNode.messages[visibleMessages];
-      const shouldShowTyping = nextMessage && 
-        nextMessage.speaker !== "system" && 
-        nextMessage.speaker !== "narrator" && 
-        nextMessage.speaker !== "detective";
+      const usesTypewriter = shouldUseTypewriter(nextMessage.speaker);
       
-      if (shouldShowTyping) {
+      setIsAwaitingAdvance(false);
+      
+      if (usesTypewriter) {
         setShowTypingIndicator(true);
         setTypingSpeaker(nextMessage.speaker);
         
         setTimeout(() => {
-          let nextVisible = visibleMessages + 1;
-          
-          while (
-            nextVisible < currentStoryNode.messages.length &&
-            (currentStoryNode.messages[nextVisible].speaker === "system" ||
-             currentStoryNode.messages[nextVisible].speaker === "narrator" ||
-             currentStoryNode.messages[nextVisible].speaker === "detective")
-          ) {
-            nextVisible++;
-          }
-          
-          setVisibleMessages(nextVisible);
+          setVisibleMessages(visibleMessages + 1);
           setShowTypingIndicator(false);
           setTypingSpeaker(undefined);
         }, 1000);
       } else {
-        let nextVisible = visibleMessages + 1;
-        
-        while (
-          nextVisible < currentStoryNode.messages.length &&
-          (currentStoryNode.messages[nextVisible].speaker === "system" ||
-           currentStoryNode.messages[nextVisible].speaker === "narrator" ||
-           currentStoryNode.messages[nextVisible].speaker === "detective")
-        ) {
-          nextVisible++;
-        }
-        
-        setVisibleMessages(nextVisible);
+        setVisibleMessages(visibleMessages + 1);
       }
     } else if (currentStoryNode.showCharacterCards && !showCharacterCardsSlider) {
       setShowCharacterCardsSlider(true);
@@ -334,6 +331,7 @@ export function GameScene() {
   const handleStageSummaryContinue = () => {
     setShowStageSummary(false);
     setCurrentStageSummary(null);
+    setIsAwaitingAdvance(false);
     
     if (!currentStoryNode) return;
     
@@ -573,7 +571,7 @@ export function GameScene() {
               if (message.speaker === "narrator" && !hintRevealed) {
                 return null;
               }
-              return <ChatMessage key={message.id} message={message} index={index} onTypingStateChange={handleTypingStateChange} />;
+              return <ChatMessage key={message.id} message={message} index={index} onTypingStateChange={handleTypingStateChange} onTypingComplete={handleTypingComplete} />;
             }
             
             return null;
@@ -617,7 +615,7 @@ export function GameScene() {
           </button>
           <button 
             onClick={handleChatClick}
-            disabled={showTypingIndicator || (visibleMessages === currentStoryNode.messages.length && (showQuestion || showEvidencePresentation))}
+            disabled={isTyping || !isAwaitingAdvance || showTypingIndicator || (visibleMessages === currentStoryNode.messages.length && (showQuestion || showEvidencePresentation))}
             className="p-2.5 rounded-full bg-blue-500 hover:bg-blue-600 transition-colors text-white disabled:bg-gray-300 disabled:cursor-not-allowed shadow-sm"
           >
             <Send className="w-5 h-5" />

@@ -11,9 +11,14 @@ interface ChatMessageProps {
   message: Message;
   index: number;
   onTypingStateChange?: (isTyping: boolean) => void;
+  onTypingComplete?: () => void;
 }
 
-export function ChatMessage({ message, index, onTypingStateChange }: ChatMessageProps) {
+function shouldUseTypewriter(speaker: string): boolean {
+  return ["detective", "maya", "chris", "ryan", "client"].includes(speaker);
+}
+
+export function ChatMessage({ message, index, onTypingStateChange, onTypingComplete }: ChatMessageProps) {
   const { playMessageSound } = useAudio();
   const { typewriterSpeed } = useDetectiveGame();
   
@@ -62,6 +67,7 @@ export function ChatMessage({ message, index, onTypingStateChange }: ChatMessage
   const isNarrator = message.speaker === "narrator";
   const isCharacter = ["maya", "chris", "ryan"].includes(message.speaker);
   const avatarUrl = getSpeakerAvatar();
+  const useTypewriter = shouldUseTypewriter(message.speaker);
 
   // System messages (centered notifications)
   if (isSystem) {
@@ -165,8 +171,9 @@ export function ChatMessage({ message, index, onTypingStateChange }: ChatMessage
             <TypewriterText
               text={message.text || ""}
               speed={typewriterSpeed}
-              onTypingStateChange={isDetective ? undefined : onTypingStateChange}
-              bypassTypewriter={isDetective}
+              onTypingStateChange={useTypewriter ? onTypingStateChange : undefined}
+              onTypingComplete={useTypewriter ? onTypingComplete : undefined}
+              bypassTypewriter={!useTypewriter}
               glossaryMode={isDetective ? "detective" : "normal"}
             />
           </p>
