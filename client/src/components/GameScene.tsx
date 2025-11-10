@@ -70,6 +70,10 @@ export function GameScene() {
   const chatEndRef = useRef<HTMLDivElement>(null);
   const activeTypingCount = useRef(0);
   const [isTyping, setIsTyping] = useState(false);
+  const [hintRevealed, setHintRevealed] = useState(false);
+  const [choicesRevealed, setChoicesRevealed] = useState(false);
+  const [dataRevealed, setDataRevealed] = useState(false);
+  const revealTimersRef = useRef<number[]>([]);
 
   const getStageNumberFromNode = (nodeId: string): number | null => {
     const summaryMap: Record<string, number> = {
@@ -171,6 +175,13 @@ export function GameScene() {
       setShowQuestion(false);
       setShowEvidencePresentation(false);
       setHandledCelebrationId(null);
+      
+      revealTimersRef.current.forEach(timer => clearTimeout(timer));
+      revealTimersRef.current = [];
+      setHintRevealed(false);
+      setChoicesRevealed(false);
+      setDataRevealed(false);
+      
       recordNodeVisited(currentNode);
       
       if (currentNode.includes('_interview')) {
@@ -197,6 +208,56 @@ export function GameScene() {
       }
     }
   };
+  
+  useEffect(() => {
+    if (!currentStoryNode) return;
+    
+    const allMessagesRevealed = visibleMessages === currentStoryNode.messages.length && !isTyping;
+    
+    if (allMessagesRevealed) {
+      revealTimersRef.current.forEach(timer => clearTimeout(timer));
+      revealTimersRef.current = [];
+      
+      const timers: number[] = [];
+      
+      const hasNarratorMessage = currentStoryNode.messages.some(msg => msg.speaker === "narrator");
+      const hasQuestion = currentStoryNode.question;
+      const hasDataVisualization = currentStoryNode.dataVisualizations && currentStoryNode.dataVisualizations.length > 0;
+      
+      let delay = 0;
+      
+      if (hasNarratorMessage) {
+        const timer = window.setTimeout(() => {
+          setHintRevealed(true);
+        }, delay);
+        timers.push(timer);
+        delay += 400;
+      } else {
+        setHintRevealed(true);
+      }
+      
+      if (hasQuestion) {
+        const timer = window.setTimeout(() => {
+          setChoicesRevealed(true);
+        }, delay);
+        timers.push(timer);
+        delay += 400;
+      } else {
+        setChoicesRevealed(true);
+      }
+      
+      if (hasDataVisualization) {
+        const timer = window.setTimeout(() => {
+          setDataRevealed(true);
+        }, delay);
+        timers.push(timer);
+      } else {
+        setDataRevealed(true);
+      }
+      
+      revealTimersRef.current = timers;
+    }
+  }, [visibleMessages, isTyping, currentStoryNode]);
   
   const handleChatClick = () => {
     if (!currentStoryNode) return;
@@ -461,7 +522,7 @@ export function GameScene() {
         {currentStoryNode.messages.slice(0, visibleMessages)
           .filter(message => !message.celebration)
           .map((message, index) => {
-            if (message.dataVisualization) {
+            if (message.dataVisualization && dataRevealed) {
               return (
                 <DataVisualization 
                   key={message.id} 
@@ -483,7 +544,7 @@ export function GameScene() {
               );
             }
             
-            if (message.isQuestion && currentStoryNode.question && showQuestion) {
+            if (message.isQuestion && currentStoryNode.question && showQuestion && choicesRevealed) {
               return (
                 <div key={message.id} onClick={(e) => e.stopPropagation()}>
                   <ChoiceButtons
@@ -509,6 +570,9 @@ export function GameScene() {
             }
             
             if (message.text) {
+              if (message.speaker === "narrator" && !hintRevealed) {
+                return null;
+              }
               return <ChatMessage key={message.id} message={message} index={index} onTypingStateChange={handleTypingStateChange} />;
             }
             
