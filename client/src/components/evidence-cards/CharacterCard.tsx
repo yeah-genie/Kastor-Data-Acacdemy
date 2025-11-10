@@ -19,7 +19,7 @@ export const CharacterCard = forwardRef<HTMLDivElement, CharacterCardProps>(
             <img 
               src={evidence.photo} 
               alt={evidence.name} 
-              className="w-12 h-12 rounded-full object-cover border-2 border-blue-400 mb-2" 
+              className="w-12 h-12 rounded-full object-cover object-top border-2 border-blue-400 mb-2" 
             />
           ) : (
             <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center border-2 border-blue-400 mb-2">
@@ -39,7 +39,7 @@ export const CharacterCard = forwardRef<HTMLDivElement, CharacterCardProps>(
               <img 
                 src={evidence.photo} 
                 alt={evidence.name} 
-                className="w-16 h-16 md:w-20 md:h-20 rounded-xl object-cover object-center border-2 border-blue-400 shadow-md flex-shrink-0" 
+                className="w-16 h-16 md:w-20 md:h-20 rounded-xl object-cover object-top border-2 border-blue-400 shadow-md flex-shrink-0" 
               />
             )}
             <div className="flex-1 min-w-0">

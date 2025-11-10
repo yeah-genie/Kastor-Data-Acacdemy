@@ -69,21 +69,21 @@ export function StageSummaryCard({ summary, onContinue }: StageSummaryCardProps)
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="flex items-start gap-3 text-gray-800"
+                    className="flex items-start gap-3 text-gray-900"
                   >
                     <span className="text-blue-500 mt-1 text-xl font-bold">•</span>
-                    <span className="text-base leading-loose flex-1">{finding}</span>
+                    <span className="text-base leading-loose flex-1 font-medium">{finding}</span>
                   </motion.li>
                 ))}
               </ul>
             </div>
 
-            <div className="flex items-center justify-between pt-5 border-t border-gray-200">
+            <div className="flex flex-col gap-3 pt-5 border-t border-gray-200">
               <div className="text-lg text-gray-800 font-medium">
                 Evidence Collected: <span className="text-blue-600 font-bold">{summary.evidenceCount}</span>
               </div>
               {summary.nextStageHint && (
-                <div className="text-sm text-gray-500 italic max-w-xs text-right leading-relaxed">
+                <div className="text-sm text-gray-500 italic leading-relaxed">
                   💡 {summary.nextStageHint}
                 </div>
               )}
