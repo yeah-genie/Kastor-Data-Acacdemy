@@ -106,18 +106,35 @@ function ConnectionLayer({ connections, nodePositions, boardWidth, boardHeight, 
         
         if (!fromPos || !toPos) return null;
 
-        const x1 = fromPos.x * boardWidth + 80;
-        const y1 = fromPos.y * boardHeight + 40;
-        const x2 = toPos.x * boardWidth + 80;
-        const y2 = toPos.y * boardHeight + 40;
+        const nodeWidth = 160;
+        const nodeHeight = 80;
+        
+        const centerX1 = fromPos.x * boardWidth + nodeWidth / 2;
+        const centerY1 = fromPos.y * boardHeight + nodeHeight / 2;
+        const centerX2 = toPos.x * boardWidth + nodeWidth / 2;
+        const centerY2 = toPos.y * boardHeight + nodeHeight / 2;
+
+        const dx = centerX2 - centerX1;
+        const dy = centerY2 - centerY1;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance === 0) return null;
+        
+        const dirX = dx / distance;
+        const dirY = dy / distance;
+        
+        const nodeRadius = Math.sqrt((nodeWidth / 2) ** 2 + (nodeHeight / 2) ** 2) * 0.7;
+        
+        const x1 = centerX1 + dirX * nodeRadius;
+        const y1 = centerY1 + dirY * nodeRadius;
+        const x2 = centerX2 - dirX * nodeRadius;
+        const y2 = centerY2 - dirY * nodeRadius;
 
         const midX = (x1 + x2) / 2;
         const midY = (y1 + y2) / 2;
-        const dx = x2 - x1;
-        const dy = y2 - y1;
-        const offset = Math.sqrt(dx * dx + dy * dy) * 0.2;
-        const cx = midX + (dy / Math.sqrt(dx * dx + dy * dy)) * offset;
-        const cy = midY - (dx / Math.sqrt(dx * dx + dy * dy)) * offset;
+        const offset = distance * 0.2;
+        const cx = midX + (dy / distance) * offset;
+        const cy = midY - (dx / distance) * offset;
         
         const pathD = `M ${x1},${y1} Q ${cx},${cy} ${x2},${y2}`;
 
