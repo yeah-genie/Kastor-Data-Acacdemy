@@ -116,6 +116,10 @@ export function GameScene() {
         }
       }
       
+      if (autoVisibleCount === 0 && node.messages.length > 0) {
+        autoVisibleCount = 1;
+      }
+      
       setVisibleMessages(autoVisibleCount);
       setShowCharacterCardsSlider(false);
       setShowQuestion(false);
