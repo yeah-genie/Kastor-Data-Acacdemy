@@ -270,22 +270,31 @@ export function EvidenceBoard({ isOpen, onClose, onSwitchToList }: EvidenceBoard
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed inset-3 md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[90vw] md:h-[85vh] md:max-w-6xl bg-white rounded-2xl z-50 overflow-hidden flex flex-col shadow-2xl border border-slate-200"
+            className="fixed inset-3 md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[90vw] md:h-[85vh] md:max-w-6xl bg-white rounded-2xl z-50 overflow-hidden flex flex-col shadow-2xl border border-gray-200"
           >
-            <div className="bg-slate-800 px-4 py-3 md:px-6 md:py-4 flex items-center justify-between border-b border-slate-700">
+            <div className="bg-white px-4 py-3 md:px-6 md:py-4 flex items-center justify-between border-b border-gray-200">
               <div className="flex items-center gap-2 md:gap-3">
-                <h2 className="text-lg md:text-xl font-bold text-white">Evidence Board</h2>
+                <h2 className="text-lg md:text-xl font-bold text-gray-900">Evidence Board</h2>
               </div>
               <div className="flex items-center gap-4">
-                <div className="hidden md:flex items-center gap-6 text-sm text-slate-300">
-                  <span>Score: <span className="font-bold text-white">{score}</span></span>
-                  <span>Evidence: <span className="font-bold text-white">{evidenceCollected.length}</span></span>
-                  <span>Hints: <span className="font-bold text-white">{hintsUsed}/{maxHints}</span></span>
+                <div className="hidden md:flex items-center gap-4 text-sm">
+                  <div className="px-3 py-1 bg-gray-100 rounded-lg">
+                    <span className="text-gray-600">Score: </span>
+                    <span className="font-bold text-gray-900">{score}</span>
+                  </div>
+                  <div className="px-3 py-1 bg-gray-100 rounded-lg">
+                    <span className="text-gray-600">Evidence: </span>
+                    <span className="font-bold text-gray-900">{evidenceCollected.length}</span>
+                  </div>
+                  <div className="px-3 py-1 bg-gray-100 rounded-lg">
+                    <span className="text-gray-600">Hints: </span>
+                    <span className="font-bold text-gray-900">{hintsUsed}/{maxHints}</span>
+                  </div>
                 </div>
                 {onSwitchToList && (
                   <button
                     onClick={onSwitchToList}
-                    className="px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 bg-slate-700 text-white hover:bg-slate-600 transition-colors"
+                    className="px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors border border-gray-200"
                     title="Switch to List View"
                   >
                     <List className="w-4 h-4" />
@@ -294,40 +303,40 @@ export function EvidenceBoard({ isOpen, onClose, onSwitchToList }: EvidenceBoard
                 )}
                 <button
                   onClick={onClose}
-                  className="text-slate-300 hover:text-white text-2xl font-bold min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors"
+                  className="text-gray-400 hover:text-gray-600 transition-colors p-2"
                 >
-                  ×
+                  <X className="w-5 h-5" />
                 </button>
               </div>
             </div>
 
-            <div className="bg-slate-50 px-4 py-2 flex items-center justify-between border-b border-slate-200">
+            <div className="bg-gray-50 px-4 py-3 flex items-center justify-between border-b border-gray-200">
               <div className="flex gap-2">
                 <button
                   onClick={() => {
                     setConnectMode(!connectMode);
                     setFirstSelectedId(null);
                   }}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
                     connectMode
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                      ? 'bg-blue-600 text-white border-blue-600'
+                      : 'bg-white text-gray-700 hover:bg-gray-100 border-gray-200'
                   }`}
                 >
                   {connectMode ? '✓ Connect Mode' : '🔗 Connect Evidence'}
                 </button>
                 {firstSelectedId && (
-                  <span className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg text-sm font-medium">
+                  <span className="px-4 py-2 bg-blue-50 text-blue-700 rounded-lg text-sm font-medium border border-blue-200">
                     Select second evidence to connect
                   </span>
                 )}
               </div>
-              <div className="text-sm text-slate-600 font-medium">
+              <div className="text-sm text-gray-600 font-medium">
                 {evidenceCollected.length} evidence • {evidenceBoardConnections.length} connections
               </div>
             </div>
 
-            <div className="flex-1 relative overflow-hidden bg-slate-100">
+            <div className="flex-1 relative overflow-hidden bg-gray-50">
               <div
                 ref={boardRef}
                 className="absolute inset-4 md:inset-8"
