@@ -16,7 +16,7 @@ interface ChatMessageProps {
 }
 
 function shouldUseTypewriter(speaker: string): boolean {
-  return ["detective", "maya", "chris", "ryan", "client"].includes(speaker);
+  return ["maya", "chris", "ryan", "client", "kaito", "lukas", "diego"].includes(speaker);
 }
 
 export function ChatMessage({ message, index, onTypingStateChange, onTypingComplete, onCharacterTyped }: ChatMessageProps) {
@@ -122,9 +122,17 @@ export function ChatMessage({ message, index, onTypingStateChange, onTypingCompl
               {/* Divider */}
               <div className="border-t border-gray-200 my-4"></div>
 
-              {/* Body */}
+              {/* Body with Typewriter Effect */}
               <div className="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">
-                {message.email.body}
+                <TypewriterText
+                  text={message.email.body}
+                  speed={typewriterSpeed}
+                  onTypingStateChange={onTypingStateChange}
+                  onTypingComplete={onTypingComplete}
+                  onCharacterTyped={onCharacterTyped}
+                  bypassTypewriter={false}
+                  glossaryMode="normal"
+                />
               </div>
             </div>
           </div>
