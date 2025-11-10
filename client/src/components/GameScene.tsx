@@ -409,8 +409,7 @@ export function GameScene() {
         <div className="flex items-center gap-3">
           <div className="px-3 py-1.5 bg-gray-100 rounded-lg border border-gray-200">
             <div className="flex items-center gap-1.5">
-              <span className="text-gray-600 text-xs">Score</span>
-              <span className="text-gray-900 text-sm font-bold">{score}</span>
+              <span className="text-gray-900 text-sm font-bold">{score} XP</span>
             </div>
           </div>
           
