@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo, useCallback, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Users, BarChart3, MessageSquare, Image as ImageIcon, FileText, X, List } from "lucide-react";
 import {
   DndContext,
@@ -255,7 +255,7 @@ export function EvidenceBoard({ isOpen, onClose, onSwitchToList }: EvidenceBoard
   }, [isOpen]);
 
   return (
-    <AnimatePresence>
+    <>
       {isOpen && (
         <>
           <div
@@ -416,6 +416,6 @@ export function EvidenceBoard({ isOpen, onClose, onSwitchToList }: EvidenceBoard
           </Drawer>
         </>
       )}
-    </AnimatePresence>
+    </>
   );
 }
