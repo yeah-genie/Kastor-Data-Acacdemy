@@ -1,9 +1,10 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { BookOpen, Users, BarChart3, MessageSquare, Image as ImageIcon, FileText, Star, Bookmark } from "lucide-react";
+import { BookOpen, Users, BarChart3, MessageSquare, Image as ImageIcon, FileText, Star, Bookmark, Layout, List } from "lucide-react";
 import { useDetectiveGame, CharacterEvidence, DataEvidence, DialogueEvidence, PhotoEvidence, DocumentEvidence } from "@/lib/stores/useDetectiveGame";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState } from "react";
+import { EvidenceBoard } from "@/components/EvidenceBoard";
 
 interface EvidenceNotebookProps {
   isOpen: boolean;
@@ -113,12 +114,17 @@ function DataEvidenceCard({ data, idx }: { data: DataEvidence; idx: number }) {
 
 export function EvidenceNotebook({ isOpen, onClose }: EvidenceNotebookProps) {
   const { evidenceCollected, score, hintsUsed, maxHints } = useDetectiveGame();
+  const [viewMode, setViewMode] = useState<'board' | 'list'>('board');
 
   const characters = evidenceCollected.filter(e => e.type === "CHARACTER") as CharacterEvidence[];
   const dataViz = evidenceCollected.filter(e => e.type === "DATA") as DataEvidence[];
   const dialogues = evidenceCollected.filter(e => e.type === "DIALOGUE") as DialogueEvidence[];
   const photos = evidenceCollected.filter(e => e.type === "PHOTO") as PhotoEvidence[];
   const documents = evidenceCollected.filter(e => e.type === "DOCUMENT") as DocumentEvidence[];
+
+  if (viewMode === 'board') {
+    return <EvidenceBoard isOpen={isOpen} onClose={onClose} onSwitchToList={() => setViewMode('list')} />;
+  }
 
   return (
     <AnimatePresence>
@@ -143,12 +149,22 @@ export function EvidenceNotebook({ isOpen, onClose }: EvidenceNotebookProps) {
                 <BookOpen className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
                 <h2 className="text-lg md:text-xl font-bold text-gray-900">Evidence Notebook</h2>
               </div>
-              <button
-                onClick={onClose}
-                className="text-gray-400 hover:text-gray-900 text-3xl md:text-2xl font-bold min-w-[44px] min-h-[44px] flex items-center justify-center"
-              >
-                ×
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setViewMode('board')}
+                  className="px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors"
+                  title="Switch to Board View"
+                >
+                  <Layout className="w-4 h-4" />
+                  <span className="hidden md:inline">Board</span>
+                </button>
+                <button
+                  onClick={onClose}
+                  className="text-gray-400 hover:text-gray-900 text-3xl md:text-2xl font-bold min-w-[44px] min-h-[44px] flex items-center justify-center"
+                >
+                  ×
+                </button>
+              </div>
             </div>
 
             <div className="bg-white px-4 py-2 md:px-6 md:py-3 border-b border-gray-200">
