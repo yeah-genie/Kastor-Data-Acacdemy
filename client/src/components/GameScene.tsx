@@ -683,11 +683,13 @@ export function GameScene() {
       )}
 
       {showInteractiveSequence && currentStoryNode?.interactiveSequence && (
-        <div className="fixed inset-0 bg-slate-900/95 z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <InteractiveSequenceHandler
-            sequence={currentStoryNode.interactiveSequence}
-            onComplete={handleInteractiveSequenceComplete}
-          />
+        <div className="fixed inset-0 bg-slate-900 z-50 overflow-y-auto">
+          <div className="min-h-full flex items-center justify-center p-2 sm:p-4">
+            <InteractiveSequenceHandler
+              sequence={currentStoryNode.interactiveSequence}
+              onComplete={handleInteractiveSequenceComplete}
+            />
+          </div>
         </div>
       )}
 

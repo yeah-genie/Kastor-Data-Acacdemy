@@ -75,26 +75,26 @@ export function TestimonyPress({ statements, onComplete }: TestimonyPressProps) 
   };
 
   return (
-    <Card className="w-full max-w-4xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 justify-center">
-          <MessageSquare className="w-6 h-6" />
+    <Card className="w-full max-w-4xl mx-auto max-h-[90vh] flex flex-col">
+      <CardHeader className="flex-shrink-0">
+        <CardTitle className="flex items-center gap-2 justify-center text-lg sm:text-xl">
+          <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6" />
           Testimony Analysis
         </CardTitle>
-        <p className="text-center text-muted-foreground">
-          Press statements for more info or present evidence to find contradictions
+        <p className="text-center text-xs sm:text-sm text-muted-foreground">
+          Press for info or present evidence
         </p>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="text-center text-sm text-muted-foreground">
+      <CardContent className="space-y-4 sm:space-y-6 overflow-y-auto flex-1">
+        <div className="text-center text-xs sm:text-sm text-muted-foreground">
           Statement {currentStatementIndex + 1} of {statements.length}
         </div>
 
-        <div className="bg-slate-100 dark:bg-slate-800 rounded-lg p-6 min-h-32">
-          <div className="flex items-start gap-3">
-            <div className="flex-1">
-              <p className="font-semibold text-sm mb-2">{currentStatement.speaker}:</p>
-              <p className="text-lg">{currentStatement.text}</p>
+        <div className="bg-slate-100 dark:bg-slate-800 rounded-lg p-4 sm:p-6 min-h-[120px]">
+          <div className="flex items-start gap-2 sm:gap-3">
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-xs sm:text-sm mb-1 sm:mb-2">{currentStatement.speaker}:</p>
+              <p className="text-sm sm:text-base leading-relaxed">{currentStatement.text}</p>
               {foundContradictions.has(currentStatement.id) && (
                 <div className="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-red-500 text-white text-xs rounded">
                   <AlertCircle className="w-3 h-3" />
@@ -106,22 +106,22 @@ export function TestimonyPress({ statements, onComplete }: TestimonyPressProps) 
         </div>
 
         {showPressResponse && currentStatement.pressResponse && (
-          <div className="bg-blue-100 dark:bg-blue-900/20 border border-blue-500 rounded-lg p-4">
-            <p className="text-sm font-semibold mb-1">Response:</p>
-            <p className="text-blue-900 dark:text-blue-100">{currentStatement.pressResponse}</p>
+          <div className="bg-blue-100 dark:bg-blue-900/20 border border-blue-500 rounded-lg p-3 sm:p-4">
+            <p className="text-xs sm:text-sm font-semibold mb-1">Response:</p>
+            <p className="text-xs sm:text-sm text-blue-900 dark:text-blue-100">{currentStatement.pressResponse}</p>
           </div>
         )}
 
         {showContradiction && currentStatement.contradictionFeedback && (
-          <div className="bg-red-100 dark:bg-red-900/20 border border-red-500 rounded-lg p-4 animate-pulse">
-            <p className="text-sm font-bold mb-1 text-red-900 dark:text-red-100">
+          <div className="bg-red-100 dark:bg-red-900/20 border border-red-500 rounded-lg p-3 sm:p-4 animate-pulse">
+            <p className="text-sm sm:text-base font-bold mb-1 text-red-900 dark:text-red-100">
               🎯 OBJECTION!
             </p>
-            <p className="text-red-900 dark:text-red-100">{currentStatement.contradictionFeedback}</p>
+            <p className="text-xs sm:text-sm text-red-900 dark:text-red-100">{currentStatement.contradictionFeedback}</p>
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-2 sm:gap-3">
           <Button
             variant="outline"
             onClick={handlePress}
@@ -130,13 +130,15 @@ export function TestimonyPress({ statements, onComplete }: TestimonyPressProps) 
               !currentStatement.pressResponse ||
               foundContradictions.has(currentStatement.id)
             }
+            className="h-auto py-3 text-sm sm:text-base"
           >
-            <MessageSquare className="w-4 h-4 mr-2" />
+            <MessageSquare className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
             Press
           </Button>
           <Button
             variant="default"
             onClick={handlePresentEvidence}
+            className="h-auto py-3 text-sm sm:text-base"
             disabled={
               showContradiction || foundContradictions.has(currentStatement.id)
             }

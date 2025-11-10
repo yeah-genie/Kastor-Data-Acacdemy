@@ -75,18 +75,18 @@ export function LogicConnectionPuzzle({
   };
 
   return (
-    <Card className="w-full max-w-4xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 justify-center">
-          <Brain className="w-6 h-6" />
+    <Card className="w-full max-w-4xl mx-auto max-h-[90vh] flex flex-col">
+      <CardHeader className="flex-shrink-0">
+        <CardTitle className="flex items-center gap-2 justify-center text-lg sm:text-xl">
+          <Brain className="w-5 h-5 sm:w-6 sm:h-6" />
           Logic Connection
         </CardTitle>
-        <p className="text-center text-muted-foreground">
+        <p className="text-center text-sm sm:text-base text-muted-foreground">
           Connect related thoughts to form deductions
         </p>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <CardContent className="space-y-4 sm:space-y-6 overflow-y-auto flex-1">
+        <div className="grid grid-cols-1 gap-3 sm:gap-4">
           {thoughts.map((thought) => (
             <Button
               key={thought.id}
@@ -100,40 +100,40 @@ export function LogicConnectionPuzzle({
               size="lg"
               onClick={() => handleThoughtClick(thought.id)}
               disabled={isThoughtConnected(thought.id) || showSuccess}
-              className="h-auto py-4 px-6 text-left whitespace-normal"
+              className="h-auto py-3 sm:py-4 px-4 sm:px-6 text-left whitespace-normal min-h-[60px]"
             >
               <div className="flex items-start gap-2">
-                <div className="mt-1">
+                <div className="mt-0.5 sm:mt-1 flex-shrink-0">
                   {isThoughtConnected(thought.id) ? (
-                    <Check className="w-5 h-5 text-green-500" />
+                    <Check className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
                   ) : (
-                    <div className="w-5 h-5 rounded-full border-2 border-current" />
+                    <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-current" />
                   )}
                 </div>
-                <span className="flex-1">{thought.text}</span>
+                <span className="flex-1 text-sm sm:text-base">{thought.text}</span>
               </div>
             </Button>
           ))}
         </div>
 
         {madeConnections.length > 0 && (
-          <div className="space-y-3">
-            <h3 className="font-semibold text-center">Deductions Made:</h3>
+          <div className="space-y-2 sm:space-y-3">
+            <h3 className="text-sm sm:text-base font-semibold text-center">Deductions Made:</h3>
             {madeConnections.map((conn, index) => (
               <div
                 key={index}
-                className="bg-blue-100 dark:bg-blue-900/20 border border-blue-500 rounded-lg p-4"
+                className="bg-blue-100 dark:bg-blue-900/20 border border-blue-500 rounded-lg p-3 sm:p-4"
               >
-                <div className="flex items-center gap-3">
-                  <span className="text-sm">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
+                  <span className="text-xs sm:text-sm flex-1">
                     {thoughts.find((t) => t.id === conn.from)?.text}
                   </span>
-                  <ArrowRight className="w-4 h-4 flex-shrink-0" />
-                  <span className="text-sm">
+                  <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                  <span className="text-xs sm:text-sm flex-1">
                     {thoughts.find((t) => t.id === conn.to)?.text}
                   </span>
                 </div>
-                <div className="mt-2 font-semibold text-blue-900 dark:text-blue-100">
+                <div className="mt-2 text-sm sm:text-base font-semibold text-blue-900 dark:text-blue-100">
                   💡 {conn.deduction}
                 </div>
               </div>
@@ -142,14 +142,14 @@ export function LogicConnectionPuzzle({
         )}
 
         {showSuccess && (
-          <div className="bg-green-100 dark:bg-green-900/20 border border-green-500 rounded-lg p-4 text-center">
-            <p className="font-medium text-green-900 dark:text-green-100">
+          <div className="bg-green-100 dark:bg-green-900/20 border border-green-500 rounded-lg p-3 sm:p-4 text-center">
+            <p className="text-sm sm:text-base font-medium text-green-900 dark:text-green-100">
               ✓ All connections made! The picture is becoming clearer...
             </p>
           </div>
         )}
 
-        <div className="text-center text-sm text-muted-foreground">
+        <div className="text-center text-xs sm:text-sm text-muted-foreground">
           Select two thoughts to connect them
           <br />
           {madeConnections.length} / {correctConnections.length} connections made

@@ -33,25 +33,25 @@ export function DocumentExamination({ title, sections, onComplete }: DocumentExa
   };
 
   return (
-    <Card className="w-full max-w-3xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 justify-center">
-          <FileText className="w-6 h-6" />
+    <Card className="w-full max-w-3xl mx-auto max-h-[90vh] flex flex-col">
+      <CardHeader className="flex-shrink-0">
+        <CardTitle className="flex items-center gap-2 justify-center text-lg sm:text-xl">
+          <FileText className="w-5 h-5 sm:w-6 sm:h-6" />
           Document Examination
         </CardTitle>
-        <p className="text-center text-muted-foreground">
-          Click on sections to examine them closely
+        <p className="text-center text-xs sm:text-sm text-muted-foreground">
+          Tap sections to examine closely
         </p>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="bg-amber-50 dark:bg-amber-900/10 border-2 border-amber-200 dark:border-amber-800 rounded-lg p-6">
-          <h3 className="font-bold text-lg mb-4 text-center">{title}</h3>
-          <div className="space-y-3">
+      <CardContent className="space-y-3 sm:space-y-4 overflow-y-auto flex-1">
+        <div className="bg-amber-50 dark:bg-amber-900/10 border-2 border-amber-200 dark:border-amber-800 rounded-lg p-3 sm:p-6">
+          <h3 className="font-bold text-base sm:text-lg mb-3 sm:mb-4 text-center">{title}</h3>
+          <div className="space-y-2 sm:space-y-3">
             {sections.map((section, index) => (
               <div key={index}>
                 <button
                   onClick={() => handleSectionClick(index)}
-                  className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
+                  className={`w-full text-left p-3 sm:p-4 rounded-lg border-2 transition-all active:scale-98 ${
                     selectedSection === index
                       ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
                       : "border-slate-200 dark:border-slate-700 hover:border-blue-300"
@@ -61,15 +61,15 @@ export function DocumentExamination({ title, sections, onComplete }: DocumentExa
                       : ""
                   }`}
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1">
-                      <div className="font-semibold text-sm mb-1">{section.label}</div>
-                      <div className="text-sm">{section.content}</div>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-xs sm:text-sm mb-1">{section.label}</div>
+                      <div className="text-xs sm:text-sm">{section.content}</div>
                     </div>
-                    <div className="flex flex-col gap-1">
-                      <ZoomIn className="w-5 h-5 text-muted-foreground" />
+                    <div className="flex flex-col gap-1 flex-shrink-0">
+                      <ZoomIn className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
                       {foundSuspicious.has(index) && (
-                        <AlertTriangle className="w-5 h-5 text-red-500 animate-pulse" />
+                        <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-red-500 animate-pulse" />
                       )}
                     </div>
                   </div>
@@ -81,19 +81,19 @@ export function DocumentExamination({ title, sections, onComplete }: DocumentExa
 
         {selectedSection !== null && (
           <div
-            className={`p-4 rounded-lg border-2 ${
+            className={`p-3 sm:p-4 rounded-lg border-2 ${
               sections[selectedSection].suspicious
                 ? "bg-red-100 dark:bg-red-900/20 border-red-500"
                 : "bg-blue-100 dark:bg-blue-900/20 border-blue-500"
             }`}
           >
-            <p className="font-semibold text-sm mb-2">Examination Result:</p>
+            <p className="font-semibold text-xs sm:text-sm mb-2">Examination Result:</p>
             {sections[selectedSection].suspicious ? (
-              <p className="text-red-900 dark:text-red-100">
+              <p className="text-xs sm:text-sm text-red-900 dark:text-red-100">
                 ⚠️ This section contains suspicious information! Something doesn't add up here.
               </p>
             ) : (
-              <p className="text-blue-900 dark:text-blue-100">
+              <p className="text-xs sm:text-sm text-blue-900 dark:text-blue-100">
                 This section appears normal and matches expectations.
               </p>
             )}
@@ -101,11 +101,11 @@ export function DocumentExamination({ title, sections, onComplete }: DocumentExa
         )}
 
         {foundSuspicious.size > 0 && (
-          <div className="bg-yellow-100 dark:bg-yellow-900/20 border border-yellow-500 rounded-lg p-4">
-            <p className="font-semibold text-sm mb-1 text-yellow-900 dark:text-yellow-100">
+          <div className="bg-yellow-100 dark:bg-yellow-900/20 border border-yellow-500 rounded-lg p-3 sm:p-4">
+            <p className="font-semibold text-xs sm:text-sm mb-1 text-yellow-900 dark:text-yellow-100">
               Suspicious items found: {foundSuspicious.size}
             </p>
-            <p className="text-sm text-yellow-900 dark:text-yellow-100">
+            <p className="text-xs sm:text-sm text-yellow-900 dark:text-yellow-100">
               These discrepancies are crucial evidence!
             </p>
           </div>

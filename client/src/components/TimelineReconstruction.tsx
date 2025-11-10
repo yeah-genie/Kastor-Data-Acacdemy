@@ -34,21 +34,21 @@ function SortableEvent({ event }: { event: TimelineEvent }) {
     <div
       ref={setNodeRef}
       style={style}
-      className={`flex items-center gap-3 p-4 rounded-lg border-2 ${
+      className={`flex items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-lg border-2 ${
         event.suspicious
           ? "bg-red-50 dark:bg-red-900/10 border-red-300 dark:border-red-800"
           : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
       }`}
     >
-      <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing">
-        <GripVertical className="w-5 h-5 text-muted-foreground" />
+      <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing touch-none flex-shrink-0">
+        <GripVertical className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
       </div>
-      <div className="flex-1">
+      <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className="font-mono font-bold text-sm">{event.time}</span>
-          {event.suspicious && <AlertTriangle className="w-4 h-4 text-red-500" />}
+          <span className="font-mono font-bold text-xs sm:text-sm">{event.time}</span>
+          {event.suspicious && <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4 text-red-500 flex-shrink-0" />}
         </div>
-        <p className="text-sm">{event.text}</p>
+        <p className="text-xs sm:text-sm truncate">{event.text}</p>
       </div>
     </div>
   );
@@ -106,17 +106,17 @@ export function TimelineReconstruction({ events, onComplete }: TimelineReconstru
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 justify-center">
-          <Clock className="w-6 h-6" />
+    <Card className="w-full max-w-2xl mx-auto max-h-[90vh] flex flex-col">
+      <CardHeader className="flex-shrink-0">
+        <CardTitle className="flex items-center gap-2 justify-center text-lg sm:text-xl">
+          <Clock className="w-5 h-5 sm:w-6 sm:h-6" />
           Timeline Reconstruction
         </CardTitle>
-        <p className="text-center text-muted-foreground">
-          Drag and drop to arrange events in chronological order
+        <p className="text-center text-sm sm:text-base text-muted-foreground">
+          Drag to arrange events in order
         </p>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 sm:space-y-4 overflow-y-auto flex-1">
         <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={sortedEvents.map((e) => e.id)} strategy={verticalListSortingStrategy}>
             <div className="space-y-2">
@@ -135,14 +135,14 @@ export function TimelineReconstruction({ events, onComplete }: TimelineReconstru
 
         {showFeedback && (
           <div
-            className={`p-4 rounded-lg ${
+            className={`p-3 sm:p-4 rounded-lg ${
               isCorrect
                 ? "bg-green-100 dark:bg-green-900/20 border border-green-500"
                 : "bg-red-100 dark:bg-red-900/20 border border-red-500"
             }`}
           >
             <p
-              className={`font-medium ${
+              className={`text-sm sm:text-base font-medium ${
                 isCorrect
                   ? "text-green-900 dark:text-green-100"
                   : "text-red-900 dark:text-red-100"
