@@ -1,6 +1,6 @@
 import { BaseEvidenceCard } from "./BaseEvidenceCard";
 import { CharacterEvidence } from "@/lib/stores/useDetectiveGame";
-import { Star, User } from "lucide-react";
+import { User } from "lucide-react";
 import { forwardRef } from "react";
 
 interface CharacterCardProps {
@@ -44,20 +44,7 @@ export const CharacterCard = forwardRef<HTMLDivElement, CharacterCardProps>(
             )}
             <div className="flex-1 min-w-0">
               <h4 className="font-bold text-base md:text-lg text-gray-900 mb-1 truncate">{evidence.name}</h4>
-              <p className="text-xs md:text-sm text-blue-600 font-semibold mb-2 line-clamp-2">{evidence.role}</p>
-              {evidence.suspicionLevel !== undefined && (
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-gray-600 font-medium">Suspicion:</span>
-                  <div className="flex gap-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <Star 
-                        key={i} 
-                        className={`w-3 h-3 md:w-4 md:h-4 ${i < (evidence.suspicionLevel || 0) ? 'fill-red-400 text-red-400' : 'text-gray-300'}`} 
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
+              <p className="text-xs md:text-sm text-blue-600 font-semibold line-clamp-2">{evidence.role}</p>
             </div>
           </div>
           
