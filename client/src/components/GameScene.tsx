@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { BookOpen, Volume2, VolumeX, Plus, Mic, Send } from "lucide-react";
+import { BookOpen, Volume2, VolumeX, Plus, Mic, Send, Settings } from "lucide-react";
 import { useDetectiveGame } from "@/lib/stores/useDetectiveGame";
 import { useAudio } from "@/lib/stores/useAudio";
 import { type StoryNode } from "@/data/case1-story";
@@ -65,6 +65,7 @@ export function GameScene() {
   const [showStageSummary, setShowStageSummary] = useState(false);
   const [currentStageSummary, setCurrentStageSummary] = useState<StageSummary | null>(null);
   const [isTyping, setIsTyping] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   const getStageNumberFromNode = (nodeId: string): number | null => {
@@ -183,6 +184,10 @@ export function GameScene() {
   
   const handleChatClick = () => {
     if (!currentStoryNode) return;
+    
+    if (isTyping) {
+      return;
+    }
     
     if (visibleMessages < currentStoryNode.messages.length) {
       const nextMessage = currentStoryNode.messages[visibleMessages];
@@ -403,6 +408,13 @@ export function GameScene() {
           </button>
           
           <button
+            onClick={() => setShowSettings(true)}
+            className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600"
+          >
+            <Settings className="w-5 h-5" />
+          </button>
+          
+          <button
             onClick={() => {
               setShowNotebook(true);
               clearNewEvidenceFlag();
@@ -482,7 +494,7 @@ export function GameScene() {
             }
             
             if (message.text) {
-              return <ChatMessage key={message.id} message={message} index={index} />;
+              return <ChatMessage key={message.id} message={message} index={index} onTypingStateChange={setIsTyping} />;
             }
             
             return null;
