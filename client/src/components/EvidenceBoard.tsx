@@ -1,37 +1,184 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { Settings, ExternalLink, Info, List } from "lucide-react";
+import { useCallback, useMemo, useEffect, useRef } from "react";
+import { 
+  ReactFlow, 
+  MiniMap, 
+  Controls, 
+  Background,
+  useNodesState,
+  useEdgesState,
+  Node,
+  Edge,
+  Connection,
+  BackgroundVariant,
+  Panel,
+  NodeChange,
+  EdgeChange,
+  useReactFlow,
+  ReactFlowProvider,
+} from '@xyflow/react';
+import '@xyflow/react/dist/style.css';
+import { List } from "lucide-react";
+import { 
+  useDetectiveGame, 
+  Evidence,
+  CharacterEvidence,
+  DataEvidence,
+  DialogueEvidence,
+  PhotoEvidence,
+  DocumentEvidence
+} from "@/lib/stores/useDetectiveGame";
+import { 
+  CharacterCard,
+  DataCard,
+  DialogueCard,
+  PhotoCard,
+  DocumentCard
+} from "@/components/evidence-cards";
+import { Handle, Position } from '@xyflow/react';
 
 interface EvidenceBoardProps {
   onClose: () => void;
   onSwitchToList: () => void;
 }
 
-export function EvidenceBoard({ onClose, onSwitchToList }: EvidenceBoardProps) {
-  const [showSettings, setShowSettings] = useState(false);
-  const [boardId, setBoardId] = useState(() => {
-    return localStorage.getItem('miro_board_id') || '';
-  });
-  const [tempBoardId, setTempBoardId] = useState(boardId);
+interface EvidenceNodeData extends Record<string, unknown> {
+  evidence: Evidence;
+}
 
-  const handleSaveBoardId = () => {
-    localStorage.setItem('miro_board_id', tempBoardId);
-    setBoardId(tempBoardId);
-    setShowSettings(false);
-  };
+function EvidenceNode({ data }: { data: EvidenceNodeData }) {
+  const { evidence } = data;
+  
+  return (
+    <div className="relative">
+      <Handle type="target" position={Position.Top} />
+      
+      <div className="bg-white rounded-lg shadow-lg">
+        {evidence.type === "CHARACTER" && <CharacterCard evidence={evidence as CharacterEvidence} />}
+        {evidence.type === "DATA" && <DataCard evidence={evidence as DataEvidence} />}
+        {evidence.type === "DIALOGUE" && <DialogueCard evidence={evidence as DialogueEvidence} />}
+        {evidence.type === "PHOTO" && <PhotoCard evidence={evidence as PhotoEvidence} />}
+        {evidence.type === "DOCUMENT" && <DocumentCard evidence={evidence as DocumentEvidence} />}
+      </div>
+      
+      <Handle type="source" position={Position.Bottom} />
+    </div>
+  );
+}
 
-  const getMiroEmbedUrl = (id: string) => {
-    if (!id) return '';
-    return `https://miro.com/app/live-embed/${id}/?autoplay=true&embedMode=view_only`;
-  };
+const nodeTypes = {
+  evidenceNode: EvidenceNode,
+};
+
+const CANVAS_WIDTH = 2000;
+const CANVAS_HEIGHT = 2000;
+
+function toPixels(normalized: number, canvasSize: number): number {
+  return normalized * canvasSize;
+}
+
+function toNormalized(pixels: number, canvasSize: number): number {
+  return pixels / canvasSize;
+}
+
+function EvidenceBoardInner({ onClose, onSwitchToList }: EvidenceBoardProps) {
+  const { 
+    evidenceCollected, 
+    evidenceBoardPositions,
+    evidenceBoardConnections,
+    setNodePosition,
+    addEvidenceConnection,
+    removeEvidenceConnection,
+  } = useDetectiveGame();
+
+  const initialNodes: Node[] = useMemo(() => {
+    return evidenceCollected.map((evidence, index) => {
+      const savedPosition = evidenceBoardPositions[evidence.id];
+      
+      let pixelX, pixelY;
+      
+      if (savedPosition) {
+        pixelX = toPixels(savedPosition.x, CANVAS_WIDTH);
+        pixelY = toPixels(savedPosition.y, CANVAS_HEIGHT);
+      } else {
+        const col = index % 4;
+        const row = Math.floor(index / 4);
+        pixelX = col * 400 + 50;
+        pixelY = row * 300 + 50;
+      }
+      
+      return {
+        id: evidence.id,
+        type: 'evidenceNode',
+        position: { x: pixelX, y: pixelY },
+        data: { evidence } as EvidenceNodeData,
+      };
+    });
+  }, [evidenceCollected, evidenceBoardPositions]);
+
+  const initialEdges: Edge[] = useMemo(() => {
+    return evidenceBoardConnections.map((conn) => ({
+      id: conn.id,
+      source: conn.from,
+      target: conn.to,
+      label: conn.label,
+      type: 'smoothstep',
+    }));
+  }, [evidenceBoardConnections]);
+
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
+  useEffect(() => {
+    setNodes(initialNodes);
+  }, [initialNodes, setNodes]);
+
+  useEffect(() => {
+    setEdges(initialEdges);
+  }, [initialEdges, setEdges]);
+
+  const handleNodesChange = useCallback(
+    (changes: NodeChange[]) => {
+      onNodesChange(changes);
+      
+      changes.forEach((change) => {
+        if (change.type === 'position' && change.position && !change.dragging) {
+          const normalizedX = toNormalized(change.position.x, CANVAS_WIDTH);
+          const normalizedY = toNormalized(change.position.y, CANVAS_HEIGHT);
+          setNodePosition(change.id, normalizedX, normalizedY);
+        }
+      });
+    },
+    [onNodesChange, setNodePosition]
+  );
+
+  const handleEdgesChange = useCallback(
+    (changes: EdgeChange[]) => {
+      onEdgesChange(changes);
+      
+      changes.forEach((change) => {
+        if (change.type === 'remove') {
+          removeEvidenceConnection(change.id);
+        }
+      });
+    },
+    [onEdgesChange, removeEvidenceConnection]
+  );
+
+  const onConnect = useCallback(
+    (params: Connection) => {
+      if (params.source && params.target) {
+        addEvidenceConnection(params.source, params.target);
+      }
+    },
+    [addEvidenceConnection]
+  );
 
   return (
     <div className="fixed inset-0 bg-slate-900/95 backdrop-blur-sm z-50 flex flex-col">
-      {/* Header */}
       <div className="bg-slate-800/90 border-b border-slate-700 p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <h2 className="text-xl font-bold text-slate-100">Evidence Board</h2>
-          <span className="text-sm text-slate-400">powered by Miro</span>
+          <span className="text-sm text-slate-400">마인드맵</span>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -43,13 +190,6 @@ export function EvidenceBoard({ onClose, onSwitchToList }: EvidenceBoardProps) {
             <span className="hidden md:inline">List View</span>
           </button>
           <button
-            onClick={() => setShowSettings(!showSettings)}
-            className="p-2 hover:bg-slate-700 rounded-lg transition-colors text-slate-300"
-            title="Settings"
-          >
-            <Settings className="w-5 h-5" />
-          </button>
-          <button
             onClick={onClose}
             className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors text-slate-100"
           >
@@ -58,98 +198,46 @@ export function EvidenceBoard({ onClose, onSwitchToList }: EvidenceBoardProps) {
         </div>
       </div>
 
-      {/* Settings Panel */}
-      {showSettings && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-slate-800 border-b border-slate-700 p-4"
+      <div className="flex-1">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={handleNodesChange}
+          onEdgesChange={handleEdgesChange}
+          onConnect={onConnect}
+          nodeTypes={nodeTypes}
+          fitView
+          className="bg-slate-900"
         >
-          <div className="max-w-2xl">
-            <h3 className="text-lg font-semibold text-slate-100 mb-2">Miro Board Settings</h3>
-            <p className="text-sm text-slate-400 mb-4">
-              Enter your Miro board ID to connect your evidence board.
-            </p>
-            
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Board ID
-                </label>
-                <input
-                  type="text"
-                  value={tempBoardId}
-                  onChange={(e) => setTempBoardId(e.target.value)}
-                  placeholder="e.g., uXjVKBxxxxx="
-                  className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              <div className="flex items-start gap-2 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-                <Info className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
-                <div className="text-sm text-slate-300">
-                  <p className="font-medium mb-1">How to get your Board ID:</p>
-                  <ol className="list-decimal list-inside space-y-1 text-slate-400">
-                    <li>Go to <a href="https://miro.com" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">miro.com</a> and create a board</li>
-                    <li>Click "Share" → "Get embed code"</li>
-                    <li>Copy the board ID from the URL (after /live-embed/)</li>
-                  </ol>
-                </div>
-              </div>
-
-              <div className="flex gap-2">
-                <button
-                  onClick={handleSaveBoardId}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors text-white font-medium"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={() => {
-                    setTempBoardId(boardId);
-                    setShowSettings(false);
-                  }}
-                  className="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors text-slate-300"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Miro Embed */}
-      <div className="flex-1 relative">
-        {boardId ? (
-          <iframe
-            src={getMiroEmbedUrl(boardId)}
-            className="w-full h-full border-0"
-            allowFullScreen
-            title="Miro Evidence Board"
+          <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="#475569" />
+          <Controls className="bg-slate-800 border-slate-700" />
+          <MiniMap 
+            className="bg-slate-800 border-slate-700" 
+            nodeColor={(node) => {
+              const evidence = (node.data as unknown as EvidenceNodeData).evidence;
+              switch (evidence.type) {
+                case 'CHARACTER': return '#3b82f6';
+                case 'DATA': return '#22c55e';
+                case 'DIALOGUE': return '#a855f7';
+                case 'PHOTO': return '#ec4899';
+                case 'DOCUMENT': return '#f97316';
+                default: return '#64748b';
+              }
+            }}
           />
-        ) : (
-          <div className="flex items-center justify-center h-full">
-            <div className="text-center max-w-md p-8">
-              <div className="w-16 h-16 bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                <ExternalLink className="w-8 h-8 text-slate-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-slate-100 mb-2">
-                Connect Your Miro Board
-              </h3>
-              <p className="text-slate-400 mb-6">
-                Click the settings icon above to enter your Miro board ID and start organizing your evidence.
-              </p>
-              <button
-                onClick={() => setShowSettings(true)}
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors text-white font-medium"
-              >
-                Setup Board
-              </button>
-            </div>
-          </div>
-        )}
+          <Panel position="top-left" className="bg-slate-800/80 text-slate-200 px-3 py-2 rounded-lg text-sm">
+            <p>💡 노드를 드래그해서 배치하고, 연결점을 드래그해서 증거 연결</p>
+          </Panel>
+        </ReactFlow>
       </div>
     </div>
+  );
+}
+
+export function EvidenceBoard(props: EvidenceBoardProps) {
+  return (
+    <ReactFlowProvider>
+      <EvidenceBoardInner {...props} />
+    </ReactFlowProvider>
   );
 }
