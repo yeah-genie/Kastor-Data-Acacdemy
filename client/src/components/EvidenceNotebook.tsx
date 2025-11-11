@@ -1,10 +1,12 @@
-import { BookOpen, Users, BarChart3, MessageSquare, Image as ImageIcon, FileText, Layout } from "lucide-react";
+import { BookOpen, Users, BarChart3, MessageSquare, Image as ImageIcon, FileText, Layout, Network } from "lucide-react";
 import { useDetectiveGame, CharacterEvidence, DataEvidence, DialogueEvidence, PhotoEvidence, DocumentEvidence } from "@/lib/stores/useDetectiveGame";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useState, useEffect, useRef } from "react";
 import { EvidenceBoard } from "@/components/EvidenceBoard";
 import { CharacterCard, DataCard, DialogueCard, PhotoCard, DocumentCard } from "@/components/evidence-cards";
+import CaseFileMindMap from "./CaseFileMindMap";
+import { case1MindMapNodes, case1MindMapConnections } from "@/data/case1-mindmap";
 
 interface EvidenceNotebookProps {
   isOpen: boolean;
@@ -12,8 +14,8 @@ interface EvidenceNotebookProps {
 }
 
 export function EvidenceNotebook({ isOpen, onClose }: EvidenceNotebookProps) {
-  const { evidenceCollected, score, hintsUsed, maxHints, highlightedEvidenceId, clearHintHighlight } = useDetectiveGame();
-  const [viewMode, setViewMode] = useState<'board' | 'list'>('board');
+  const { evidenceCollected, score, hintsUsed, maxHints, highlightedEvidenceId, clearHintHighlight, currentCase } = useDetectiveGame();
+  const [viewMode, setViewMode] = useState<'board' | 'list' | 'mindmap'>('board');
   const highlightedEvidenceRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -41,6 +43,18 @@ export function EvidenceNotebook({ isOpen, onClose }: EvidenceNotebookProps) {
     return <EvidenceBoard onClose={handleClose} onSwitchToList={() => setViewMode('list')} />;
   }
 
+  if (viewMode === 'mindmap') {
+    return (
+      <CaseFileMindMap
+        isOpen={true}
+        onClose={() => setViewMode('board')}
+        caseTitle={currentCase === 1 ? "Episode 1: The Glitch" : `Case ${currentCase}`}
+        nodes={case1MindMapNodes}
+        connections={case1MindMapConnections}
+      />
+    );
+  }
+
   return (
     <>
       <div
@@ -64,6 +78,14 @@ export function EvidenceNotebook({ isOpen, onClose }: EvidenceNotebookProps) {
                 >
                   <Layout className="w-4 h-4" />
                   <span className="hidden md:inline">Board</span>
+                </button>
+                <button
+                  onClick={() => setViewMode('mindmap')}
+                  className="px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 bg-cyan-100 text-cyan-700 hover:bg-cyan-200 transition-colors"
+                  title="Switch to Mind Map View"
+                >
+                  <Network className="w-4 h-4" />
+                  <span className="hidden md:inline">Map</span>
                 </button>
                 <button
                   onClick={handleClose}
