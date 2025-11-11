@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kastor Data Academy - Code Analysis</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;family=Fira+Code:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<style>
+      .syntax-keyword { color: #00FFFF; }.syntax-variable { color: #FFFFFF; }.syntax-comment { color: #808080; }</style>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#13ecec",
+              "background-light": "#f6f8f8",
+              "background-dark": "#0a0e27",
+            },
+            fontFamily: {
+              "display": ["Space Grotesk", "sans-serif"],
+              "mono": ["Fira Code", "monospace"],
+            },
+            borderRadius: {
+              "DEFAULT": "0.5rem",
+              "lg": "1rem",
+              "xl": "1.5rem",
+              "full": "9999px"
+            },
+          },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+      background-image:
+        linear-gradient(rgba(10, 14, 39, 0.9), rgba(10, 14, 39, 1)),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill='%2313ecec' fill-opacity='0.05'%3E%3Crect x='0' y='0' width='50' height='50'/%3E%3Crect x='50' y='50' width='50' height='50'/%3E%3C/g%3E%3C/svg%3E");
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark font-display text-white">
+<div class="relative flex h-auto min-h-screen w-full flex-col">
+<div class="flex items-center bg-background-dark/80 backdrop-blur-sm p-4 sticky top-0 z-10 border-b border-white/10">
+<button class="flex size-10 shrink-0 items-center justify-center">
+<span class="material-symbols-outlined text-white">arrow_back</span>
+</button>
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">Case File: server_access.log</h2>
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-white/10">
+<span class="material-symbols-outlined text-cyan-400">lightbulb</span>
+</button>
+</div>
+<div class="p-4 flex-grow">
+<p class="text-white/80 text-base font-normal leading-normal pb-4">Analyze the code and select the three suspicious lines to proceed.</p>
+<div class="bg-transparent rounded-lg border border-white/10 overflow-hidden">
+<div class="flex font-mono text-sm leading-6">
+<div class="bg-black/20 p-4 text-right text-white/40 select-none w-14">
+<div>1</div>
+<div>2</div>
+<div class="bg-yellow-400/20 text-yellow-400 rounded -mx-4 px-4">3</div>
+<div>4</div>
+<div>5</div>
+<div>6</div>
+<div>7</div>
+<div>8</div>
+<div class="bg-yellow-400/20 text-yellow-400 rounded -mx-4 px-4">9</div>
+<div>10</div>
+<div>11</div>
+<div>12</div>
+<div>13</div>
+<div>14</div>
+<div>15</div>
+<div>16</div>
+<div class="bg-yellow-400/20 text-yellow-400 rounded -mx-4 px-4">17</div>
+<div>18</div>
+<div>19</div>
+<div>20</div>
+</div>
+<div class="p-4 overflow-x-auto flex-1">
+<pre><code><span class="syntax-keyword">function</span> <span class="syntax-variable">handle_request(user, data) {</span>
+  <span class="syntax-keyword">if</span> <span class="syntax-variable">(!user.authenticated) {</span>
+    <span class="syntax-keyword">exec</span><span class="syntax-variable">(</span><span class="syntax-comment">'/bin/bash -c "echo Access Denied"'</span><span class="syntax-variable">)</span>
+    <span class="syntax-keyword">return</span> <span class="syntax-variable">403;</span>
+  }
+  <span class="syntax-comment">// Log user activity</span>
+  <span class="syntax-keyword">let</span> <span class="syntax-variable">log_entry = format_log(user, data);</span>
+  <span class="syntax-keyword">POST</span> <span class="syntax-variable">http://192.168.1.100/log &lt; log_entry;</span>
+  <span class="syntax-keyword">if</span> <span class="syntax-variable">(user.role == 'admin') {</span>
+    <span class="syntax-comment">// Admin has full access</span>
+    <span class="syntax-keyword">let</span> <span class="syntax-variable">result = process_data(data);</span>
+    <span class="syntax-keyword">return</span> <span class="syntax-variable">{ status: 200, body: result };</span>
+  } <span class="syntax-keyword">else</span> {
+    <span class="syntax-comment">// Regular user access</span>
+    <span class="syntax-keyword">eval</span><span class="syntax-variable">('user.action = ' + data.payload);</span>
+    <span class="syntax-keyword">return</span> <span class="syntax-variable">{ status: 200, body: "OK" };</span>
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<h3 class="text-cyan-400 text-base font-bold tracking-widest uppercase pb-2 pt-6">Selected Lines</h3>
+<div class="space-y-2">
+<div class="flex items-center gap-4 bg-black/20 p-4 min-h-14 rounded-lg border border-white/10 justify-between">
+<div class="flex items-center gap-4 overflow-hidden">
+<p class="text-white text-sm font-mono leading-normal flex-1 truncate"><span class="text-yellow-400 font-bold mr-3">3</span><span class="syntax-keyword">exec</span><span class="syntax-variable">(</span><span class="syntax-comment">'/bin/bash...'</span><span class="syntax-variable">)</span></p>
+</div>
+<div class="shrink-0">
+<span class="material-symbols-outlined text-green-400">check_circle</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-4 bg-black/20 p-4 min-h-14 rounded-lg border border-red-500/50 justify-between">
+<div class="flex items-center gap-4 overflow-hidden">
+<p class="text-white text-sm font-mono leading-normal flex-1 truncate"><span class="text-yellow-400 font-bold mr-3">9</span><span class="syntax-keyword">POST</span> http://192.168...</p>
+</div>
+<div class="shrink-0 flex items-center gap-2">
+<span class="material-symbols-outlined text-red-500">cancel</span>
+</div>
+</div>
+<p class="text-red-400 text-sm px-2">Incorrect: This is a standard logging procedure.</p>
+</div>
+<div class="flex items-center gap-4 bg-black/20 p-4 min-h-14 rounded-lg border border-white/10 justify-between">
+<div class="flex items-center gap-4 overflow-hidden">
+<p class="text-white text-sm font-mono leading-normal flex-1 truncate"><span class="text-yellow-400 font-bold mr-3">17</span><span class="syntax-keyword">eval</span><span class="syntax-variable">(</span><span class="syntax-comment">'user.action...'</span><span class="syntax-variable">)</span></p>
+</div>
+<div class="shrink-0">
+<span class="material-symbols-outlined text-green-400">check_circle</span>
+</div>
+</div>
+</div>
+</div>
+<div class="sticky bottom-0 bg-background-dark/80 backdrop-blur-sm p-4 mt-auto border-t border-white/10">
+<button class="w-full flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-cyan-400 text-background-dark gap-2 text-base font-bold leading-normal tracking-[0.015em] hover:bg-cyan-300 transition-colors">
+<span>Submit Analysis</span>
+</button>
+</div>
+</div>
+
+</body></html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kastor Data Academy - Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<style>
+        body {
+            background-color: #1a1a2e;
+            background-image:
+                linear-gradient(rgba(26, 26, 46, 0.95), rgba(26, 26, 46, 0.95)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100"><g fill="%230f2123" fill-opacity="0.1"><rect x="0" y="0" width="100" height="1"></rect><rect x="0" y="0" width="1" height="100"></rect></g></svg>'),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><g fill="%230f2123" fill-opacity="0.1"><path fill-rule="evenodd" d="M11 0l5 20H6l5-20zm42 31h20l-5-20h-20l5 20zm-22 0h20l-5-20h-20l5 20zM0 31h20l-5-20H0l5 20zM40 60l5 20H35l5-20zm22 0l5 20h-20l5-20zM0 60l5 20H0l5-20z"/></g></svg>');
+            background-blend-mode: multiply;
+        }
+    </style>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#00d9ff",
+              "background-light": "#f5f8f8",
+              "background-dark": "#1a1a2e",
+            },
+            fontFamily: {
+              "display": ["Space Grotesk", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-dark font-display text-white">
+<div class="relative flex h-auto min-h-screen w-full flex-col">
+<div class="flex items-center p-4 pb-2 justify-between sticky top-0 bg-background-dark/80 backdrop-blur-sm z-10">
+<div class="text-white flex size-12 shrink-0 items-center">
+<span class="material-symbols-outlined text-3xl">arrow_back_ios_new</span>
+</div>
+<h1 class="text-white text-2xl font-bold leading-tight tracking-tight flex-1">SETTINGS</h1>
+</div>
+<div class="flex-grow px-4 pb-40">
+<div class="mt-6">
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] px-0 pb-2 pt-4">Audio</h2>
+<div class="flex flex-col gap-2 rounded-lg bg-white/5 p-1">
+<div class="@container">
+<div class="relative flex w-full flex-col items-start justify-between gap-3 p-3 @[480px]:flex-row @[480px]:items-center">
+<div class="flex w-full shrink-[3] items-center justify-between">
+<p class="text-white text-base font-medium leading-normal">BGM Volume</p>
+<p class="text-primary text-sm font-normal leading-normal @[480px]:hidden">75%</p>
+</div>
+<div class="flex h-4 w-full items-center gap-4">
+<div class="flex h-1.5 flex-1 rounded-full bg-white/10">
+<div class="h-full w-[75%] rounded-full bg-primary"></div>
+<div class="relative"><div class="absolute -left-2 -top-1.5 size-4 rounded-full bg-primary border-2 border-background-dark"></div></div>
+</div>
+<p class="text-primary text-sm font-normal leading-normal hidden @[480px]:block">75%</p>
+</div>
+</div>
+</div>
+<div class="@container">
+<div class="relative flex w-full flex-col items-start justify-between gap-3 p-3 @[480px]:flex-row @[480px]:items-center">
+<div class="flex w-full shrink-[3] items-center justify-between">
+<p class="text-white text-base font-medium leading-normal">SFX Volume</p>
+<p class="text-primary text-sm font-normal leading-normal @[480px]:hidden">90%</p>
+</div>
+<div class="flex h-4 w-full items-center gap-4">
+<div class="flex h-1.5 flex-1 rounded-full bg-white/10">
+<div class="h-full w-[90%] rounded-full bg-primary"></div>
+<div class="relative"><div class="absolute -left-2 -top-1.5 size-4 rounded-full bg-primary border-2 border-background-dark"></div></div>
+</div>
+<p class="text-primary text-sm font-normal leading-normal hidden @[480px]:block">90%</p>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4 px-3 min-h-14 justify-between">
+<div class="flex items-center gap-4">
+<div class="text-primary flex items-center justify-center shrink-0 size-10">
+<span class="material-symbols-outlined text-3xl">volume_off</span>
+</div>
+<p class="text-white text-base font-normal leading-normal flex-1 truncate">Mute All</p>
+</div>
+<div class="shrink-0">
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-white/10 p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary">
+<div class="h-full w-[27px] rounded-full bg-white transition-transform"></div>
+<input class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-6">
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] px-0 pb-2 pt-4">Gameplay</h2>
+<div class="flex flex-col gap-2 rounded-lg bg-white/5 p-1">
+<div class="flex items-center gap-4 px-3 min-h-14 justify-between">
+<p class="text-white text-base font-normal leading-normal">Text Speed</p>
+<div class="flex items-center rounded-lg bg-white/10 p-1 text-sm">
+<button class="px-3 py-1 rounded-md text-white/70">Slow</button>
+<button class="px-3 py-1 rounded-md bg-primary text-background-dark font-semibold">Normal</button>
+<button class="px-3 py-1 rounded-md text-white/70">Fast</button>
+</div>
+</div>
+<div class="flex items-center gap-4 px-3 min-h-14 justify-between">
+<p class="text-white text-base font-normal leading-normal">Auto-Advance</p>
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-white/10 p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary">
+<div class="h-full w-[27px] rounded-full bg-white transition-transform"></div>
+<input checked="" class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+<div class="flex items-center gap-4 px-3 min-h-14 justify-between">
+<p class="text-white text-base font-normal leading-normal">Hint Difficulty</p>
+<div class="relative">
+<select class="appearance-none rounded-lg border-none bg-white/10 py-2 pl-3 pr-8 text-white focus:outline-none focus:ring-2 focus:ring-primary">
+<option>Easy</option>
+<option selected="">Normal</option>
+<option>Hard</option>
+</select>
+<span class="material-symbols-outlined pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-white/70">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-6">
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] px-0 pb-2 pt-4">Display</h2>
+<div class="flex flex-col gap-2 rounded-lg bg-white/5 p-1">
+<div class="flex items-center gap-4 px-3 min-h-14 justify-between">
+<p class="text-white text-base font-normal leading-normal">Language</p>
+<div class="relative">
+<select class="appearance-none rounded-lg border-none bg-white/10 py-2 pl-10 pr-8 text-white focus:outline-none focus:ring-2 focus:ring-primary">
+<option value="en">English</option>
+<option value="ko">한국어</option>
+</select>
+<div class="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 flex items-center">
+<img class="h-5 w-5 rounded-full object-cover" data-alt="USA flag" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzRFo3Us4OU0E6vEOMFlFdF8BV80dExbFYVfQ6kHH_4z4pTJf_oQXy1boewp1hXT-TbEcLxQQO3B6Qo9nGB1pFercy-brG3z8ANPJG4QMsDSJ7UApSMxeGcm3ohBgzrdCBznT7XHKbjV3aaKA0SF-B7SniotqhYiudsjvJuzmqbSbGHY-UK9f0JHMpmGphLwY0vQ8L1E8CKvzeRyIHODqc0qX43fOs2n5_slCvCdbb7iKpGlSzwQQwGmYB1VFRSzd6FMCQ6Cm5iA"/>
+</div>
+<span class="material-symbols-outlined pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-white/70">expand_more</span>
+</div>
+</div>
+<div class="flex items-center gap-4 px-3 min-h-14 justify-between">
+<p class="text-white text-base font-normal leading-normal">Colorblind Mode</p>
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-white/10 p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary">
+<div class="h-full w-[27px] rounded-full bg-white transition-transform"></div>
+<input class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+<div class="flex items-center gap-4 px-3 min-h-14 justify-between">
+<p class="text-white text-base font-normal leading-normal">Reduce Motion</p>
+<label class="relative flex h-[31px] w-[51px] cursor-pointer items-center rounded-full border-none bg-white/10 p-0.5 has-[:checked]:justify-end has-[:checked]:bg-primary">
+<div class="h-full w-[27px] rounded-full bg-white transition-transform"></div>
+<input class="invisible absolute" type="checkbox"/>
+</label>
+</div>
+</div>
+</div>
+<div class="mt-6">
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em] px-0 pb-2 pt-4">Account</h2>
+<div class="flex flex-col gap-2 rounded-lg bg-white/5 p-1">
+<div class="flex items-center gap-4 px-3 py-2 min-h-14 justify-between">
+<p class="text-white text-base font-normal leading-normal shrink-0">Player Name</p>
+<input class="w-full max-w-xs rounded-lg border-none bg-white/10 py-2 px-3 text-right text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-primary" type="text" value="Detective Kai"/>
+</div>
+<button class="flex w-full items-center gap-4 px-3 min-h-14 justify-between text-left hover:bg-white/10 rounded-lg transition-colors">
+<p class="text-white text-base font-normal leading-normal">Statistics</p>
+<span class="material-symbols-outlined text-white/70">chevron_right</span>
+</button>
+<button class="flex w-full items-center gap-4 px-3 min-h-14 justify-between text-left hover:bg-white/10 rounded-lg transition-colors">
+<p class="text-white text-base font-normal leading-normal">Credits</p>
+<span class="material-symbols-outlined text-white/70">chevron_right</span>
+</button>
+<button class="flex w-full items-center gap-4 px-3 min-h-14 justify-between text-left hover:bg-red-500/20 rounded-lg transition-colors">
+<p class="text-red-400 text-base font-normal leading-normal">Reset Progress</p>
+<span class="material-symbols-outlined text-red-400">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<div class="fixed bottom-0 left-0 right-0 z-10 bg-background-dark/80 backdrop-blur-sm p-4 border-t border-white/10">
+<div class="flex flex-col gap-3">
+<button class="w-full rounded-lg bg-primary py-3 text-center text-base font-bold text-background-dark transition-opacity hover:opacity-90">Save Changes</button>
+<div class="flex items-center justify-center gap-4">
+<button class="flex-1 rounded-lg border-2 border-primary py-2.5 text-center text-sm font-bold text-primary transition-colors hover:bg-primary/20">Reset to Default</button>
+<button class="flex-1 py-3 text-center text-sm font-bold text-white/70 transition-colors hover:text-white">Back</button>
+</div>
+</div>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Case Closed - Kastor Data Academy</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ecec", // Cyan
+                        "navy": "#0A192F", // Deep Navy
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                    keyframes: {
+                      stamp: {
+                        '0%': { transform: 'scale(3) rotate(-30deg)', opacity: '0' },
+                        '50%': { transform: 'scale(1) rotate(-12deg)', opacity: '1' },
+                        '100%': { transform: 'scale(1) rotate(-12deg)', opacity: '1' },
+                      },
+                      popIn: {
+                        '0%': { transform: 'scale(0.5)', opacity: '0' },
+                        '100%': { transform: 'scale(1)', opacity: '1' },
+                      },
+                      particle: {
+                        '0%': { transform: 'translateY(0) scale(1)', opacity: '1' },
+                        '100%': { transform: 'translateY(-100px) scale(0)', opacity: '0' },
+                      }
+                    },
+                    animation: {
+                      stamp: 'stamp 0.5s ease-out forwards',
+                      popIn: 'popIn 0.3s ease-out forwards',
+                      particle: 'particle 1.5s ease-out infinite'
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24
+        }
+        .text-shadow-gold {
+            text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700, 0 0 30px #FFD700;
+        }
+        .text-shadow-silver {
+            text-shadow: 0 0 10px #C0C0C0, 0 0 20px #C0C0C0;
+        }
+        .text-shadow-bronze {
+            text-shadow: 0 0 8px #CD7F32;
+        }
+        .badge-glow {
+            box-shadow: 0 0 15px 0px rgba(19, 236, 236, 0.4);
+        }
+        .btn-glow {
+           box-shadow: 0 0 15px 0px rgba(19, 236, 236, 0.5);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-navy font-display text-white/90">
+<div class="relative flex min-h-screen w-full flex-col items-center justify-center p-4 overflow-hidden">
+<div class="absolute inset-0 z-0 bg-navy bg-[radial-gradient(circle_at_center,rgba(19,236,236,0.1),transparent_40%)]"></div>
+<div class="absolute inset-0 z-0 opacity-10" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuABS0DMt4OD4jwTAVMFuMMeAt6KSNGxndNIvx8gEI8yA1Zt6I9H5udgRL_NLXFmijInn4pG5P7DhZHh62nOoyHQjKQ8UJpG-EJOn2qnit0d56KlON91OM58bk4eoBpu23fHlQuzITZJwsuLSXGHejYwzWt0T9DuwkCqVllmeRwrr03m3OBvGd8zcm5jKRFWsHUiN3TPRH4w5b23cXgqyMCokwJybyq1u0XNYZItxtoh9gXSVKAkxxSqNtxd5kROQbp_GuC0Ex_p_g'), url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48dGV4dCB4PSI1MCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJzZXJpZiIgZm9udC1zaXplPSIyMCIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4xIiB0cmFuc2Zvcm09InJvdGF0ZSgtMjApIj5Mb3JlbSBpcHN1bSBkb2xvciBzaXQgYW1ldCwKIGNvbnNlY3RldHVyIGFkaXBpc2NpbmcgZWxpdC4gUHJhZXNlbnQKdmVoaWN1bGEgYXVjdG9yIG5pYmggdmVsaXQgc29sZW1zIG1pLiBOdW5jCmV0IG5pc2kgbWF4aW11cywgc29kYWxlcyBpYWN1bGlzIG5vbi4gQ3JhcyBtYXVyaXMKbGVjdHVzIGV1IHJpc3VzLiBWaXZhbXVzIGxhY3VzIGxhb3JlZXQgZXN0LiBQZWxsZW50ZXNxdWUKcHVsdmluYXIgbmlzbCBlZ2V0LCBhdCBmYWNpbGlzaXMgZXJvcyBuZWMuIEV0aWFtIG51bGxhCmZlcm1lbnR1bSBmZWxpcyBldSB1cm5hIG1vbGVzdGllLiBDdXJhYml0dXIgY29udmFsbGlzCnZpdGFlIGZyaW5naWxsYS4gU3VzcGVuZGlzc2UgcG90ZW50aS48L3RleHQ+PC9zdmc+'); background-blend-mode: overlay;"></div>
+<main class="relative z-10 mx-auto w-full max-w-sm rounded-xl bg-navy/70 p-6 backdrop-blur-md border border-primary/20 shadow-2xl shadow-primary/10">
+<div class="relative flex flex-col items-center">
+<div class="absolute -top-8 -right-8 z-20 animate-stamp">
+<svg class="h-28 w-28" viewBox="0 0 100 100">
+<circle cx="50" cy="50" fill="rgba(19, 236, 236, 0.1)" r="46" stroke="#13ecec" stroke-width="4"></circle>
+<text fill="#13ecec" font-family="Space Grotesk, sans-serif" font-size="20" font-weight="bold" text-anchor="middle" transform="rotate(-12 50 50)" x="50" y="55">SOLVED</text>
+</svg>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-4xl text-primary">gavel</span>
+<h1 class="text-white tracking-wider text-[32px] font-bold">CASE CLOSED</h1>
+</div>
+<h2 class="text-white/80 text-lg font-medium mt-1 mb-6">Case #007: The Binary Betrayal</h2>
+<div class="flex w-full flex-col gap-3">
+<div class="flex items-center gap-3 rounded-md bg-white/5 p-3 min-h-14 justify-between">
+<div class="flex items-center gap-3">
+<div class="text-primary flex items-center justify-center rounded-md bg-primary/10 shrink-0 size-10"><span class="material-symbols-outlined text-2xl">folder_open</span></div>
+<p class="text-white/90 text-base font-normal">Evidence Collected</p>
+</div>
+<div class="shrink-0 flex items-center gap-2"><p class="text-white text-sm font-medium">12/15</p></div>
+</div>
+<div class="flex items-center gap-3 rounded-md bg-white/5 p-3 min-h-14 justify-between">
+<div class="flex items-center gap-3">
+<div class="text-primary flex items-center justify-center rounded-md bg-primary/10 shrink-0 size-10"><span class="material-symbols-outlined text-2xl">mic</span></div>
+<p class="text-white/90 text-base font-normal">Interview Accuracy</p>
+</div>
+<div class="shrink-0 flex items-center text-primary text-xl gap-0.5">
+<span class="material-symbols-outlined !text-xl" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined !text-xl" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined !text-xl" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined !text-xl" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined !text-xl">star</span>
+</div>
+</div>
+<div class="flex items-center gap-3 rounded-md bg-white/5 p-3 min-h-14 justify-between">
+<div class="flex items-center gap-3">
+<div class="text-primary flex items-center justify-center rounded-md bg-primary/10 shrink-0 size-10"><span class="material-symbols-outlined text-2xl">timer</span></div>
+<p class="text-white/90 text-base font-normal">Time Taken</p>
+</div>
+<div class="shrink-0"><p class="text-white text-base font-medium">12:35</p></div>
+</div>
+<div class="flex items-center gap-3 rounded-md bg-white/5 p-3 min-h-14 justify-between">
+<div class="flex items-center gap-3">
+<div class="text-primary flex items-center justify-center rounded-md bg-primary/10 shrink-0 size-10"><span class="material-symbols-outlined text-2xl">lightbulb</span></div>
+<p class="text-white/90 text-base font-normal">Hints Used</p>
+</div>
+<div class="shrink-0"><p class="text-white text-base font-medium">1</p></div>
+</div>
+</div>
+<div class="my-6 flex flex-col items-center">
+<p class="text-sm uppercase tracking-widest text-white/50">Final Grade</p>
+<div class="relative">
+<p class="font-display text-9xl font-bold text-shadow-silver text-white/80">A</p>
+</div>
+</div>
+<div class="w-full">
+<h3 class="text-center text-sm font-bold uppercase tracking-wider text-white/70 mb-3">New Badges Unlocked</h3>
+<div class="grid grid-cols-3 gap-4">
+<div class="flex flex-col items-center gap-2 rounded-lg bg-white/5 p-3 border border-primary/50 badge-glow animate-popIn" style="animation-delay: 0.2s;">
+<div class="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-3xl">psychology</span>
+</div>
+<p class="text-center text-xs font-medium text-white/90">Master Interrogator</p>
+</div>
+<div class="flex flex-col items-center gap-2 rounded-lg bg-white/5 p-3 opacity-60">
+<div class="flex size-12 items-center justify-center rounded-full bg-white/10 text-white/50">
+<span class="material-symbols-outlined text-3xl">visibility</span>
+</div>
+<p class="text-center text-xs font-medium text-white/90">Eagle Eye</p>
+</div>
+<div class="flex flex-col items-center gap-2 rounded-lg bg-white/5 p-3 opacity-60">
+<div class="flex size-12 items-center justify-center rounded-full bg-white/10 text-white/50">
+<span class="material-symbols-outlined text-3xl">bolt</span>
+</div>
+<p class="text-center text-xs font-medium text-white/90">Swift Justice</p>
+</div>
+</div>
+</div>
+<div class="mt-8 flex w-full flex-col items-center gap-4">
+<button class="w-full rounded-md bg-primary py-3 text-center text-base font-bold uppercase tracking-wider text-navy btn-glow transition-transform hover:scale-105">Next Episode</button>
+<button class="w-full rounded-md border-2 border-white/30 py-2.5 text-center text-base font-bold uppercase tracking-wider text-white/80 transition-colors hover:bg-white/10">Replay</button>
+<button class="text-center text-sm font-bold uppercase tracking-wider text-white/50 transition-colors hover:text-white">Main Menu</button>
+</div>
+</div>
+</main>
+</div>
+</body></html>
