@@ -1,12 +1,21 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { AnimatePresence } from "framer-motion";
 import { useDetectiveGame } from "./lib/stores/useDetectiveGame";
 import { useAudio } from "./lib/stores/useAudio";
-import { StartMenu } from "./components/StartMenu";
+import TitleSplash from "./components/TitleSplash";
+import MainMenu from "./components/MainMenu";
+import EpisodeSelectionScreen from "./components/EpisodeSelectionScreen";
+import SceneTransition from "./components/SceneTransition";
+import { VisualNovelGame } from "./components/VisualNovelGame";
 import { GameScene } from "./components/GameScene";
 import "@fontsource/inter";
 
+type Screen = "splash" | "menu" | "episodes" | "settings" | "game";
+
 function App() {
-  const { phase } = useDetectiveGame();
+  const [currentScreen, setCurrentScreen] = useState<Screen>("splash");
+  const [selectedEpisode, setSelectedEpisode] = useState<number | null>(null);
+  const { phase, setPhase, startCase, setCurrentNode } = useDetectiveGame();
   const { setBackgroundMusic, setSuccessSound, setHitSound } = useAudio();
 
   useEffect(() => {
@@ -24,10 +33,141 @@ function App() {
     setHitSound(hitSound);
   }, [setBackgroundMusic, setSuccessSound, setHitSound]);
 
+  useEffect(() => {
+    if (phase === "menu") {
+      setCurrentScreen("menu");
+    }
+  }, [phase]);
+
+  const episodes = [
+    {
+      id: 1,
+      title: "The Missing Balance Patch",
+      difficulty: 2,
+      duration: "30-40 min",
+      thumbnail:
+        "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=900&q=80",
+      isLocked: false
+    },
+    {
+      id: 2,
+      title: "The Ghost User's Ranking Manipulation",
+      difficulty: 3,
+      duration: "45-60 min",
+      thumbnail:
+        "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80",
+      isLocked: true
+    },
+    {
+      id: 3,
+      title: "The Perfect Victory",
+      difficulty: 4,
+      duration: "50-60 min",
+      thumbnail:
+        "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=900&q=80",
+      isLocked: true,
+      isDemo: true
+    }
+  ];
+
+  const hasSaveData = false;
+
+  const handleSplashComplete = () => {
+    setCurrentScreen("menu");
+  };
+
+  const handleNewGame = () => {
+    setCurrentScreen("episodes");
+  };
+
+  const handleContinue = () => {
+    // TODO: implement load
+    setCurrentScreen("game");
+  };
+
+  const handleEpisodes = () => {
+    setCurrentScreen("episodes");
+  };
+
+  const handleSettings = () => {
+    setCurrentScreen("settings");
+  };
+
+  const handleSelectEpisode = (episodeId: number) => {
+    setSelectedEpisode(episodeId);
+    startCase(episodeId, false);
+    setCurrentNode("scene-0-1");
+    setPhase("intro");
+    setCurrentScreen("game");
+  };
+
+  const handleBackToMenu = () => {
+    setCurrentScreen("menu");
+    setPhase("menu");
+  };
+
+  const handleBackToEpisodes = () => {
+    setCurrentScreen("episodes");
+  };
+
   return (
-    <div className="min-h-screen bg-slate-900">
-      {phase === "menu" && <StartMenu />}
-      {phase !== "menu" && <GameScene />}
+    <div className="min-h-screen bg-[#0b1220]" style={{ fontFamily: "Space Grotesk, sans-serif" }}>
+      <AnimatePresence mode="wait">
+        {currentScreen === "splash" && (
+          <SceneTransition show={true} type="fade">
+            <TitleSplash onComplete={handleSplashComplete} />
+          </SceneTransition>
+        )}
+
+        {currentScreen === "menu" && (
+          <SceneTransition show={true} type="fade">
+            <MainMenu
+              onNewGame={handleNewGame}
+              onContinue={handleContinue}
+              onEpisodes={handleEpisodes}
+              onSettings={handleSettings}
+              hasSaveData={hasSaveData}
+            />
+          </SceneTransition>
+        )}
+
+        {currentScreen === "episodes" && (
+          <SceneTransition show={true} type="slide-right">
+            <EpisodeSelectionScreen
+              onBack={handleBackToMenu}
+              onSelectEpisode={handleSelectEpisode}
+              episodes={episodes}
+            />
+          </SceneTransition>
+        )}
+
+        {currentScreen === "game" && (
+          <SceneTransition show={true} type="fade" duration={0.8}>
+            {selectedEpisode === 1 ? (
+              <VisualNovelGame onExit={handleBackToEpisodes} />
+            ) : (
+              <GameScene />
+            )}
+          </SceneTransition>
+        )}
+
+        {currentScreen === "settings" && (
+          <SceneTransition show={true} type="slide-up">
+            <div className="flex h-screen items-center justify-center bg-[#1a1a2e] text-white">
+              <div className="text-center px-4">
+                <h1 className="text-2xl font-bold">Settings</h1>
+                <p className="mt-2 text-white/60">Coming soon...</p>
+                <button
+                  onClick={handleBackToMenu}
+                  className="mt-4 rounded-lg bg-[#00d9ff] px-6 py-2 text-black font-bold"
+                >
+                  Back to Menu
+                </button>
+              </div>
+            </div>
+          </SceneTransition>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
