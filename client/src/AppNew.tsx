@@ -19,7 +19,7 @@ type Screen =
 function AppNew() {
   const [currentScreen, setCurrentScreen] = useState<Screen>("splash");
   const [selectedEpisode, setSelectedEpisode] = useState<number | null>(null);
-  const { phase, setPhase, setCurrentCase, setCurrentNode } = useDetectiveGame();
+  const { phase, setPhase, startCase, setCurrentNode } = useDetectiveGame();
   const { setBackgroundMusic, setSuccessSound, setHitSound } = useAudio();
 
   // Initialize audio
@@ -48,8 +48,7 @@ function AppNew() {
       title: "The Missing Balance Patch",
       difficulty: 2,
       duration: "30-40 min",
-      thumbnail:
-        "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80",
+      thumbnail: "/episodes/ep1-thumbnail.png",
       isLocked: false
     },
     {
@@ -57,8 +56,7 @@ function AppNew() {
       title: "The Ghost User's Ranking Manipulation",
       difficulty: 3,
       duration: "45-60 min",
-      thumbnail:
-        "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80",
+      thumbnail: "/episodes/ep2-thumbnail.png",
       isLocked: true
     },
     {
@@ -66,8 +64,7 @@ function AppNew() {
       title: "The Perfect Victory",
       difficulty: 4,
       duration: "50-60 min",
-      thumbnail:
-        "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80",
+      thumbnail: "/episodes/ep3-thumbnail.png",
       isLocked: true,
       isDemo: true
     }
@@ -97,7 +94,7 @@ function AppNew() {
 
   const handleSelectEpisode = (episodeId: number) => {
     setSelectedEpisode(episodeId);
-    setCurrentCase(episodeId);
+    startCase(episodeId, false); // Start new case without resume mode
 
     // Set initial node based on episode
     switch (episodeId) {
