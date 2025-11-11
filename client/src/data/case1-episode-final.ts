@@ -340,6 +340,23 @@ Director, Legend Arena`
       { id: "m94", speaker: "detective", text: "Shadow! It shoots up on Day 28!" },
       { id: "m95", speaker: "kastor", text: "Nice! That's our guy!" },
     ],
+    hints: [
+      {
+        level: 1,
+        title: "Look for Anomalies",
+        content: "Compare the three character lines. Which one shows behavior that's different from the others? Look for sudden changes or unusual patterns."
+      },
+      {
+        level: 2,
+        title: "Check Day 28",
+        content: "Notice what happens on Day 28. One character's win rate jumps dramatically - from around 50% to over 84%. This is not normal player improvement."
+      },
+      {
+        level: 3,
+        title: "Shadow's Suspicious Jump",
+        content: "Shadow's win rate skyrockets from 50.2% to 84.7% on Day 28 - a 34% increase overnight! This matches exactly when the patch was deployed. Select Shadow as the suspicious character."
+      }
+    ],
     interactiveSequence: {
       type: "graph_analysis",
       id: "graph1",
@@ -574,6 +591,23 @@ Director, Legend Arena`
         text: "[Filtering admin01 activities...]",
         image: "https://images.unsplash.com/photo-1501139083538-0139583c060f?w=800&q=80"
       },
+    ],
+    hints: [
+      {
+        level: 1,
+        title: "Sort by Time",
+        content: "Look at the timestamps on each event. Arrange them from earliest to latest to reconstruct the timeline chronologically."
+      },
+      {
+        level: 2,
+        title: "Office vs Home",
+        content: "Notice there are two sessions: office hours (19:15-19:45) and late night at home (23:35-00:05). The suspicious activity happens during the late night session."
+      },
+      {
+        level: 3,
+        title: "Complete Timeline",
+        content: "Correct order:\n1. 19:15 Login (Office)\n2. 19:20 Checked Shadow data\n3. 19:45 Logout (Office)\n4. 23:35 Login (Home) ⚠️\n5. 23:47 Modified Shadow 🚨\n6. 23:52 Tried to delete logs 🚨\n7. 00:05 Logout (Home)"
+      }
     ],
     interactiveSequence: {
       type: "timeline_reconstruction",
@@ -815,6 +849,23 @@ Director, Legend Arena`
       { id: "m246", speaker: "kaito", text: "Lots of people play after work." },
       { id: "m247", speaker: "kaito", text: "My win rate improved because I practiced hard." },
       { id: "m248", speaker: "kaito", text: "I don't even like Shadow that much." },
+    ],
+    hints: [
+      {
+        level: 1,
+        title: "Look for Inconsistencies",
+        content: "Compare each statement against the evidence you've collected. Which statements contradict the facts from the server logs, patch notes, or timeline?"
+      },
+      {
+        level: 2,
+        title: "Check the Evidence",
+        content: "The timeline shows Kaito logged in from HOME at 23:35 - not the office. His win rate jumped overnight by 35%, not from practice. He mains Shadow according to his profile."
+      },
+      {
+        level: 3,
+        title: "Three Contradictions",
+        content: "Statements with contradictions:\n• 'Routine maintenance' - He logged in from home late at night\n• 'Practiced hard' - 35% jump in one day is impossible from practice\n• 'Don't like Shadow' - His profile shows Shadow is his main character"
+      }
     ],
     interactiveSequence: {
       type: "testimony_press",

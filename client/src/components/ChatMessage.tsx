@@ -217,9 +217,9 @@ export function ChatMessage({ message, index, onTypingStateChange, onTypingCompl
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: index * 0.2, duration: 0.3 }}
-            className="flex justify-center my-2"
+            className="py-2 text-center"
           >
-            <div className="bg-gray-200 text-gray-600 px-4 py-2 rounded-full text-xs font-semibold text-center whitespace-pre-wrap">
+            <p className="text-xs font-normal leading-normal text-[#b0b0b0]">
               <TypewriterText
                 text={message.text}
                 speed={typewriterSpeed}
@@ -227,7 +227,7 @@ export function ChatMessage({ message, index, onTypingStateChange, onTypingCompl
                 bypassTypewriter={true}
                 glossaryMode="none"
               />
-            </div>
+            </p>
           </motion.div>
         )}
 
@@ -241,7 +241,7 @@ export function ChatMessage({ message, index, onTypingStateChange, onTypingCompl
             <img
               src={message.photo}
               alt="Scene"
-              className="max-w-[85%] rounded-3xl shadow-lg border-2 border-gray-200"
+              className="max-w-[85%] rounded-xl shadow-lg border border-white/10"
             />
           </motion.div>
         )}
@@ -259,7 +259,7 @@ export function ChatMessage({ message, index, onTypingStateChange, onTypingCompl
           transition={{ delay: index * 0.2, duration: 0.3 }}
           className="flex justify-center my-3"
         >
-          <div className="bg-gray-100 border border-gray-300 text-gray-700 px-4 py-3 rounded-lg max-w-[90%] md:max-w-[85%] shadow-sm">
+          <div className="bg-[#2a2d3a]/50 border border-white/10 text-[#b0b0b0] px-4 py-3 rounded-xl max-w-[90%] md:max-w-[85%] shadow-md">
             <p className="text-sm md:text-xs leading-relaxed break-words whitespace-pre-wrap italic">
               {parseTextWithGlossary(message.text || "")}
             </p>
@@ -277,7 +277,7 @@ export function ChatMessage({ message, index, onTypingStateChange, onTypingCompl
             <img
               src={message.image}
               alt="Scene"
-              className="max-w-[85%] rounded-2xl shadow-lg border-2 border-gray-200"
+              className="max-w-[85%] rounded-xl shadow-lg border border-white/10"
             />
           </motion.div>
         )}
@@ -288,44 +288,54 @@ export function ChatMessage({ message, index, onTypingStateChange, onTypingCompl
   // Regular chat messages
   return (
     <motion.div
-      initial={{ opacity: 0, x: isDetective ? 20 : -20 }}
-      animate={{ opacity: 1, x: 0 }}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.2, duration: 0.3 }}
-      className={`flex gap-2 ${isDetective ? "flex-row-reverse" : ""}`}
+      className={`flex items-end gap-3 ${isDetective ? "max-w-[70%] self-end" : "max-w-[75%] self-start"}`}
     >
-      {/* Avatar */}
-      <div className="flex-shrink-0">
-        {avatarUrl ? (
-          <img 
-            src={avatarUrl} 
-            alt={getSpeakerName()} 
-            className={`w-10 h-10 md:w-8 md:h-8 rounded-full object-cover ${isDetective ? 'object-top' : 'object-center'}`}
-          />
-        ) : (
-          <div className={`w-10 h-10 md:w-8 md:h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold ${
-            isDetective ? "bg-blue-500" : isNarrator ? "bg-purple-500" : "bg-gray-500"
-          }`}>
-            {isDetective ? "👮" : isNarrator ? <FileText className="w-4 h-4" /> : <User className="w-4 h-4" />}
-          </div>
-        )}
-      </div>
+      {/* Avatar - only for NPC messages */}
+      {!isDetective && (
+        <div className="flex-shrink-0">
+          {avatarUrl ? (
+            <div className="relative">
+              <img
+                src={avatarUrl}
+                alt={getSpeakerName()}
+                className="h-9 w-9 rounded-full object-cover"
+              />
+              {/* Cyan glow for Kastor */}
+              {isKastor && (
+                <div className="absolute inset-0 rounded-full border border-primary shadow-[0_0_8px_0_rgba(6,220,249,0.5)]"></div>
+              )}
+            </div>
+          ) : (
+            <div className="h-9 w-9 rounded-full flex items-center justify-center bg-[#2a2d3a] text-white text-xs font-semibold">
+              <User className="w-4 h-4" />
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Message bubble */}
-      <div className={`flex flex-col max-w-[80%] md:max-w-[75%] ${isDetective ? "items-end" : "items-start"}`}>
-        <div className="text-xs md:text-[11px] text-gray-500 mb-1 px-2">
-          {getSpeakerName()} • {message.timestamp || new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-        </div>
+      <div className="flex flex-col gap-1.5">
+        {/* Speaker name - only for NPC messages */}
+        {!isDetective && (
+          <p className="text-xs font-normal text-[#b0b0b0]">
+            {getSpeakerName()}
+          </p>
+        )}
+
         <div className="relative">
-          <div className={`rounded-2xl px-4 py-3 md:py-2 ${
+          <div className={`rounded-xl px-4 py-3 shadow-md ${
             isThought
               ? isDetective
-                ? "bg-blue-100 text-gray-600 border-2 border-dashed border-blue-300 rounded-tr-sm italic"
-                : "bg-gray-50 text-gray-500 border-2 border-dashed border-gray-300 rounded-tl-sm italic"
+                ? "bg-[#2a2d3a]/50 text-[#b0b0b0] border-2 border-dashed border-primary/30 rounded-br-none italic"
+                : "bg-[#2a2d3a]/30 text-[#b0b0b0] border-2 border-dashed border-white/20 rounded-bl-none italic"
               : isDetective
-                ? "bg-blue-500 text-white rounded-tr-sm"
-                : "bg-white text-gray-800 border border-gray-200 rounded-tl-sm"
+                ? "rounded-br-none bg-gradient-to-br from-[#00d9ff] to-[#0097b2] text-white shadow-[0_4px_12px_rgba(0,217,255,0.2)]"
+                : "rounded-bl-none bg-[#2a2d3a] text-white"
           }`}>
-            <p className="text-base md:text-sm leading-relaxed whitespace-pre-wrap">
+            <p className="text-[15px] font-normal leading-snug whitespace-pre-wrap">
               <TypewriterText
                 text={message.text || ""}
                 speed={typewriterSpeed}
@@ -344,7 +354,7 @@ export function ChatMessage({ message, index, onTypingStateChange, onTypingCompl
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ delay: index * 0.2 + 0.5, type: "spring", stiffness: 200 }}
-              className={`absolute -bottom-2 ${isDetective ? "-left-3" : "-right-3"} bg-white rounded-full p-1.5 shadow-lg border-2 border-gray-200`}
+              className={`absolute -bottom-2 ${isDetective ? "-left-3" : "-right-3"} bg-[#1a1a2e] rounded-full p-1.5 shadow-lg border-2 border-primary/30`}
             >
               <span className="text-2xl leading-none">{message.reaction}</span>
             </motion.div>

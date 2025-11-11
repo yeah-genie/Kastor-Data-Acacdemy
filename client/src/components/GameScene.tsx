@@ -27,6 +27,9 @@ import { getStageSummary } from "@/data/case1-summaries";
 import { type StageSummary } from "@/data/case1-story-new";
 import { ResumeGameModal } from "./ResumeGameModal";
 import { InteractiveSequenceHandler } from "./InteractiveSequenceHandler";
+import CharacterUnlockModal, { type CharacterData } from "./CharacterUnlockModal";
+import SkillUnlockModal, { type SkillData } from "./SkillUnlockModal";
+import { episode1Unlocks } from "@/data/episode1-unlocks";
 
 export function GameScene() {
   const {
@@ -78,6 +81,10 @@ export function GameScene() {
   const revealTimersRef = useRef<number[]>([]);
   const [isAwaitingAdvance, setIsAwaitingAdvance] = useState(false);
   const [typingTrigger, setTypingTrigger] = useState(0);
+  const [showCharacterUnlock, setShowCharacterUnlock] = useState(false);
+  const [unlockedCharacter, setUnlockedCharacter] = useState<CharacterData | null>(null);
+  const [showSkillUnlock, setShowSkillUnlock] = useState(false);
+  const [unlockedSkill, setUnlockedSkill] = useState<SkillData | null>(null);
 
   const shouldUseTypewriter = (speaker: string): boolean => {
     return ["detective", "maya", "chris", "ryan", "client"].includes(speaker);
@@ -188,6 +195,23 @@ export function GameScene() {
       setShowEvidencePresentation(false);
       setHandledCelebrationId(null);
       setShowInteractiveSequence(!!node.interactiveSequence);
+
+      // Check for unlocks (Episode 1 only for now)
+      if (currentCase === 1) {
+        const unlock = episode1Unlocks.find(u => u.nodeId === currentNode);
+        if (unlock) {
+          // Delay showing unlock modal to let messages appear first
+          setTimeout(() => {
+            if (unlock.type === "character") {
+              setUnlockedCharacter(unlock.data as CharacterData);
+              setShowCharacterUnlock(true);
+            } else if (unlock.type === "skill") {
+              setUnlockedSkill(unlock.data as SkillData);
+              setShowSkillUnlock(true);
+            }
+          }, 2000);
+        }
+      }
 
       revealTimersRef.current.forEach(timer => clearTimeout(timer));
       revealTimersRef.current = [];
@@ -711,6 +735,24 @@ export function GameScene() {
             console.log(`Hint level ${level} used`);
             // Can track hint usage for analytics or scoring
           }}
+        />
+      )}
+
+      {/* Character Unlock Modal */}
+      {unlockedCharacter && (
+        <CharacterUnlockModal
+          isOpen={showCharacterUnlock}
+          onClose={() => setShowCharacterUnlock(false)}
+          character={unlockedCharacter}
+        />
+      )}
+
+      {/* Skill Unlock Modal */}
+      {unlockedSkill && (
+        <SkillUnlockModal
+          isOpen={showSkillUnlock}
+          onClose={() => setShowSkillUnlock(false)}
+          skill={unlockedSkill}
         />
       )}
     </div>
