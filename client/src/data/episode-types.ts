@@ -13,6 +13,13 @@ export interface InteractiveSequence {
     | "pattern_matching"
     | "email_filter"
     | "code_debugging";
+    | "graph-analysis"
+    | "timeline"
+    | "database-search"
+    | "testimony-press"
+    | "document-viewer"
+    | "case-report"
+    | "rank-display";
   id: string;
   data: any;
 }
