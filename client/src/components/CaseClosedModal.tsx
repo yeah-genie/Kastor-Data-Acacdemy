@@ -156,11 +156,31 @@ export function CaseClosedModal({ isOpen, onClose, caseNumber, caseTitle }: Case
                     className="w-10 h-10 rounded-full object-cover"
                   />
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 relative">
                   <div className="bg-gray-100 rounded-2xl rounded-tl-sm px-4 py-3">
                     <p className="text-gray-800 font-semibold mb-1">🎉 CASE CLOSED!</p>
                     <p className="text-gray-600 text-sm">{caseTitle}</p>
                   </div>
+
+                  {/* Stamp Effect */}
+                  <motion.div
+                    initial={{ scale: 3, rotate: -30, opacity: 0 }}
+                    animate={{ scale: 1, rotate: -12, opacity: 1 }}
+                    transition={{
+                      delay: 0.5,
+                      duration: 0.5,
+                      ease: "easeOut"
+                    }}
+                    className="absolute -right-4 -top-4 pointer-events-none"
+                  >
+                    <div className="relative">
+                      <div className="border-4 border-red-500 rounded-full w-20 h-20 flex items-center justify-center bg-red-50/80">
+                        <span className="text-red-500 font-bold text-xs leading-tight text-center">
+                          CASE<br/>CLOSED
+                        </span>
+                      </div>
+                    </div>
+                  </motion.div>
                 </div>
               </motion.div>
 

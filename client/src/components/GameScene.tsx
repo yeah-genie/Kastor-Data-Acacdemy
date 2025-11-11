@@ -17,6 +17,7 @@ import { ResolutionScene } from "./ResolutionScene";
 import { HintDialog } from "./HintDialog";
 import { getHint } from "@/data/hints";
 import { CharacterCardsSlider } from "./CharacterCardsSlider";
+import HintSystem from "./HintSystem";
 import { CharacterEvidence } from "@/lib/stores/useDetectiveGame";
 import { CaseClosedModal } from "./CaseClosedModal";
 import { TypingIndicator } from "./TypingIndicator";
@@ -702,6 +703,16 @@ export function GameScene() {
         onClose={handleBackModalContinue}
         isBackButton={true}
       />
+
+      {currentStoryNode?.hints && currentStoryNode.hints.length > 0 && (
+        <HintSystem
+          hints={currentStoryNode.hints}
+          onHintUsed={(level) => {
+            console.log(`Hint level ${level} used`);
+            // Can track hint usage for analytics or scoring
+          }}
+        />
+      )}
     </div>
   );
 }

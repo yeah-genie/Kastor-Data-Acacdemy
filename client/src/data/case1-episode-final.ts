@@ -54,11 +54,19 @@ export interface DataVisualization {
   data: any;
 }
 
+export interface Hint {
+  level: 1 | 2 | 3;
+  title: string;
+  content: string;
+  cost?: number; // Optional: hint points cost
+}
+
 export interface StoryNode {
   id: string;
   phase: "stage1" | "stage2" | "stage3" | "stage4" | "stage5";
   messages: Message[];
   interactiveSequence?: InteractiveSequence;
+  hints?: Hint[]; // Available hints for this node
   question?: {
     id: string;
     text: string;
