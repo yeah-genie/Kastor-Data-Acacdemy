@@ -454,19 +454,19 @@ const evidenceLibrary: Record<string, EvidenceModalItem> = {
     title: "03:00 AM Server Access Log",
     type: "log",
     tag: "CRITICAL",
-    detail: {
-      kind: "log",
-      summary: "데이터 센터 DMZ 서버에서 새벽 3시에 비정상적인 대용량 전송이 감지되었습니다.",
-      body: [
-        "03:02:12  •  svc_boundary  •  192.168.10.37  →  52.18.74.4  •  18.4MB/s",
-        "03:02:36  •  svc_boundary  •  192.168.10.37  →  52.18.74.4  •  22.1MB/s",
-        "03:02:48  •  svc_boundary  •  192.168.10.37  →  178.34.22.9  •  432MB/s",
-        "03:02:51  •  svc_boundary  •  192.168.10.37  →  178.34.22.9  •  487MB/s",
-        "03:03:02  •  svc_boundary  •  192.168.10.37  →  178.34.22.9  •  512MB/s",
-        "03:03:14  •  svc_boundary  •  192.168.10.37  →  178.34.22.9  •  525MB/s",
-      ],
-      highlights: ["03:02:48  •  svc_boundary  •  192.168.10.37  →  178.34.22.9  •  432MB/s"],
-    },
+      detail: {
+        kind: "log",
+        summary: "Anomalous high-volume transfers were detected on the DMZ server at 03:00 AM.",
+        body: [
+          "- 03:02:12 | svc_boundary | 192.168.10.37 -> 52.18.74.4 | 18.4 MB/s",
+          "- 03:02:36 | svc_boundary | 192.168.10.37 -> 52.18.74.4 | 22.1 MB/s",
+          "- 03:02:48 | svc_boundary | 192.168.10.37 -> 178.34.22.9 | 432 MB/s",
+          "- 03:02:51 | svc_boundary | 192.168.10.37 -> 178.34.22.9 | 487 MB/s",
+          "- 03:03:02 | svc_boundary | 192.168.10.37 -> 178.34.22.9 | 512 MB/s",
+          "- 03:03:14 | svc_boundary | 192.168.10.37 -> 178.34.22.9 | 525 MB/s",
+        ],
+        highlights: ["03:02:48 | svc_boundary | 192.168.10.37 -> 178.34.22.9 | 432 MB/s"],
+      },
     metadata: [
       { label: "Source", value: "Edge Firewall Sensor" },
       { label: "Severity", value: "High" },
@@ -479,12 +479,12 @@ const evidenceLibrary: Record<string, EvidenceModalItem> = {
     type: "document",
     detail: {
       kind: "document",
-      summary: "초기 사고 대응 회의에서 정리된 핵심 상황 브리핑입니다.",
+        summary: "Key takeaways captured during the initial incident response huddle.",
       body: [
-        "• 03:01 AM: 자동 침입 탐지 시스템이 비정상 전송 알림 발송",
-        "• 03:02 AM: Kastor가 데이터 유출량 1.2TB 추정",
-        "• 미확인 계정 `svc_boundary`가 DMZ 서버에서 대용량 다운로드 수행",
-        "• 다음 조치: 로그 필터링, CCTV 확인, 출입 기록 조사",
+          "- 03:01 AM: Automated IDS issued abnormal transfer alert",
+          "- 03:02 AM: Kastor estimated 1.2 TB of data exfiltration",
+          "- Unidentified account `svc_boundary` performed high-volume download in DMZ server",
+          "- Next steps: filter logs, review CCTV, audit door access records",
       ],
     },
     metadata: [
@@ -506,13 +506,13 @@ const evidenceLibrary: Record<string, EvidenceModalItem> = {
         subject: "[URGENT] Data Exfiltration Detected - Ticket #5741",
         timestamp: "03:03 AM (UTC+9)",
       },
-      body: [
-        "팀 여러분,",
-        "FW-DMZ-02 센서가 03:02 AM 기준으로 대량 데이터 업로드를 감지했습니다.",
-        "초기 분석에 따르면 전송 대상은 익명화된 해외 VPS로 추정되며, 총 전송량은 약 1.2TB입니다.",
-        "즉시 전송을 차단하고, 관련 로그와 사용자 활동을 확보해 주세요.",
-        "- SOC Automation",
-      ],
+        body: [
+          "Team,",
+          "The FW-DMZ-02 sensor detected a massive data upload at 03:02 AM.",
+          "Initial analysis points to an anonymized overseas VPS. Estimated volume: ~1.2 TB.",
+          "Immediately block the transfer and capture related logs plus user activity.",
+          "- SOC Automation",
+        ],
     },
     relatedCharacters: ["Camille Beaumont"],
   },
@@ -523,10 +523,10 @@ const evidenceLibrary: Record<string, EvidenceModalItem> = {
     detail: {
       kind: "image",
       src: "/office-scene.jpg",
-      caption: "03:00 AM 근무 교대 직후 촬영된 서버실 CCTV 스틸 이미지입니다.",
+        caption: "CCTV still captured right after the 03:00 AM shift change in the server room.",
       metadata: [
         { label: "Camera", value: "CCTV-SV-03" },
-        { label: "Exposure", value: "1/60s • ISO 400" },
+          { label: "Exposure", value: "1/60s | ISO 400" },
         { label: "Detected", value: "Human silhouette near rack #5" },
       ],
     },
@@ -546,10 +546,10 @@ const evidenceLibrary: Record<string, EvidenceModalItem> = {
         ["03:03:02", "svc_boundary", "178.34.22.9", "540 GB", "Critical"],
       ],
       insights: [
-        "동일 사용자 ID가 120초 내에 세 번 이상 고용량 전송을 시도했습니다.",
-        "Destination `178.34.22.9`는 지난 30일간 접속 이력이 없습니다.",
+          "The same user attempted high-volume transfers three times within 120 seconds.",
+          "Destination `178.34.22.9` shows no activity over the last 30 days.",
       ],
-      footnote: "Kastor HyperLog 분석 기준으로 위험 점수 9.4/10을 기록했습니다.",
+        footnote: "Kastor HyperLog assigns a risk score of 9.4 out of 10.",
     },
     metadata: [
       { label: "Generated", value: "Kastor HyperLog" },
@@ -559,7 +559,7 @@ const evidenceLibrary: Record<string, EvidenceModalItem> = {
 };
 
 const formatTimestamp = () =>
-  new Date().toLocaleTimeString("ko-KR", {
+  new Date().toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
   });
@@ -581,18 +581,18 @@ interface ScriptedChoice extends EnhancedChoice {
 const scriptedChoices: ScriptedChoice[] = [
   {
     id: "choice-check-logs",
-    text: "시스템 로그부터 확인하자",
+    text: "Start with the system logs",
     icon: "🗂️",
     variant: "standard",
     response: {
       author: "kastor",
-      content: "좋아요! 로그 뷰어를 열어둘게요. 수상한 접근이 보이면 바로 알려줄게요.",
+      content: "Great call! I'll open the log viewer and flag any suspicious access immediately.",
     },
     unlocksEvidence: "ev-001",
     followUpChoices: [
       {
         id: "choice-deep-scan",
-        text: "심층 스캔을 실행한다",
+        text: "Run a deep scan",
         icon: "🛰️",
         variant: "consequence",
         consequence: {
@@ -604,12 +604,12 @@ const scriptedChoices: ScriptedChoice[] = [
           author: "maya",
           name: "Maya Zhang",
           avatar: "🛰️",
-          content: "좋은 판단이에요! 의심스러운 IP 범위를 바로 공유할게요.",
+            content: "Smart move! I'll share the suspicious IP ranges right away.",
         },
       },
       {
         id: "choice-present-evidence",
-        text: "로그 증거를 제시한다",
+          text: "Present the log evidence",
         icon: "📑",
         variant: "requires-evidence",
         requiredEvidence: ["ev-001"],
@@ -617,14 +617,14 @@ const scriptedChoices: ScriptedChoice[] = [
           author: "marcus",
           name: "Marcus Chen",
           avatar: "🖥️",
-          content: "증거를 반영해서 방화벽 규칙을 업데이트할게요.",
+            content: "I'll update the firewall rules based on that evidence.",
         },
       },
     ],
   },
   {
     id: "choice-brief-team",
-    text: "팀에게 브리핑을 요청한다",
+      text: "Request a team briefing",
     icon: "👥",
     variant: "consequence",
     consequence: {
@@ -636,23 +636,23 @@ const scriptedChoices: ScriptedChoice[] = [
       author: "marcus",
       name: "Marcus Chen",
       avatar: "🖥️",
-      content: "알겠습니다. 네트워크 포렌식 데이터를 정리해서 공유하겠습니다.",
+        content: "Understood. I'll compile the network forensics data and share it.",
     },
   },
   {
     id: "choice-hold",
-    text: "조금만 더 관찰한다",
+      text: "Hold and observe briefly",
     icon: "⏳",
     variant: "timed",
     timerSeconds: 12,
     response: {
       author: "kastor",
-      content: "좋아요, 10초 동안 새로운 이상 징후를 모니터링할게요.",
+        content: "Got it. Monitoring for new anomalies over the next ten seconds.",
     },
   },
   {
     id: "choice-evidence-locked",
-    text: "서버 액세스 로그를 제시한다",
+      text: "Submit the server access log",
     icon: "🔒",
     variant: "requires-evidence",
     requiredEvidence: ["ev-001"],
@@ -660,7 +660,7 @@ const scriptedChoices: ScriptedChoice[] = [
       author: "camille",
       name: "Camille Beaumont",
       avatar: "🛡️",
-      content: "로그를 기반으로 경보 레벨을 높였어요. 나머지 증거도 계속 확보해봐요!",
+        content: "Alert level raised based on the log. Let's keep collecting supporting evidence!",
     },
   },
 ];
@@ -683,7 +683,7 @@ const initialMessages: ChatMessage[] = [
     avatar: "🦊",
     timestamp: "03:02",
     content:
-      "팀, 데이터 브리치를 감지했어요! 방금 1.2TB가 외부로 빠져나갔어요. 평균 전송량 대비 312% 상승이에요. 숫자가 웃고 있진 않겠죠?",
+        "Team, we just caught a data breach in progress! 1.2 TB blasted out of the network, 312% above baseline flow. Data is not supposed to laugh at us... right?",
   },
   {
     id: "maya-1",
@@ -693,7 +693,7 @@ const initialMessages: ChatMessage[] = [
     avatar: "🛰️",
     timestamp: "03:02",
     content:
-      "서버실 CCTV 확인할게. 야간 교대했던 사람 명단 공유해줘.",
+        "Checking the server room CCTV now. Share the list of who was on the overnight shift.",
   },
   {
     id: "player-1",
@@ -703,7 +703,7 @@ const initialMessages: ChatMessage[] = [
     avatar: "🕵️‍♂️",
     timestamp: "03:03",
     content:
-      "일단 로그부터 확인하죠. 어떤 시스템에서 전송이 시작됐나요?",
+        "Let's inspect the logs first. Which system initiated the transfer?",
   },
   {
     id: "kastor-2",
@@ -712,7 +712,7 @@ const initialMessages: ChatMessage[] = [
     name: "Kastor",
     avatar: "🦊",
     timestamp: "03:03",
-    content: "서버 로그를 바로 가져왔어요. 샘플을 확인해볼까요?",
+      content: "Pulled the server logs right away. Want to review a sample?",
     attachments: [
       {
         id: "ev-001",
@@ -728,7 +728,7 @@ const initialMessages: ChatMessage[] = [
     name: "Kastor",
     avatar: "🦊",
     timestamp: "03:04",
-    content: "추가로 브리핑 노트, 이메일, CCTV 캡처, 그리고 요약 데이터를 함께 공유할게요!",
+      content: "Adding briefing notes, the alert email, a CCTV snapshot, and a summary dataset!",
     attachments: [
       {
         id: "ev-002",
@@ -759,7 +759,7 @@ const initialMessages: ChatMessage[] = [
     name: "System",
     avatar: "ℹ️",
     timestamp: "03:04",
-    content: "💡 새로운 증거가 `Files` 탭에 저장되었습니다.",
+      content: "💡 New evidence has been stored under the `Files` tab.",
   },
 ];
 
@@ -879,7 +879,7 @@ export function ChatView() {
           avatar: "🦊",
           timestamp: formatTimestamp(),
           content:
-            "좋은 관찰이에요! 데이터를 필터링해서 02:00-04:00 로그만 추려볼까요?",
+              "Sharp catch! How about we filter the dataset to logs between 02:00 and 04:00?",
         },
       ]);
       setIsAwaitingKastor(false);
@@ -900,12 +900,12 @@ export function ChatView() {
   const handleEvidenceCardClick = (attachments: EvidenceAttachment[], attachmentIndex: number) => {
     const target = attachments[attachmentIndex];
     if (!target) return;
-    handleAddEvidence(target.id, `📁 '${target.title}' 증거를 확보했습니다.`);
+    handleAddEvidence(target.id, `📁 Evidence secured: '${target.title}'.`);
     const ids = attachments
       .map((item) => item.id)
       .filter((id, index, array) => array.indexOf(id) === index && Boolean(evidenceLibrary[id]));
     if (ids.length === 0) {
-      setChoiceFeedback("🗂️ 아직 상세 정보를 열 수 없는 증거입니다.");
+      setChoiceFeedback("🗂️ Detailed view not available yet for this evidence.");
       return;
     }
     const initialIndex = Math.max(0, ids.indexOf(target.id));
@@ -930,12 +930,12 @@ export function ChatView() {
       choice.requiredEvidence?.some((id) => !collectedEvidenceIds.includes(id));
 
     if (requiresEvidenceMissing) {
-      setChoiceFeedback("🔒 해당 선택지를 사용하려면 관련 증거를 먼저 확보해야 해요.");
+    setChoiceFeedback("🔒 Collect the required evidence before using this choice.");
       return;
     }
 
     if (expiredChoiceIds.includes(choice.id)) {
-      setChoiceFeedback("⏱️ 시간이 지나 선택할 수 없는 선택지입니다.");
+    setChoiceFeedback("⏱️ This choice expired and is no longer available.");
       return;
     }
 
@@ -991,14 +991,14 @@ export function ChatView() {
               name: "System",
               avatar: "ℹ️",
               timestamp: formatTimestamp(),
-              content: "새로운 증거가 확보되었습니다.",
+                content: "New evidence has been secured.",
             });
           }
           return nextMessages;
         });
 
         if (choice.unlocksEvidence) {
-          handleAddEvidence(choice.unlocksEvidence, "✅ 새로운 증거를 확보했습니다.");
+        handleAddEvidence(choice.unlocksEvidence, "✅ New evidence secured.");
         }
 
         setActiveChoices(choice.followUpChoices ?? []);
@@ -1021,10 +1021,10 @@ export function ChatView() {
         name: "System",
         avatar: "⏱️",
         timestamp,
-        content: `선택지 "${choice.text}" 시간이 만료되었습니다.`,
+          content: `Choice "${choice.text}" expired.`,
       },
     ]);
-    setChoiceFeedback(`⏱️ "${choice.text}" 선택지가 만료되었습니다.`);
+      setChoiceFeedback(`⏱️ Choice "${choice.text}" has expired.`);
   };
 
   const typingIndicator = useMemo(
@@ -1060,7 +1060,7 @@ export function ChatView() {
             <Title>Incident Response Channel</Title>
             <Status>
               <Clock size={16} />
-              03:05 AM • Active Investigation
+                03:05 AM - Active investigation
             </Status>
           </div>
           <Status>
@@ -1122,7 +1122,7 @@ export function ChatView() {
                                 <EvidenceTitle>{attachment.title}</EvidenceTitle>
                                 <EvidenceType>{attachment.type}</EvidenceType>
                               </EvidenceMeta>
-                              <EvidenceAction>열람</EvidenceAction>
+                                <EvidenceAction>View</EvidenceAction>
                             </EvidenceCard>
                           ))}
                         </AttachmentsList>
@@ -1142,7 +1142,7 @@ export function ChatView() {
                   exit={{ opacity: 0, translateY: -12 }}
                   layout
                 >
-                  <ChoiceLead>다음 행동을 선택하세요</ChoiceLead>
+                    <ChoiceLead>Choose your next move</ChoiceLead>
                   <ChoiceGrid>
                     {activeChoices.map((choice) => {
                       const evidenceMissing =
@@ -1154,10 +1154,10 @@ export function ChatView() {
                         evidenceMissing ||
                         isExpired ||
                         (selectedChoiceId !== null && selectedChoiceId !== choice.id);
-                      const disabledReason = evidenceMissing
-                        ? "필요한 증거를 확보해야 해요."
-                        : isExpired
-                          ? "시간이 초과되었어요."
+                        const disabledReason = evidenceMissing
+                          ? "You need to collect the required evidence."
+                          : isExpired
+                          ? "This choice has timed out."
                           : null;
                       return (
                         <ChoiceButton
@@ -1182,24 +1182,24 @@ export function ChatView() {
           </MessageScrollArea>
 
           <InputBar onSubmit={handleSubmit}>
-            <IconButton type="button" aria-label="첨부 파일 추가" disabled>
+              <IconButton type="button" aria-label="Add attachment" disabled>
               <Paperclip size={20} />
             </IconButton>
 
             <InputField
-              placeholder="메시지를 입력하세요…"
+                placeholder="Type your message..."
               value={input}
               onChange={(event) => setInput(event.target.value)}
               disabled={isAwaitingKastor}
             />
 
-            <IconButton type="submit" aria-label="메시지 전송" $variant="primary" disabled={isSendDisabled}>
+              <IconButton type="submit" aria-label="Send message" $variant="primary" disabled={isSendDisabled}>
               <Send size={20} />
             </IconButton>
           </InputBar>
         </ChatShell>
 
-        <FooterHint>Ctrl + Enter로 빠르게 전송 • 증거 카드를 클릭하면 상세 뷰를 열 수 있어요</FooterHint>
+        <FooterHint>Ctrl + Enter to send quickly - Click an evidence card to open the detailed view.</FooterHint>
       </Wrapper>
       <EvidenceModal
         isOpen={isEvidenceModalOpen && modalEvidenceItems.length > 0}

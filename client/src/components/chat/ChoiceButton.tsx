@@ -171,10 +171,10 @@ export function ChoiceButton({
 
   const timerBadge =
     choice.variant === "timed" && timeLeft !== null ? (
-      <Badge $tone={timeLeft <= 5 ? "warning" : "neutral"}>
-        <Clock size={14} />
-        {isExpired ? "시간 초과" : `${timeLeft}s`}
-      </Badge>
+        <Badge $tone={timeLeft <= 5 ? "warning" : "neutral"}>
+          <Clock size={14} />
+          {isExpired ? "Expired" : `${timeLeft}s`}
+        </Badge>
     ) : null;
 
   const evidenceBadge =

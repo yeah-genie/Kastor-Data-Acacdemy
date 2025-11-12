@@ -541,7 +541,7 @@ export function EvidenceModal({
             exit={{ opacity: 0, scale: 0.96, translateY: 16 }}
             transition={{ duration: 0.22, ease: "easeOut" }}
           >
-            <CloseButton onClick={onClose} aria-label="닫기">
+              <CloseButton onClick={onClose} aria-label="Close">
               <X size={18} />
             </CloseButton>
             <Header>
@@ -572,13 +572,13 @@ export function EvidenceModal({
               <NavControls>
                 {totalItems > 1 && (
                   <>
-                    <IconButton onClick={goPrev} aria-label="이전 증거">
+                      <IconButton onClick={goPrev} aria-label="Previous evidence">
                       <ArrowLeft size={18} />
                     </IconButton>
                     <CountBubble>
                       {activeIndex + 1} / {totalItems}
                     </CountBubble>
-                    <IconButton onClick={goNext} aria-label="다음 증거">
+                      <IconButton onClick={goNext} aria-label="Next evidence">
                       <ArrowRight size={18} />
                     </IconButton>
                   </>

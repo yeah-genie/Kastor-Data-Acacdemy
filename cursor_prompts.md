@@ -23,6 +23,11 @@ The game uses a "Detective Dashboard" interface with multiple views:
 The gameplay is narrative-driven with interactive puzzles and choices.
 ```
 
+> **🌐 Localization Update (2025-11-12)**  
+> - The live UI and recent components have been converted to English.  
+> - Keep future copy changes i18n-ready so that a full Korean build can be produced later.  
+> - When new UI strings are added, record both the English source and the intended Korean translation keys for Phase 10 localisation tasks.
+
 ---
 
 ## 📋 Phase 1: 프로젝트 초기 설정

@@ -44,12 +44,12 @@ export function TeamView() {
   return (
     <Wrapper>
       <Header>
-        <Title>팀 & 캐릭터 프로파일</Title>
+        <Title>Team & Character Profiles</Title>
       </Header>
-      <Subtitle>캐릭터 카드, 관계도 시각화, 타임라인 등이 이 구역에 배치됩니다.</Subtitle>
+      <Subtitle>The team board will render character dossiers, timelines, and relationship visualisations here.</Subtitle>
       <Placeholder>
-        팀 뷰 인터페이스가 여기에 구현될 예정입니다. <br />
-        캐릭터 상태, 신뢰도, 관련 증거 목록을 포함합니다.
+        The full team interface will live in this space.<br />
+        It will highlight status badges, trust levels, related evidence, and the interactive relationship graph.
       </Placeholder>
     </Wrapper>
   );

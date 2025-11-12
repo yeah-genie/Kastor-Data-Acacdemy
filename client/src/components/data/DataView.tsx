@@ -257,31 +257,31 @@ interface PuzzlePattern {
 const PUZZLE_PATTERNS: PuzzlePattern[] = [
   {
     id: "pattern-exfiltration",
-    title: "심야 대용량 데이터 유출",
-    summary: "svc_boundary 계정이 짧은 간격으로 외부 IP로 대량 전송했습니다.",
+    title: "Overnight Massive Data Exfiltration",
+    summary: "Account svc_boundary pushed hundreds of gigabytes to an untrusted VPS multiple times.",
     requiredRows: ["log-001", "log-002", "log-003"],
     reward: 40,
   },
   {
     id: "pattern-ghost-reader",
-    title: "미확인 엔드포인트 접근",
-    summary: "외부 VPS(52.18.74.4)에서 HR 아카이브를 대량으로 읽었습니다.",
+    title: "Ghost Endpoint Reconnaissance",
+    summary: "An unidentified VPS (52.18.74.4) harvested HR archives at high speed.",
     requiredRows: ["log-008"],
     reward: 25,
   },
   {
     id: "pattern-cover-tracks",
-    title: "증거 삭제 시도",
-    summary: "같은 외부 IP가 보안 이벤트 버퍼를 삭제하려 했습니다.",
+    title: "Covering Their Tracks",
+    summary: "The same external IP attempted to purge the security event buffer.",
     requiredRows: ["log-015"],
     reward: 35,
   },
 ];
 
 const PUZZLE_HINTS = [
-  "심야(02:00~03:30) 구간의 동일 계정 활동에 집중해 보세요.",
-  "외부 IP 178.34.22.9 및 52.18.74.4 가 반복적으로 등장합니다.",
-  "이상 징후는 데이터 유출, 정찰, 흔적 제거의 세 단계로 이루어집니다.",
+  "Check the same account activity between 02:00 and 03:30.",
+  "Look for repeated appearances of external IPs 178.34.22.9 and 52.18.74.4.",
+  "The anomaly unfolds in three steps: exfiltration, reconnaissance, and evidence removal.",
 ];
 
 const USERS = Array.from(
@@ -1088,8 +1088,8 @@ function useDataFilters(entries: LogEntry[]) {
 }
 
 function formatTimestampToLocale(value: string) {
-  return new Date(value).toLocaleString("ko-KR", {
-    month: "2-digit",
+  return new Date(value).toLocaleString("en-US", {
+    month: "short",
     day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
@@ -1178,32 +1178,32 @@ export function DataView() {
 
   const handleRevealHint = () => {
     if (hintLevel >= PUZZLE_HINTS.length) {
-      setFeedback({ variant: "info", message: "사용 가능한 힌트를 모두 확인했습니다." });
+      setFeedback({ variant: "info", message: "All available hints have already been revealed." });
       return;
     }
     setHintLevel((prev) => prev + 1);
     setHintsUsed((prev) => prev + 1);
     setPuzzlePoints((prev) => Math.max(0, prev - 10));
     const nextIndex = hintLevel;
-    setFeedback({ variant: "info", message: `힌트 ${nextIndex + 1}: ${PUZZLE_HINTS[nextIndex]}` });
+    setFeedback({ variant: "info", message: `Hint ${nextIndex + 1}: ${PUZZLE_HINTS[nextIndex]}` });
   };
 
   const handleResetSelection = () => {
     if (selectedRows.size === 0) return;
     clearSelection();
     setExpandedRow(null);
-    setFeedback({ variant: "info", message: "선택한 로그를 초기화했습니다." });
+    setFeedback({ variant: "info", message: "Cleared the current log selection." });
   };
 
   const handleSubmitSelection = () => {
     if (puzzleComplete) {
-      setFeedback({ variant: "info", message: "이미 모든 패턴을 해결했습니다. 탁월해요!" });
+      setFeedback({ variant: "info", message: "All patterns have already been solved. Outstanding work!" });
       return;
     }
 
     const selectedIds = Array.from(selectedRows);
     if (selectedIds.length === 0) {
-      setFeedback({ variant: "error", message: "먼저 패턴으로 의심되는 로그를 선택해 주세요." });
+      setFeedback({ variant: "error", message: "Select at least one log you believe belongs to a pattern." });
       return;
     }
 
@@ -1218,7 +1218,7 @@ export function DataView() {
       setPuzzlePoints((prev) => prev + matchedPattern.reward);
       setFeedback({
         variant: "success",
-        message: `${matchedPattern.title} 패턴을 찾아냈어요! ${matchedPattern.summary}`,
+        message: `Pattern confirmed: ${matchedPattern.title}. ${matchedPattern.summary}`,
       });
       clearSelection();
       setExpandedRow(null);
@@ -1226,7 +1226,7 @@ export function DataView() {
       setPuzzlePoints((prev) => Math.max(0, prev - 5));
       setFeedback({
         variant: "error",
-        message: "선택된 로그로는 패턴이 확인되지 않아요. 다른 조합을 시도해 보세요.",
+        message: "That combination didn't match a known pattern. Try a different set of logs.",
       });
     }
   };
@@ -1235,14 +1235,14 @@ export function DataView() {
     <Wrapper>
       <Header>
         <TitleRow>
-          <Title>데이터 분석 콘솔</Title>
+          <Title>Incident Data Console</Title>
           <GhostButton onClick={resetFilters}>
             <Filter size={16} />
-            기본 필터로 초기화
+            Reset to Default Filters
           </GhostButton>
         </TitleRow>
         <Subtitle>
-          SOC가 수집한 로그 스트림을 빠르게 필터링하고, 이상 징후를 감지하며, 다음 퍼즐에 대비할 근거를 확보하세요.
+          Filter the SOC log stream, flag anomalies, and gather evidence that feeds the next puzzle step.
         </Subtitle>
       </Header>
 
@@ -1252,12 +1252,12 @@ export function DataView() {
             <Search size={16} />
             <Input
               value={searchQuery}
-              placeholder="사용자, 위치, 상세 내용 검색..."
+              placeholder="Search user, location, or details..."
               onChange={(event) => {
                 setSearchQuery(event.target.value);
                 setCurrentPage(1);
               }}
-              aria-label="로그 검색"
+              aria-label="Search logs"
             />
           </SearchField>
           <SelectField
@@ -1266,9 +1266,9 @@ export function DataView() {
               setUserFilter(event.target.value);
               setCurrentPage(1);
             }}
-            aria-label="사용자 필터"
+            aria-label="User filter"
           >
-            <option value="all">전체 사용자</option>
+            <option value="all">All users</option>
             {USERS.map((user) => (
               <option key={user} value={user}>
                 {user}
@@ -1281,13 +1281,13 @@ export function DataView() {
               setTimeFilter(event.target.value as TimeRange);
               setCurrentPage(1);
             }}
-            aria-label="시간 범위 필터"
+            aria-label="Time range filter"
           >
-            <option value="all">전체 기간</option>
-            <option value="today">오늘</option>
-            <option value="yesterday">어제</option>
-            <option value="last7">최근 7일</option>
-            <option value="overnight">심야 활동 (00:00~04:00)</option>
+            <option value="all">All time</option>
+            <option value="today">Today</option>
+            <option value="yesterday">Yesterday</option>
+            <option value="last7">Last 7 days</option>
+            <option value="overnight">Overnight activity (00:00-04:00)</option>
           </SelectField>
           <SelectField
             value={actionFilter}
@@ -1295,9 +1295,9 @@ export function DataView() {
               setActionFilter(event.target.value);
               setCurrentPage(1);
             }}
-            aria-label="행동 유형 필터"
+            aria-label="Action filter"
           >
-            <option value="all">모든 액션</option>
+            <option value="all">All actions</option>
             {ACTION_TYPES.map((action) => (
               <option key={action} value={action}>
                 {action}
@@ -1307,27 +1307,27 @@ export function DataView() {
           <SelectField
             value={sortColumn}
             onChange={(event) => toggleSort(event.target.value as keyof LogEntry)}
-            aria-label="정렬 기준"
+            aria-label="Sort column"
           >
-            <option value="timestamp">시간순 정렬</option>
-            <option value="user">사용자</option>
-            <option value="action">행동</option>
-            <option value="location">위치</option>
+            <option value="timestamp">Sort by time</option>
+            <option value="user">Sort by user</option>
+            <option value="action">Sort by action</option>
+            <option value="location">Sort by location</option>
           </SelectField>
         </FiltersRow>
 
         <ActionsRow>
           <GhostButton onClick={() => setTimeFilter("overnight")}>
             <AlertTriangle size={16} />
-            심야 이상 징후 보기
+            Focus on overnight anomalies
           </GhostButton>
           <GhostButton onClick={() => setSearchQuery("")}>
             <RefreshCw size={16} />
-            검색어 지우기
+            Clear search
           </GhostButton>
           <PrimaryButton onClick={handleExportCsv}>
             <Download size={16} />
-            CSV 내보내기
+            Export CSV
           </PrimaryButton>
         </ActionsRow>
       </ControlsShell>
@@ -1335,22 +1335,22 @@ export function DataView() {
       <PuzzleShell>
         <PuzzleHeader>
           <PuzzleTitle>
-            <h3>패턴 찾기 퍼즐</h3>
-            <span>심야 로그에서 의심스러운 활동을 모두 찾아내면 다음 단계가 열립니다.</span>
+            <h3>Pattern Detection Puzzle</h3>
+            <span>Identify suspicious overnight activity to unlock the next investigative step.</span>
           </PuzzleTitle>
           <PuzzleStats>
             <span>
-              발견한 패턴: <strong>{foundPatternIds.length}</strong> / {PUZZLE_PATTERNS.length}
+              Patterns found: <strong>{foundPatternIds.length}</strong> / {PUZZLE_PATTERNS.length}
             </span>
             <span>
-              선택한 로그: <strong>{selectedCount}</strong>
+              Selected logs: <strong>{selectedCount}</strong>
             </span>
             <span>
-              현재 점수: <strong>{puzzlePoints} XP</strong>
+              Current score: <strong>{puzzlePoints} XP</strong>
             </span>
             {hintsUsed > 0 && (
               <span>
-                사용한 힌트: <strong>{hintsUsed}</strong>
+                Hints used: <strong>{hintsUsed}</strong>
               </span>
             )}
           </PuzzleStats>
@@ -1361,31 +1361,31 @@ export function DataView() {
           </ProgressTrack>
           <PuzzleStats>
             {puzzleComplete ? (
-              <strong>완벽해요! 모든 패턴을 밝혀냈습니다.</strong>
+              <strong>Excellent! Every suspicious pattern has been uncovered.</strong>
             ) : (
-              <span>남은 패턴 {patternsRemaining}개 • 의심 로그를 선택 후 제출해 확인하세요.</span>
+              <span>{patternsRemaining} pattern(s) remaining - Select logs and submit to validate your theory.</span>
             )}
           </PuzzleStats>
         </PuzzleProgress>
         <PuzzleActions>
           <PrimaryButton type="button" onClick={handleSubmitSelection} disabled={puzzleComplete}>
             <Sparkles size={16} />
-            선택한 로그로 패턴 확인
+            Validate Pattern From Selection
           </PrimaryButton>
           <GhostButton type="button" onClick={handleRevealHint} disabled={hintLevel >= PUZZLE_HINTS.length}>
             <Info size={16} />
-            힌트 보기 {hintLevel >= PUZZLE_HINTS.length ? "(모두 사용)" : ""}
+            Reveal Hint {hintLevel >= PUZZLE_HINTS.length ? "(all used)" : ""}
           </GhostButton>
           <GhostButton type="button" onClick={handleResetSelection} disabled={selectedCount === 0}>
             <RefreshCw size={16} />
-            선택 초기화
+            Clear Selection
           </GhostButton>
         </PuzzleActions>
         {hintLevel > 0 && (
           <HintList>
             {revealedHints.map((hint, index) => (
               <li key={hint}>
-                <strong>힌트 {index + 1}.</strong> {hint}
+                <strong>Hint {index + 1}.</strong> {hint}
               </li>
             ))}
           </HintList>
@@ -1410,51 +1410,51 @@ export function DataView() {
             </FeedbackToast>
           )}
         </AnimatePresence>
+          <AnimatePresence>
+            {puzzleComplete && (
+              <PuzzleCompleteBanner
+                key="puzzle-complete"
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.94 }}
+              >
+                <Sparkles size={18} />
+                All anomaly patterns confirmed! Kastor is ready to move to the next phase.
+              </PuzzleCompleteBanner>
+            )}
+          </AnimatePresence>
+        </PuzzleShell>
+
         <AnimatePresence>
-          {puzzleComplete && (
-            <PuzzleCompleteBanner
-              key="puzzle-complete"
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.94 }}
+          {patternDetected && (
+            <AlertBanner
+              initial={{ opacity: 0, y: -12 }}
+              animate={{ opacity: 1, y: 0, transition: { type: "spring", stiffness: 320, damping: 28 } }}
+              exit={{ opacity: 0, y: -10 }}
             >
-              <Sparkles size={18} />
-              모든 패턴 분석 완료! Kastor가 다음 단계로 이동할 준비가 되었습니다.
-            </PuzzleCompleteBanner>
+              <AlertTriangle size={28} color="#ffb74d" />
+              <AlertContent>
+                <AlertTitle>Pattern detected: Overnight bulk transfer</AlertTitle>
+                <AlertDescription>
+                  Service account <strong>svc_boundary</strong> sent more than 400 GB three times within 15 minutes to
+                  178.34.22.9. Volume exceeds the baseline by 310%, followed by an attempt to wipe event buffers.
+                </AlertDescription>
+              </AlertContent>
+              <AlertActions>
+                <AlertActionButton $variant="outline">
+                  <Info size={14} />
+                  View detailed logs
+                </AlertActionButton>
+                <AlertActionButton>
+                  <ArrowRight size={14} />
+                  Ask Kastor for guidance
+                </AlertActionButton>
+              </AlertActions>
+            </AlertBanner>
           )}
         </AnimatePresence>
-      </PuzzleShell>
 
-      <AnimatePresence>
-        {patternDetected && (
-          <AlertBanner
-            initial={{ opacity: 0, y: -12 }}
-            animate={{ opacity: 1, y: 0, transition: { type: "spring", stiffness: 320, damping: 28 } }}
-            exit={{ opacity: 0, y: -10 }}
-          >
-            <AlertTriangle size={28} color="#ffb74d" />
-            <AlertContent>
-              <AlertTitle>패턴 감지: 심야 대용량 데이터 전송</AlertTitle>
-              <AlertDescription>
-                동일 서비스 계정이 15분 간격으로 3회 이상 400GB 이상의 데이터를 외부 IP(178.34.22.9)로 전송했습니다.
-                기존 평소 대비 310% 초과량이며, 전송 후 이벤트 버퍼 삭제 시도가 확인되었습니다.
-              </AlertDescription>
-            </AlertContent>
-            <AlertActions>
-              <AlertActionButton $variant="outline">
-                <Info size={14} />
-                세부 로그 분석
-              </AlertActionButton>
-              <AlertActionButton>
-                <ArrowRight size={14} />
-                Kastor에게 질문하기
-              </AlertActionButton>
-            </AlertActions>
-          </AlertBanner>
-        )}
-      </AnimatePresence>
-
-      <TableShell>
+        <TableShell>
         <TableScroll>
           <Table>
             <thead>
@@ -1462,26 +1462,26 @@ export function DataView() {
                 <HeaderCell>
                   <Checkbox
                     type="checkbox"
-                    aria-label="모든 행 선택"
+                    aria-label="Select all rows"
                     checked={selectedRows.size === paginatedEntries.length && paginatedEntries.length > 0}
                     onChange={toggleAllRows}
                   />
                 </HeaderCell>
                 <HeaderCell $sortable onClick={() => toggleSort("timestamp")}>
-                  타임스탬프 {sortColumn === "timestamp" ? (sortDirection === "asc" ? "▲" : "▼") : ""}
+                  Timestamp {sortColumn === "timestamp" ? (sortDirection === "asc" ? "▲" : "▼") : ""}
                 </HeaderCell>
                 <HeaderCell $sortable onClick={() => toggleSort("user")}>
-                  사용자 {sortColumn === "user" ? (sortDirection === "asc" ? "▲" : "▼") : ""}
+                  User {sortColumn === "user" ? (sortDirection === "asc" ? "▲" : "▼") : ""}
                 </HeaderCell>
                 <HeaderCell $sortable onClick={() => toggleSort("action")}>
-                  액션 {sortColumn === "action" ? (sortDirection === "asc" ? "▲" : "▼") : ""}
+                  Action {sortColumn === "action" ? (sortDirection === "asc" ? "▲" : "▼") : ""}
                 </HeaderCell>
                 <HeaderCell $sortable onClick={() => toggleSort("location")}>
-                  위치 {sortColumn === "location" ? (sortDirection === "asc" ? "▲" : "▼") : ""}
+                  Location {sortColumn === "location" ? (sortDirection === "asc" ? "▲" : "▼") : ""}
                 </HeaderCell>
-                <HeaderCell>심각도</HeaderCell>
-                <HeaderCell>태그</HeaderCell>
-                <HeaderCell>세부 정보</HeaderCell>
+                <HeaderCell>Severity</HeaderCell>
+                <HeaderCell>Tags</HeaderCell>
+                <HeaderCell>Details</HeaderCell>
               </tr>
             </thead>
             <tbody>
@@ -1489,7 +1489,7 @@ export function DataView() {
                 <tr>
                   <BodyCell colSpan={8}>
                     <EmptyState>
-                      조건에 맞는 로그가 없습니다. 필터 범위를 넓히거나 다른 키워드를 시도해 보세요.
+                      No logs match the current filters. Broaden the filters or try a different keyword search.
                     </EmptyState>
                   </BodyCell>
                 </tr>
@@ -1505,7 +1505,7 @@ export function DataView() {
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => toggleRowSelection(entry.id)}
-                          aria-label={`${entry.user} 행 선택`}
+                            aria-label={`Select row for ${entry.user}`}
                         />
                       </BodyCell>
                       <BodyCell>{formatTimestampToLocale(entry.timestamp)}</BodyCell>
@@ -1525,38 +1525,38 @@ export function DataView() {
                           ))}
                         </TagList>
                       </BodyCell>
-                      <BodyCell>
-                        <ExpandToggle onClick={() => toggleExpand(entry.id)} aria-label="세부 내용 펼치기">
-                          {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                          <span style={{ marginLeft: "0.35rem" }}>{entry.detail.slice(0, 36)}...</span>
-                        </ExpandToggle>
-                      </BodyCell>
+                        <BodyCell>
+                          <ExpandToggle onClick={() => toggleExpand(entry.id)} aria-label="Toggle detailed view">
+                            {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                            <span style={{ marginLeft: "0.35rem" }}>{entry.detail.slice(0, 36)}...</span>
+                          </ExpandToggle>
+                        </BodyCell>
                     </BodyRow>
                     {isExpanded && (
                       <ExpandedRow>
                         <ExpandedCell colSpan={8}>
                           <ExpandedGrid>
                             <ExpandedStat>
-                              <span>IP 주소</span>
+                                <span>IP Address</span>
                               <span>{highlightText(entry.ipAddress, searchQuery)}</span>
                             </ExpandedStat>
                             <ExpandedStat>
-                              <span>사용 디바이스</span>
+                                <span>Device</span>
                               <span>{entry.device}</span>
                             </ExpandedStat>
                             <ExpandedStat>
-                              <span>시간 구간</span>
+                                <span>Time Window</span>
                               <span>
-                                {entry.timeBucket === "overnight"
-                                  ? "심야(00:00-04:00)"
-                                  : entry.timeBucket === "business"
-                                  ? "주간(09:00-18:00)"
-                                  : "야간(18:00-00:00)"}
+                                  {entry.timeBucket === "overnight"
+                                    ? "Overnight (00:00-04:00)"
+                                    : entry.timeBucket === "business"
+                                    ? "Business hours (09:00-18:00)"
+                                    : "Off-peak (18:00-00:00)"}
                               </span>
                             </ExpandedStat>
                           </ExpandedGrid>
                           <ExpandedDetail>
-                            <strong>세부 설명:</strong> {highlightText(entry.detail, searchQuery)}
+                              <strong>Details:</strong> {highlightText(entry.detail, searchQuery)}
                           </ExpandedDetail>
                         </ExpandedCell>
                       </ExpandedRow>
@@ -1570,14 +1570,14 @@ export function DataView() {
 
         <TableFooter>
           <SelectionSummary>
-            총 {filteredEntries.length}개 중 {paginatedEntries.length}개 표시 • 페이지당 {pageSize}건
+              Showing {paginatedEntries.length} of {filteredEntries.length} entries - {pageSize} per page
             {selectedRows.size > 0 && (
               <>
                 <span>|</span>
-                <strong>{selectedRows.size}</strong>개 선택됨
+                  <strong>{selectedRows.size}</strong> selected
                 <GhostButton onClick={clearSelection}>
                   <XCircle size={14} />
-                  선택 해제
+                    Clear selection
                 </GhostButton>
               </>
             )}
@@ -1586,26 +1586,26 @@ export function DataView() {
                 <span>|</span>
                 <span style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem" }}>
                   <AlertTriangle size={14} color="#ffb74d" />
-                  의심 로그 {suspiciousCount}건
+                    {suspiciousCount} suspicious log(s)
                 </span>
               </>
             )}
           </SelectionSummary>
           <PaginationControls>
             <PaginationButton onClick={() => setCurrentPage(1)} disabled={currentPage === 1}>
-              처음
+                First
             </PaginationButton>
             <PaginationButton onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
-              이전
+                Prev
             </PaginationButton>
             <span>
               {currentPage} / {totalPages}
             </span>
             <PaginationButton onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>
-              다음
+                Next
             </PaginationButton>
             <PaginationButton onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages}>
-              끝
+                Last
             </PaginationButton>
           </PaginationControls>
         </TableFooter>
