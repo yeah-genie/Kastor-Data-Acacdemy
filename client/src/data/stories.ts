@@ -1,7 +1,7 @@
-import { case1EpisodeFinal } from "./case1-episode-final";
 import { case2EpisodeFull } from "./case2-episode-full";
-import { case3EpisodeFull } from "./case3-episode-full";
-import type { StoryNode } from "./case1-episode-final";
+import episode1 from "./episode1.json";
+import episode3 from "./episode3.json";
+import type { StoryNode } from "./episode-types";
 
 export interface CaseMetadata {
   id: number;
@@ -44,14 +44,18 @@ export const caseMetadata: Record<number, CaseMetadata> = {
   },
 };
 
-export const stories: Record<number, Record<string, StoryNode>> = {
-  1: case1EpisodeFinal,
+export type LegacyStoryGraph = Record<string, StoryNode>;
+export type EpisodeSceneGraph = typeof episode1 | typeof episode3;
+export type StoryRepositoryEntry = EpisodeSceneGraph | LegacyStoryGraph;
+
+export const stories: Record<number, StoryRepositoryEntry> = {
+  1: episode1,
   2: case2EpisodeFull,
-  3: case3EpisodeFull,
+  3: episode3,
 };
 
-export function getStory(caseId: number): Record<string, StoryNode> {
-  return stories[caseId] || case1EpisodeFinal;
+export function getStory(caseId: number): StoryRepositoryEntry {
+  return stories[caseId] || episode1;
 }
 
 export function getCaseMetadata(caseId: number): CaseMetadata {

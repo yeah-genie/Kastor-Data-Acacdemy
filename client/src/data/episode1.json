@@ -1,0 +1,781 @@
+{
+  "metadata": {
+    "caseId": 1,
+    "episodeCode": "EP01",
+    "title": "The Missing Balance Patch",
+    "tagline": "Data anomalies always leave footprints.",
+    "description": "Investigate the mysterious overnight power spike of the character Shadow in Legend Arena.",
+    "setting": "Legend Arena Headquarters & Data Detective Agency",
+    "difficulty": "Beginner",
+    "themeColor": "#00d9ff",
+    "background": "#1a1a2e",
+    "relatedEpisodes": ["EP02", "EP03"]
+  },
+  "structure": {
+    "acts": [
+      {
+        "id": "act-0",
+        "label": "Briefing",
+        "scenes": ["scene-0-1", "scene-0-2", "scene-0-3"]
+      },
+      {
+        "id": "act-1",
+        "label": "Data Investigation",
+        "scenes": ["scene-1-1", "scene-1-2"]
+      },
+      {
+        "id": "act-2",
+        "label": "Timeline Reconstruction",
+        "scenes": ["scene-2-1", "scene-2-2"]
+      },
+      {
+        "id": "act-3",
+        "label": "Player Tracing",
+        "scenes": ["scene-3-1", "scene-3-2"]
+      },
+      {
+        "id": "act-4",
+        "label": "Confrontation",
+        "scenes": ["scene-4-1", "scene-4-2"]
+      },
+      {
+        "id": "act-5",
+        "label": "Closure",
+        "scenes": ["scene-5-1", "scene-5-2", "scene-5-3", "scene-5-4"]
+      },
+      {
+        "id": "act-x",
+        "label": "Classified Epilogue",
+        "scenes": ["scene-x-1"]
+      }
+    ]
+  },
+  "scenes": [
+    {
+      "id": "scene-0-1",
+      "code": "0.1",
+      "title": "Office Introduction",
+      "location": "Data Detective Agency",
+      "phase": "briefing",
+      "layout": {
+        "background": "office-evening",
+        "lighting": "moody",
+        "hud": "minimal"
+      },
+      "goals": [
+        "Introduce Kastor and the player detective.",
+        "Establish partnership dynamic."
+      ],
+      "dialogue": [
+        {"speaker": "Narrator", "mood": "deadpan", "type": "narration", "text": "A run-down detective office. Dust on the desk. Someone's sleeping."},
+        {"speaker": "Kastor", "mood": "sleeping", "expression": "asleep", "text": "Zzzzz..."},
+        {"speaker": "Narrator", "type": "sound", "text": "[Door opens — Detective enters]"},
+        {"speaker": "Detective", "mood": "uncertain", "text": "...Is this the right place?"},
+        {"speaker": "Kastor", "mood": "surprised", "expression": "wake", "text": "Hm? Oh! New person?"},
+        {"speaker": "Detective", "mood": "neutral", "text": "I'm the new detective."},
+        {"speaker": "Kastor", "mood": "teasing", "text": "Detective? You don't look like one."},
+        {"speaker": "Detective", "mood": "defensive", "text": "It's my first day!"},
+        {"speaker": "Kastor", "mood": "grin", "text": "I can tell. It's written all over your face."},
+        {"speaker": "Detective", "type": "thought", "text": "(This guy...)"},
+        {"speaker": "Kastor", "mood": "cheerful", "text": "I'm Kastor. Your partner!"},
+        {"speaker": "Detective", "mood": "awkward", "text": "Nice to meet you, I guess?"},
+        {"speaker": "Kastor", "mood": "curious", "text": "Name?"}
+      ],
+      "interactions": [
+        {
+          "id": "input-name",
+          "type": "text-input",
+          "prompt": "Enter your detective alias.",
+          "validation": {
+            "minLength": 2,
+            "maxLength": 18,
+            "errorMessage": "이름은 2~18자 사이여야 합니다."
+          },
+          "postDialogue": [
+            {"speaker": "Detective", "text": "[Name]"},
+            {"speaker": "Kastor", "mood": "playful", "text": "Cool name! Spell it right?"},
+            {"speaker": "Detective", "text": "I just typed it myself, so yes."},
+            {"speaker": "Kastor", "text": "Good! No refunds on name tags."},
+            {"speaker": "Detective", "text": "What?"},
+            {"speaker": "Kastor", "mood": "teasing", "text": "Kidding~ But seriously, we're broke."},
+            {"speaker": "Detective", "type": "thought", "text": "(What kind of agency is this...)"},
+            {"speaker": "System", "type": "celebration", "variant": "mini", "title": "Partnership formed!", "reward": {"xp": 10, "items": ["badge-partner"]}}
+          ]
+        }
+      ],
+      "next": "scene-0-2"
+    },
+    {
+      "id": "scene-0-2",
+      "code": "0.2",
+      "title": "First Case Arrives",
+      "location": "Data Detective Agency",
+      "phase": "briefing",
+      "layout": {
+        "background": "office-night",
+        "lighting": "monitor-glow",
+        "hud": "mail-alert"
+      },
+      "goals": [
+        "Deliver Maya's urgent email.",
+        "Prompt the player's first hypothesis."
+      ],
+      "dialogue": [
+        {"speaker": "System", "type": "sound", "text": "[Email notification — DING!]"},
+        {"speaker": "Kastor", "mood": "excited", "text": "Ooh! Mail!"},
+        {"speaker": "Detective", "mood": "surprised", "text": "Already?"},
+        {"speaker": "Kastor", "mood": "playful", "text": "Yep! You're lucky! No cases = boring."},
+        {"speaker": "Detective", "mood": "uncertain", "text": "Is that... good luck?"},
+        {"speaker": "Kastor", "mood": "matter-of-fact", "text": "Obviously! Now click it!"}
+      ],
+      "interactions": [
+        {
+          "id": "open-email",
+          "type": "document-viewer",
+          "name": "Email — URGENT! Need Help!",
+          "content": [
+            "Hello detectives!",
+            "I'm Maya, director of Legend Arena.",
+            "We have a HUGE problem! 😰",
+            "Our character Shadow's win rate jumped from 50% to 85% in ONE DAY!",
+            "We didn't patch him! I have no idea why this happened!",
+            "Players are furious! The community is exploding!",
+            "If we lose player trust... the game is finished!",
+            "PLEASE HELP US!"
+          ],
+          "meta": {
+            "from": "Maya Zhang",
+            "subject": "🚨 URGENT! Need Help!",
+            "timestamp": "Day 28 08:12"
+          }
+        },
+        {
+          "id": "first-hypothesis",
+          "type": "choice",
+          "prompt": "What's your first hypothesis?",
+          "choices": [
+            {"id": "official-patch", "label": "Official patch (cover-up?)", "isCorrect": true, "feedback": "Interesting angle! Could be a cover-up!"},
+            {"id": "rare-bug", "label": "Rare bug (unexpected side effect)", "isCorrect": true, "feedback": "Good thinking! Technical issues can be sneaky!"},
+            {"id": "secret-mod", "label": "Someone secretly modified data", "isCorrect": true, "feedback": "Ooh! Crime vibes! I like it!"}
+          ],
+          "postDialogue": [
+            {"speaker": "Detective", "text": "Just... a feeling."},
+            {"speaker": "Kastor", "mood": "lecturing", "text": "Detectives can't work on feelings~"},
+            {"speaker": "Detective", "text": "Then what?"},
+            {"speaker": "Kastor", "mood": "serious", "text": "DATA! Numbers don't lie!"},
+            {"speaker": "Detective", "text": "People do?"},
+            {"speaker": "Kastor", "mood": "wink", "text": "All the time! Let's go check!"},
+            {"speaker": "System", "type": "celebration", "variant": "mini", "title": "Case accepted!", "reward": {"xp": 10, "items": []}}
+          ]
+        }
+      ],
+      "next": "scene-0-3"
+    },
+    {
+      "id": "scene-0-3",
+      "code": "0.3",
+      "title": "Call with Maya",
+      "location": "Conference Call",
+      "phase": "briefing",
+      "layout": {
+        "background": "call-interface",
+        "lighting": "holographic",
+        "hud": "call"
+      },
+      "goals": [
+        "Gain direct context from Maya.",
+        "Receive investigation documents."
+      ],
+      "dialogue": [
+        {"speaker": "System", "type": "sound", "text": "[Phone dialing tone]"},
+        {"speaker": "Maya", "mood": "panicked", "text": "Hello? Is this the detective?"},
+        {"speaker": "Detective", "mood": "calm", "text": "Yes, we got your email. Tell us everything."},
+        {"speaker": "Maya", "mood": "stressed", "text": "Shadow's win rate spiked on Day 28. We didn't patch him. Community's on fire."},
+        {"speaker": "Kastor", "mood": "focused", "text": "Can you send data? Patch notes, server logs."},
+        {"speaker": "Maya", "mood": "determined", "text": "I'll send them now! Please hurry!"}
+      ],
+      "next": "scene-1-1"
+    },
+    {
+      "id": "scene-1-1",
+      "code": "1.1",
+      "title": "Graph Analysis",
+      "location": "Data Lab",
+      "phase": "investigation",
+      "layout": {
+        "background": "data-center",
+        "hud": "analysis"
+      },
+      "goals": [
+        "Identify Shadow as the anomaly.",
+        "Introduce visual analytics mini-game."
+      ],
+      "dialogue": [
+        {"speaker": "Kastor", "mood": "motivated", "text": "Data received. Open the graph!"},
+        {"speaker": "System", "type": "ui", "text": "[Interactive line graph — Shadow, Phoenix, Viper]"},
+        {"speaker": "Detective", "mood": "analytical", "text": "The red line rockets up at Day 28..."},
+        {"speaker": "Kastor", "mood": "encouraging", "text": "Exactly. Rollercoaster to space."},
+        {"speaker": "Detective", "text": "Phoenix also rises slightly."},
+        {"speaker": "Kastor", "mood": "explanatory", "text": "Gentle hill vs rocket. Pick the most suspicious."}
+      ],
+      "interactions": [
+        {
+          "id": "graph-outlier",
+          "type": "graph-analysis",
+          "prompt": "Select the character with abnormal behavior.",
+          "graph": {
+            "series": [
+              {
+                "label": "Shadow",
+                "color": "#ef4444",
+                "data": [
+                  {"day": 24, "winRate": 49.5},
+                  {"day": 25, "winRate": 50.1},
+                  {"day": 26, "winRate": 49.8},
+                  {"day": 27, "winRate": 50.2},
+                  {"day": 28, "winRate": 84.7},
+                  {"day": 29, "winRate": 85.1},
+                  {"day": 30, "winRate": 85.3}
+                ]
+              },
+              {
+                "label": "Phoenix",
+                "color": "#3b82f6",
+                "data": [
+                  {"day": 24, "winRate": 52.3},
+                  {"day": 25, "winRate": 52.8},
+                  {"day": 26, "winRate": 53.1},
+                  {"day": 27, "winRate": 53.5},
+                  {"day": 28, "winRate": 55.2},
+                  {"day": 29, "winRate": 55.8},
+                  {"day": 30, "winRate": 56.1}
+                ]
+              },
+              {
+                "label": "Viper",
+                "color": "#10b981",
+                "data": [
+                  {"day": 24, "winRate": 48.2},
+                  {"day": 25, "winRate": 48.5},
+                  {"day": 26, "winRate": 48.1},
+                  {"day": 27, "winRate": 47.9},
+                  {"day": 28, "winRate": 47.5},
+                  {"day": 29, "winRate": 47.2},
+                  {"day": 30, "winRate": 46.8}
+                ]
+              }
+            ]
+          },
+          "correctAnswer": "Shadow",
+          "postDialogue": [
+            {"speaker": "Detective", "text": "Shadow rockets from 50% to 85% overnight."},
+            {"speaker": "Kastor", "mood": "proud", "text": "For a rookie, you're fast!"},
+            {"speaker": "System", "type": "celebration", "variant": "mini", "title": "Pattern recognized!", "reward": {"xp": 15, "items": ["clue-shadow-spike"]}}
+          ]
+        }
+      ],
+      "next": "scene-1-2"
+    },
+    {
+      "id": "scene-1-2",
+      "code": "1.2",
+      "title": "Patch Notes & Server Logs",
+      "location": "Data Lab",
+      "phase": "investigation",
+      "layout": {
+        "background": "hologram-room",
+        "hud": "documents"
+      },
+      "goals": [
+        "Highlight contradiction between official notes and server logs.",
+        "Trigger call revealing admin01 identity."
+      ],
+      "dialogue": [
+        {"speaker": "Kastor", "mood": "focused", "text": "Official patch notes and logs incoming."},
+        {"speaker": "System", "type": "ui", "text": "[Patch Notes + Server Log overlay]"},
+        {"speaker": "Detective", "text": "Patch notes say Shadow wasn't touched."},
+        {"speaker": "Kastor", "mood": "skeptical", "text": "But logs show a 23:47 modification."},
+        {"speaker": "Detective", "text": "And a failed deletion attempt."},
+        {"speaker": "Kastor", "mood": "serious", "text": "That's rogue admin behavior. Call Maya."}
+      ],
+      "interactions": [
+        {
+          "id": "doc-review",
+          "type": "document-compare",
+          "documents": [
+            {
+              "id": "patch-notes",
+              "title": "Day 28 Patch Notes",
+              "entries": [
+                {"label": "Phoenix", "content": "Skill cooldown -2s", "flag": "expected"},
+                {"label": "Shadow", "content": "No changes", "flag": "suspicious"},
+                {"label": "Server", "content": "Maintenance completed", "flag": "neutral"}
+              ]
+            },
+            {
+              "id": "server-logs",
+              "title": "Server Logs (Day 28)",
+              "entries": [
+                {"timestamp": "02:13", "content": "System: Phoenix cooldown -2s", "flag": "expected"},
+                {"timestamp": "23:47", "content": "admin01: Shadow data modified", "flag": "critical"},
+                {"timestamp": "23:52", "content": "admin01: Log deletion attempt (FAILED)", "flag": "critical"}
+              ]
+            }
+          ],
+          "tasks": [
+            {"id": "highlight-shadow", "description": "Mark the contradictory entry", "target": "patch-notes:Shadow"},
+            {"id": "flag-admin", "description": "Flag suspicious admin activity", "target": "server-logs:23:47"}
+          ],
+          "postDialogue": [
+            {"speaker": "Detective", "text": "Someone modified Shadow and tried to hide it."},
+            {"speaker": "Kastor", "text": "Time to confirm who admin01 is."},
+            {"speaker": "System", "type": "call", "target": "Maya"}
+          ]
+        },
+        {
+          "id": "call-maya-admin01",
+          "type": "dialogue",
+          "script": [
+            {"speaker": "Detective", "text": "Maya, who is admin01?"},
+            {"speaker": "Maya", "mood": "shocked", "text": "admin01 is Kaito Nakamura, our junior balance designer."},
+            {"speaker": "Detective", "text": "Was he working late?"},
+            {"speaker": "Maya", "text": "No, Day 28 was an early day. No overtime."},
+            {"speaker": "Kastor", "text": "Then he logged in from home. Unauthorized."},
+            {"speaker": "Maya", "text": "Please find out the truth."}
+          ]
+        }
+      ],
+      "next": "scene-2-1"
+    },
+    {
+      "id": "scene-2-1",
+      "code": "2.1",
+      "title": "Timeline Reconstruction",
+      "location": "Data Lab — Timeline Wall",
+      "phase": "analysis",
+      "layout": {
+        "background": "timeline-board",
+        "hud": "timeline"
+      },
+      "goals": [
+        "Recreate admin01's activity timeline.",
+        "Contrast office vs home sessions."
+      ],
+      "dialogue": [
+        {"speaker": "Kastor", "mood": "strategic", "text": "Let's rebuild Kaito's actions."},
+        {"speaker": "System", "type": "ui", "text": "[Timeline puzzle unlocked]"},
+        {"speaker": "Kastor", "text": "Sort events chronologically. Office first, home second."}
+      ],
+      "interactions": [
+        {
+          "id": "timeline-reconstruct",
+          "type": "timeline",
+          "prompt": "Arrange Kaito's Day 28 activities.",
+          "events": [
+            {"id": "19-15", "label": "19:15 — Login (Office)", "category": "office", "order": 1},
+            {"id": "19-20", "label": "19:20 — Checked Shadow data", "category": "office", "order": 2},
+            {"id": "19-45", "label": "19:45 — Logout (Office)", "category": "office", "order": 3},
+            {"id": "23-35", "label": "23:35 — Login (Home)", "category": "home", "order": 4, "flag": "suspicious"},
+            {"id": "23-47", "label": "23:47 — Modified Shadow (Damage +35%, Defense +20%)", "category": "home", "order": 5, "flag": "critical"},
+            {"id": "23-52", "label": "23:52 — Attempted to delete logs (Failed)", "category": "home", "order": 6, "flag": "critical"},
+            {"id": "00-05", "label": "00:05 — Logout (Home)", "category": "home", "order": 7}
+          ],
+          "postDialogue": [
+            {"speaker": "Detective", "text": "He checked data at work, executed changes at home."},
+            {"speaker": "Kastor", "mood": "grim", "text": "Classic sneaky pattern."},
+            {"speaker": "System", "type": "celebration", "variant": "mini", "title": "Timeline complete!", "reward": {"xp": 20, "items": ["timeline-evidence"]}}
+          ]
+        }
+      ],
+      "next": "scene-2-2"
+    },
+    {
+      "id": "scene-2-2",
+      "code": "2.2",
+      "title": "Lukas Interview",
+      "location": "Holo-call",
+      "phase": "analysis",
+      "layout": {
+        "background": "call-interface",
+        "hud": "dialogue"
+      },
+      "goals": [
+        "Gather testimony from Lukas.",
+        "Reveal trust dynamics."
+      ],
+      "dialogue": [
+        {"speaker": "System", "type": "sound", "text": "[Calling Lukas Schmidt...]"},
+        {"speaker": "Detective", "text": "Mr. Schmidt, we need to confirm Day 28."},
+        {"speaker": "Lukas", "mood": "cooperative", "text": "I logged in at 22:30 for routine checks. Logged out by 22:40."},
+        {"speaker": "Detective", "text": "Kaito logged in again later from home."},
+        {"speaker": "Lukas", "mood": "shocked", "text": "What? That can't be right. He's a good kid."},
+        {"speaker": "Kastor", "mood": "firm", "text": "Logs don't lie. Someone manipulated Shadow."},
+        {"speaker": "Lukas", "mood": "somber", "text": "I... I need time to process this."}
+      ],
+      "next": "scene-3-1"
+    },
+    {
+      "id": "scene-3-1",
+      "code": "3.1",
+      "title": "IP Tracking",
+      "location": "Cyber Desk",
+      "phase": "investigation",
+      "layout": {
+        "background": "network-grid",
+        "hud": "database"
+      },
+      "goals": [
+        "Connect admin actions to player account Noctis.",
+        "Distinguish between suspects."
+      ],
+      "dialogue": [
+        {"speaker": "Kastor", "mood": "determined", "text": "IP addresses loaded. Let's see where admin01 connects."},
+        {"speaker": "System", "type": "ui", "text": "[Database search interface opens]"}
+      ],
+      "interactions": [
+        {
+          "id": "ip-database-search",
+          "type": "database-search",
+          "prompt": "Match the suspicious IP with player records.",
+          "searchValue": "192.168.45.178",
+          "results": [
+            {
+              "ign": "Noctis",
+              "ip": "192.168.45.178",
+              "mainCharacter": "Shadow (95% usage)",
+              "session": "Day 28 — 23:50 to 01:30",
+              "winRateChange": "48% → 88%",
+              "flag": "critical"
+            },
+            {
+              "ign": "ShadowFan99",
+              "ip": "192.168.12.034",
+              "mainCharacter": "Shadow (45% usage)",
+              "session": "Day 28 — 19:00 to 21:00",
+              "winRateChange": "62% → 65%",
+              "flag": "normal"
+            }
+          ],
+          "postDialogue": [
+            {"speaker": "Detective", "text": "Noctis logs in three minutes after the modification."},
+            {"speaker": "Kastor", "mood": "analytical", "text": "Win rate jumps 40%. Motivation secured."},
+            {"speaker": "System", "type": "celebration", "variant": "mini", "title": "Culprit identified!", "reward": {"xp": 25, "items": ["evidence-ip-match"]}}
+          ]
+        }
+      ],
+      "next": "scene-3-2"
+    },
+    {
+      "id": "scene-3-2",
+      "code": "3.2",
+      "title": "Diego Interview",
+      "location": "Video Call",
+      "phase": "investigation",
+      "layout": {
+        "background": "call-interface",
+        "hud": "dialogue"
+      },
+      "goals": [
+        "Clear secondary suspect.",
+        "Show community impact."
+      ],
+      "dialogue": [
+        {"speaker": "System", "type": "sound", "text": "[Calling Diego Torres...]"},
+        {"speaker": "Detective", "text": "Diego, did you play after 9 PM on Day 28?"},
+        {"speaker": "Diego", "mood": "energetic", "text": "No way! Homework night. Logged off at 9."},
+        {"speaker": "Detective", "text": "Thanks. You're cleared."},
+        {"speaker": "Diego", "mood": "relieved", "text": "Phew! Please catch the real cheater!"}
+      ],
+      "next": "scene-4-1"
+    },
+    {
+      "id": "scene-4-1",
+      "code": "4.1",
+      "title": "Confronting Kaito",
+      "location": "Interrogation Call",
+      "phase": "climax",
+      "layout": {
+        "background": "interrogation-room",
+        "hud": "dialogue"
+      },
+      "goals": [
+        "Present evidence chain to Kaito.",
+        "Transition into testimony press mini-game."
+      ],
+      "dialogue": [
+        {"speaker": "System", "type": "sound", "text": "[Calling Kaito Nakamura...]"},
+        {"speaker": "Detective", "text": "Kaito, let's talk about Day 28."},
+        {"speaker": "Kaito", "mood": "defensive", "text": "What about it?"},
+        {"speaker": "Detective", "text": "23:35 home login, 23:47 Shadow modification, 23:50 Noctis log-in."},
+        {"speaker": "Kaito", "mood": "nervous", "text": "You have proof?"},
+        {"speaker": "Kastor", "mood": "firm", "text": "IP, timeline, and win rate all point to you."}
+      ],
+      "next": "scene-4-2"
+    },
+    {
+      "id": "scene-4-2",
+      "code": "4.2",
+      "title": "Testimony Press",
+      "location": "Interrogation Interface",
+      "phase": "climax",
+      "layout": {
+        "background": "evidence-room",
+        "hud": "testimony"
+      },
+      "goals": [
+        "Catch contradictions in Kaito's statements.",
+        "Force confession."
+      ],
+      "dialogue": [
+        {"speaker": "Kaito", "mood": "defensive", "text": "I was just doing routine maintenance."},
+        {"speaker": "Kaito", "text": "Lots of people play after work."},
+        {"speaker": "Kaito", "text": "My win rate improved because I practiced hard."},
+        {"speaker": "Kaito", "text": "I don't even like Shadow that much."}
+      ],
+      "interactions": [
+        {
+          "id": "testimony-press-01",
+          "type": "testimony-press",
+          "statements": [
+            {
+              "id": "routine-maintenance",
+              "statement": "I was just doing routine maintenance.",
+              "contradictionEvidence": "No maintenance scheduled; home login flagged.",
+              "resolution": "Press reveals unauthorized action."
+            },
+            {
+              "id": "practice-winrate",
+              "statement": "My win rate improved because I practiced hard.",
+              "contradictionEvidence": "Win rate jump occurred minutes after modification.",
+              "resolution": "Press reveals cause-effect link."
+            },
+            {
+              "id": "shadow-preference",
+              "statement": "I don't even like Shadow that much.",
+              "contradictionEvidence": "Player profile shows 95% usage.",
+              "resolution": "Press breaks denial."
+            }
+          ],
+          "postDialogue": [
+            {"speaker": "Kastor", "mood": "intense", "text": "Why attempt to delete logs if it was innocent?"},
+            {"speaker": "Kaito", "mood": "defeated", "text": "...I'm sorry. I just wanted to win."},
+            {"speaker": "System", "type": "celebration", "variant": "major", "title": "Case Solved!", "reward": {"xp": 50, "items": ["case-badge-001"]}}
+          ]
+        }
+      ],
+      "next": "scene-5-1"
+    },
+    {
+      "id": "scene-5-1",
+      "code": "5.1",
+      "title": "Confession & Reactions",
+      "location": "Agency HQ",
+      "phase": "resolution",
+      "layout": {
+        "background": "office-dawn",
+        "hud": "dialogue"
+      },
+      "goals": [
+        "Deliver emotional payoff.",
+        "Show stakeholder responses."
+      ],
+      "dialogue": [
+        {"speaker": "Kaito", "mood": "remorseful", "text": "I kept losing the company tournament. I wanted to prove myself."},
+        {"speaker": "Maya", "mood": "disappointed", "text": "You broke player trust. We'll have to take action."},
+        {"speaker": "Lukas", "mood": "hurt", "text": "I mentored you. Why didn't you come to me?"},
+        {"speaker": "Diego", "mood": "relieved", "text": "Glad you caught the real culprit!"}
+      ],
+      "next": "scene-5-2"
+    },
+    {
+      "id": "scene-5-2",
+      "code": "5.2",
+      "title": "Case Report Assembly",
+      "location": "War Room",
+      "phase": "resolution",
+      "layout": {
+        "background": "report-room",
+        "hud": "report"
+      },
+      "goals": [
+        "Summarize who/when/how/why.",
+        "Reinforce learning outcomes."
+      ],
+      "interactions": [
+        {
+          "id": "case-report",
+          "type": "case-report",
+          "fields": [
+            {"id": "who", "prompt": "WHO committed the crime?", "options": ["Kaito Nakamura", "Lukas Schmidt", "Diego Torres", "Maya Zhang"], "answer": "Kaito Nakamura"},
+            {"id": "when", "prompt": "WHEN did it occur?", "options": ["Day 27 19:20", "Day 28 23:47", "Day 28 22:30", "Day 29 01:00"], "answer": "Day 28 23:47"},
+            {"id": "how", "prompt": "HOW was it done?", "options": ["Unauthorized data modification", "Bug exploitation", "Official patch mistake", "External hacking"], "answer": "Unauthorized data modification"},
+            {"id": "why", "prompt": "WHY was it done?", "options": ["Desperation to prove himself", "Sabotaging the company", "Accidental mistake", "Testing balance"], "answer": "Desperation to prove himself"}
+          ],
+          "evidenceChecklist": [
+            "Shadow win rate spike (Day 28)",
+            "Patch notes: No Shadow changes",
+            "Server logs: admin01 modification",
+            "IP tracing: admin01 = Noctis",
+            "Play session: Noctis 23:50–01:30",
+            "Win rate jump: 48% → 88%"
+          ],
+          "postDialogue": [
+            {"speaker": "Detective", "text": "Summary submitted."},
+            {"speaker": "Kastor", "mood": "celebratory", "text": "Perfect report! 100 points!"}
+          ]
+        }
+      ],
+      "next": "scene-5-3"
+    },
+    {
+      "id": "scene-5-3",
+      "code": "5.3",
+      "title": "Case Evaluation",
+      "location": "Evaluation Screen",
+      "phase": "resolution",
+      "layout": {
+        "background": "evaluation-terminal",
+        "hud": "score"
+      },
+      "goals": [
+        "Provide performance feedback.",
+        "Unlock rank-based endings."
+      ],
+      "dialogue": [
+        {"speaker": "System", "type": "ui", "text": "[CASE COMPLETE — Calculating rank]"}
+      ],
+      "interactions": [
+        {
+          "id": "rank-outcome",
+          "type": "rank-display",
+          "ranks": [
+            {
+              "id": "s-rank",
+              "requirements": {"evidence": 6, "logic": 4, "time": "optimal"},
+              "dialogue": [
+                {"speaker": "System", "text": "Evidence: 6/6 ✓"},
+                {"speaker": "System", "text": "Logic Connections: 4/4 ✓"},
+                {"speaker": "System", "text": "Contradictions: 3/3 ✓"},
+                {"speaker": "System", "text": "FINAL GRADE: S RANK 🏆"},
+                {"speaker": "Kastor", "mood": "thrilled", "text": "First case, SOLVED!"}
+              ]
+            },
+            {
+              "id": "a-rank",
+              "requirements": {"evidence": ">=4", "logic": ">=3"},
+              "dialogue": [
+                {"speaker": "System", "text": "Evidence: 5/6"},
+                {"speaker": "System", "text": "Logic Connections: 3/4"},
+                {"speaker": "System", "text": "FINAL GRADE: A RANK ⭐"},
+                {"speaker": "Kastor", "mood": "supportive", "text": "Solid work! Let's keep improving!"}
+              ]
+            },
+            {
+              "id": "b-rank",
+              "requirements": {"evidence": ">=3"},
+              "dialogue": [
+                {"speaker": "System", "text": "Evidence: 3/6"},
+                {"speaker": "System", "text": "FINAL GRADE: B RANK"},
+                {"speaker": "Kastor", "mood": "encouraging", "text": "We caught the culprit, but there's room to grow."}
+              ]
+            },
+            {
+              "id": "c-rank",
+              "requirements": {"evidence": "<3"},
+              "dialogue": [
+                {"speaker": "System", "text": "Evidence: 2/6"},
+                {"speaker": "System", "text": "FINAL GRADE: C RANK"},
+                {"speaker": "Kastor", "mood": "gentle", "text": "Everyone starts somewhere. Follow the data!"}
+              ]
+            }
+          ]
+        }
+      ],
+      "next": "scene-5-4"
+    },
+    {
+      "id": "scene-5-4",
+      "code": "5.4",
+      "title": "Closing Banter",
+      "location": "Agency Lobby",
+      "phase": "resolution",
+      "layout": {
+        "background": "lobby-morning",
+        "hud": "minimal"
+      },
+      "goals": [
+        "Reset pacing.",
+        "Tease next episode."
+      ],
+      "dialogue": [
+        {"speaker": "Kastor", "mood": "cheerful", "text": "Next case is waiting~"},
+        {"speaker": "Detective", "mood": "exhausted", "text": "Already?"},
+        {"speaker": "Kastor", "mood": "playful", "text": "Detectives are busy!"},
+        {"speaker": "System", "type": "ui", "text": "[Episode 2 unlocked]"}
+      ],
+      "next": "scene-x-1"
+    },
+    {
+      "id": "scene-x-1",
+      "code": "X",
+      "title": "Classified: The Fixer's Playbook",
+      "location": "Encrypted Archive",
+      "phase": "post-credits",
+      "unlockCondition": "Complete Episode 3",
+      "layout": {
+        "background": "encrypted-terminal",
+        "hud": " dossier"
+      },
+      "goals": [
+        "Reveal mastermind intent.",
+        "Foreshadow future conflict."
+      ],
+      "dialogue": [
+        {"speaker": "System", "type": "file", "text": "=== OPERATION: SHADOW TEST ==="},
+        {"speaker": "System", "text": "Objective: Test run + Insider recruitment"},
+        {"speaker": "System", "text": "Target: Legend Arena"},
+        {"speaker": "System", "text": "Status: COMPLETED"},
+        {"speaker": "System", "text": "PHASE 1 — Subject: Kaito Nakamura (junior balance). Psychological profile exploitable."},
+        {"speaker": "System", "text": "PHASE 2 — Anonymous forum manipulation. Trigger hero complex."},
+        {"speaker": "System", "text": "PHASE 3 — Email attachment: balance_patch_v2.8_final.json."},
+        {"speaker": "System", "text": "PHASE 4 — Execution trigger: 'Sometimes heroes have to act alone.'"},
+        {"speaker": "System", "text": "PHASE 5 — Observation: Detective team confirmed. Security gaps logged."},
+        {"speaker": "System", "text": "RESULTS: Company reputation damaged, vulnerabilities mapped, detective marked as threat."},
+        {"speaker": "System", "text": "NOTES: Ryan stronger-willed than predicted. Adjust approach."},
+        {"speaker": "Fixer", "mood": "unknown", "text": "Phase 1 complete. Moving to Phase 2. Stand by."},
+        {"speaker": "Kastor", "mood": "serious", "text": "Someone planned this from the start..."},
+        {"speaker": "Detective", "mood": "resolute", "text": "The Fixer. We'll find them."},
+        {"speaker": "System", "type": "celebration", "variant": "revelation", "title": "The bigger picture revealed", "reward": {"xp": 50, "items": ["codex-fixer"]}}
+      ],
+      "next": null
+    }
+  ],
+  "glossary": {
+    "characters": [
+      {"id": "detective", "name": "Detective (Player)", "personality": "Earnest, eager learner", "arc": "Confused rookie → confident analyst"},
+      {"id": "kastor", "name": "Kastor", "personality": "Playful AI partner with sharp logic", "arc": "Comic relief → serious mentor"},
+      {"id": "maya", "name": "Maya Zhang", "personality": "Perfectionist director", "arc": "Panicked → composed leader"},
+      {"id": "kaito", "name": "Kaito Nakamura (Noctis)", "personality": "Competitive, insecure", "arc": "Confident → exposed → remorseful"},
+      {"id": "lukas", "name": "Lukas Schmidt", "personality": "Kind mentor", "arc": "Trusting → heartbroken"},
+      {"id": "diego", "name": "Diego Torres (ShadowFan99)", "personality": "Energetic player", "arc": "Worried → vindicated"},
+      {"id": "fixer", "name": "The Fixer", "personality": "Shadowy mastermind", "arc": "Observer plotting future phases"}
+    ],
+    "mechanics": [
+      {"id": "graph-analysis", "label": "Graph Analysis", "description": "Select the data series that behaves abnormally."},
+      {"id": "document-compare", "label": "Document Examination", "description": "Cross-reference multiple documents to spot contradictions."},
+      {"id": "timeline", "label": "Timeline Reconstruction", "description": "Order events chronologically to reveal hidden patterns."},
+      {"id": "database-search", "label": "Database Search", "description": "Filter and match IP addresses with player profiles."},
+      {"id": "testimony-press", "label": "Testimony Press", "description": "Challenge contradictory statements using collected evidence."},
+      {"id": "case-report", "label": "Case Report Assembly", "description": "Summarize case details to reinforce key learning points."},
+      {"id": "rank-display", "label": "Rank Evaluation", "description": "Deliver dynamic outcomes based on performance metrics."}
+    ],
+    "rewards": [
+      {"id": "badge-partner", "name": "Partner Badge", "description": "Unlocked after forming partnership with Kastor."},
+      {"id": "clue-shadow-spike", "name": "Shadow Spike Graph", "description": "Evidence showing abnormal win rate jump."},
+      {"id": "timeline-evidence", "name": "Timeline Board", "description": "Chronological reconstruction of admin01 actions."},
+      {"id": "evidence-ip-match", "name": "IP Connection Report", "description": "Proof linking admin01 to player Noctis."},
+      {"id": "case-badge-001", "name": "Case #001 Medal", "description": "Awarded for solving Episode 1."},
+      {"id": "codex-fixer", "name": "Fixer Codex Entry", "description": "Unlocks classified intel on the Fixer."}
+    ]
+  }
+}

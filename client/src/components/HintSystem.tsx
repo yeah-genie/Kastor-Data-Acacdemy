@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Hint } from "../data/case1-episode-final";
+import { Hint } from "../data/episode-types";
 
 interface HintSystemProps {
   hints: Hint[];

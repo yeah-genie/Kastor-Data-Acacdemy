@@ -1,4 +1,4 @@
-import type { StoryNode } from "./case1-episode-final";
+import type { StoryNode } from "./episode-types";
 
 /**
  * Episode 3: The Perfect Victory

@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { User, FileText, Mail } from "lucide-react";
-import { Message } from "@/data/case1-episode-final";
+import { Message } from "@/data/episode-types";
 import { useEffect, useState } from "react";
 import { useAudio } from "@/lib/stores/useAudio";
 import { useDetectiveGame } from "@/lib/stores/useDetectiveGame";

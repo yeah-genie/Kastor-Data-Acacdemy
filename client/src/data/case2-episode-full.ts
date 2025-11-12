@@ -1,7 +1,7 @@
 import {
   Message,
   StoryNode,
-} from "./case1-episode-final";
+} from "./episode-types";
 
 /**
  * Episode 2: The Ghost User's Ranking Manipulation
