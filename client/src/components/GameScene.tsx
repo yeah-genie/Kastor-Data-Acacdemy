@@ -495,21 +495,21 @@ export function GameScene() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
+    <div className="min-h-screen bg-[#1a1a2e] flex flex-col">
       {/* Chat Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+      <div className="bg-[#1f2a40] border-b border-white/10 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <button 
+          <button
             onClick={handleBackToMenu}
-            className="text-gray-600 hover:text-gray-900 transition-colors text-2xl font-light"
+            className="text-white/70 hover:text-white transition-colors text-2xl font-light"
           >
             ←
           </button>
           <div>
-            <h1 className="font-semibold text-gray-900">
+            <h1 className="font-semibold text-white">
               {caseMetadata[currentCase]?.title || "Case Investigation"}
             </h1>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-[#00d9ff]">
               {phase === "stage1" && "Stage 1: Testimony & Hypothesis"}
               {phase === "stage2" && "Stage 2: Data Collection"}
               {phase === "stage3" && "Stage 3: Data Preprocessing"}
@@ -520,29 +520,29 @@ export function GameScene() {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="px-3 py-1.5 bg-gray-100 rounded-lg border border-gray-200">
+          <div className="px-3 py-1.5 bg-white/10 rounded-lg border border-white/20">
             <div className="flex items-center gap-1.5">
-              <span className="text-gray-900 text-sm font-bold">{score} XP</span>
+              <span className="text-white text-sm font-bold">{score} XP</span>
             </div>
           </div>
-          
+
           <button
             onClick={toggleMute}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600"
+            className="p-2 rounded-lg hover:bg-white/10 transition-colors text-white/70"
           >
             {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
           </button>
-          
+
           <button
             onClick={() => {
               setShowNotebook(true);
               clearNewEvidenceFlag();
             }}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600 relative"
+            className="p-2 rounded-lg hover:bg-white/10 transition-colors text-white/70 relative"
           >
             <BookOpen className="w-5 h-5" />
             {hasNewEvidence && (
-              <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+              <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-[#00d9ff] rounded-full border-2 border-[#1f2a40]"></span>
             )}
           </button>
         </div>
@@ -621,18 +621,18 @@ export function GameScene() {
       </div>
 
       {/* Bottom Input Area */}
-      <div className="bg-white border-t border-gray-200 px-3 py-2 safe-area-bottom">
+      <div className="bg-[#1f2a40] border-t border-white/10 px-3 py-2 safe-area-bottom">
         <div className="flex items-center gap-2">
-          <button 
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-400"
+          <button
+            className="p-2 rounded-full hover:bg-white/10 transition-colors text-white/40"
             disabled
           >
             <Plus className="w-6 h-6" />
           </button>
-          <div className="flex-1 bg-gray-100 rounded-full px-4 py-2.5 flex items-center justify-between">
-            <span className="text-gray-500 text-sm">
-              {visibleMessages < currentStoryNode.messages.length 
-                ? "Continue the conversation..." 
+          <div className="flex-1 bg-white/5 rounded-full px-4 py-2.5 flex items-center justify-between border border-white/10">
+            <span className="text-white/60 text-sm">
+              {visibleMessages < currentStoryNode.messages.length
+                ? "Continue the conversation..."
                 : showQuestion || showEvidencePresentation
                   ? "Make your choice above..."
                   : currentStoryNode.dataVisualizations
@@ -643,16 +643,16 @@ export function GameScene() {
               }
             </span>
           </div>
-          <button 
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-400"
+          <button
+            className="p-2 rounded-full hover:bg-white/10 transition-colors text-white/40"
             disabled
           >
             <Mic className="w-5 h-5" />
           </button>
-          <button 
+          <button
             onClick={handleChatClick}
             disabled={isTyping || !isAwaitingAdvance || showTypingIndicator || (visibleMessages === currentStoryNode.messages.length && (showQuestion || showEvidencePresentation))}
-            className="p-2.5 rounded-full bg-blue-500 hover:bg-blue-600 transition-colors text-white disabled:bg-gray-300 disabled:cursor-not-allowed shadow-sm"
+            className="p-2.5 rounded-full bg-gradient-to-r from-[#00d9ff] to-[#00a6c7] hover:from-[#00a6c7] hover:to-[#008ca8] transition-colors text-[#1a1a2e] disabled:bg-white/20 disabled:from-transparent disabled:to-transparent disabled:cursor-not-allowed shadow-lg shadow-[#00d9ff]/20"
           >
             <Send className="w-5 h-5" />
           </button>
