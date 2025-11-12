@@ -5,17 +5,11 @@ import { useAudio } from "./lib/stores/useAudio";
 import TitleSplash from "./components/TitleSplash";
 import MainMenu from "./components/MainMenu";
 import EpisodeSelectionScreen from "./components/EpisodeSelectionScreen";
-import { GameScene } from "./components/GameScene";
 import SceneTransition from "./components/SceneTransition";
 import "@fontsource/inter";
 import { useNavigate } from "react-router-dom";
 
-type Screen =
-  | "splash"
-  | "menu"
-  | "episodes"
-  | "settings"
-  | "game";
+type Screen = "splash" | "menu" | "episodes" | "settings";
 
 function AppNew() {
   const [currentScreen, setCurrentScreen] = useState<Screen>("splash");
@@ -111,7 +105,6 @@ function AppNew() {
     }
 
     setPhase("intro");
-    setCurrentScreen("game");
     navigate("/dashboard/chat");
   };
 
@@ -155,13 +148,6 @@ function AppNew() {
               onSelectEpisode={handleSelectEpisode}
               episodes={episodes}
             />
-          </SceneTransition>
-        )}
-
-        {/* Game Scene */}
-        {currentScreen === "game" && (
-          <SceneTransition show={true} type="fade" duration={0.8}>
-            <GameScene />
           </SceneTransition>
         )}
 

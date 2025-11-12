@@ -1,1 +1,1 @@
-export {};
+export { ChatView } from "./ChatView";

@@ -1,1 +1,1 @@
-export {};
+export { TeamView } from "./TeamView";

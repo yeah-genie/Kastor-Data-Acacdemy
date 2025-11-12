@@ -1,1 +1,1 @@
-export {};
+export { FilesView } from "./FilesView";
