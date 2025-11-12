@@ -8,6 +8,7 @@ import EpisodeSelectionScreen from "./components/EpisodeSelectionScreen";
 import { GameScene } from "./components/GameScene";
 import SceneTransition from "./components/SceneTransition";
 import "@fontsource/inter";
+import { useNavigate } from "react-router-dom";
 
 type Screen =
   | "splash"
@@ -21,6 +22,7 @@ function AppNew() {
   const [selectedEpisode, setSelectedEpisode] = useState<number | null>(null);
   const { phase, setPhase, startCase, setCurrentNode } = useDetectiveGame();
   const { setBackgroundMusic, setSuccessSound, setHitSound } = useAudio();
+  const navigate = useNavigate();
 
   // Initialize audio
   useEffect(() => {
@@ -80,8 +82,7 @@ function AppNew() {
   };
 
   const handleContinue = () => {
-    // TODO: Load save data
-    setCurrentScreen("game");
+    navigate("/dashboard/chat");
   };
 
   const handleEpisodes = () => {
@@ -111,6 +112,7 @@ function AppNew() {
 
     setPhase("intro");
     setCurrentScreen("game");
+    navigate("/dashboard/chat");
   };
 
   const handleBackToMenu = () => {
