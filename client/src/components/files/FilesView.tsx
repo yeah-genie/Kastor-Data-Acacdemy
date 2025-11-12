@@ -1,6 +1,19 @@
-import { Fragment, useMemo, useState } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MouseEvent,
+  type PointerEvent,
+} from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  AlertTriangle,
+  Bookmark,
+  BookmarkCheck,
+  BookmarkPlus,
   Calendar,
   ChevronDown,
   ChevronRight,
@@ -8,6 +21,8 @@ import {
   FileText,
   Filter,
   Folder,
+  ClipboardCopy,
+  Highlighter,
   Image as ImageIcon,
   Info,
   LayoutGrid as LayoutGridIcon,
@@ -15,6 +30,10 @@ import {
   Mail,
   MoreHorizontal,
   Search,
+  Download as DownloadIcon,
+  Printer,
+  RefreshCw,
+  RotateCcw,
   Share2,
   ShieldAlert,
   Sparkles,
@@ -22,25 +41,40 @@ import {
   StarOff,
   Table2,
   Video,
+  ZoomIn,
+  ZoomOut,
 } from "lucide-react";
 import styled from "styled-components";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 type EvidenceType = "document" | "log" | "email" | "image" | "video" | "data" | "encrypted";
 type EvidenceImportance = "low" | "medium" | "high" | "critical";
+type LogLevel = "INFO" | "WARN" | "ERROR" | "DEBUG" | "CRITICAL";
 
 interface EvidencePreviewBase {
-  kind: EvidenceType | "text";
+  kind: "document" | "log" | "email" | "data" | "image" | "video" | "encrypted";
 }
 
-interface TextPreview extends EvidencePreviewBase {
-  kind: "text";
+interface DocumentPreview extends EvidencePreviewBase {
+  kind: "document";
   body: string[];
+  language?: string;
+  filenameHint?: string;
 }
 
 interface LogPreview extends EvidencePreviewBase {
   kind: "log";
   lines: string[];
+  language?: string;
   highlight?: number[];
+}
+
+interface EmailAttachment {
+  filename: string;
+  size: string;
+  type: string;
+  suspicious?: boolean;
 }
 
 interface EmailPreview extends EvidencePreviewBase {
@@ -50,6 +84,9 @@ interface EmailPreview extends EvidencePreviewBase {
   cc?: string[];
   subject: string;
   body: string[];
+  attachments?: EmailAttachment[];
+  thread?: Array<{ sender: string; timestamp: string; summary: string }>;
+  flaggedPhrases?: string[];
 }
 
 interface TablePreview extends EvidencePreviewBase {
@@ -64,6 +101,11 @@ interface ImagePreview extends EvidencePreviewBase {
   src: string;
   alt: string;
   caption?: string;
+  metadata?: {
+    resolution?: string;
+    capturedAt?: string;
+    device?: string;
+  };
 }
 
 interface VideoPreview extends EvidencePreviewBase {
@@ -80,7 +122,7 @@ interface EncryptedPreview extends EvidencePreviewBase {
 }
 
 type EvidencePreview =
-  | TextPreview
+  | DocumentPreview
   | LogPreview
   | EmailPreview
   | TablePreview
@@ -151,6 +193,77 @@ const FOLDER_TREE: FolderNode = {
   ],
 };
 
+interface AnnotationBookmark {
+  id: string;
+  label: string;
+  target: string;
+}
+
+interface AnnotationEntry {
+  highlights: string[];
+  bookmarks: AnnotationBookmark[];
+}
+
+type AnnotationState = Record<string, AnnotationEntry>;
+
+const ANNOTATIONS_STORAGE_KEY = "kastor-files-annotations";
+const NOTES_STORAGE_KEY = "kastor-files-notes";
+
+const createDefaultAnnotation = (): AnnotationEntry => ({
+  highlights: [],
+  bookmarks: [],
+});
+
+const loadAnnotationsFromStorage = (): AnnotationState => {
+  if (typeof window === "undefined") return {};
+  try {
+    const stored = window.localStorage.getItem(ANNOTATIONS_STORAGE_KEY);
+    if (!stored) return {};
+    const parsed = JSON.parse(stored) as AnnotationState;
+    return parsed ?? {};
+  } catch (error) {
+    console.warn("Failed to parse annotations from storage", error);
+    return {};
+  }
+};
+
+const loadNotesFromStorage = (): Record<string, string> => {
+  if (typeof window === "undefined") return {};
+  try {
+    const stored = window.localStorage.getItem(NOTES_STORAGE_KEY);
+    if (!stored) return {};
+    const parsed = JSON.parse(stored) as Record<string, string>;
+    return parsed ?? {};
+  } catch (error) {
+    console.warn("Failed to parse notes from storage", error);
+    return {};
+  }
+};
+
+const createBookmarkId = () => {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+  return Math.random().toString(36).slice(2);
+};
+
+const deriveLogLevel = (line: string): LogLevel => {
+  const lower = line.toLowerCase();
+  if (lower.includes("critical") || lower.includes("severe") || lower.includes("**")) {
+    return "CRITICAL";
+  }
+  if (/\b(error|failed|denied|panic)\b/.test(lower)) {
+    return "ERROR";
+  }
+  if (/\b(warn|anomaly|suspicious)\b/.test(lower)) {
+    return "WARN";
+  }
+  if (/\b(debug|trace)\b/.test(lower)) {
+    return "DEBUG";
+  }
+  return "INFO";
+};
+
 const EVIDENCE_FILES: EvidenceFile[] = [
   {
     id: "ev-001",
@@ -191,13 +304,13 @@ const EVIDENCE_FILES: EvidenceFile[] = [
     related: ["ev-001", "ev-007"],
     summary: "Concise recap from the emergency SOC huddle with immediate action items.",
     preview: {
-      kind: "text",
-        body: [
-          "- IDS escalation triggered at 03:01 when outbound bandwidth spiked.",
-          "- Kastor estimates 1.2 TB of data already streamed to an external VPS.",
-          "- Unlisted service account `svc_boundary` leveraged DMZ Edge 02.",
-          "- Next steps include CCTV review, badge access correlation, and isolating the host.",
-        ],
+      kind: "document",
+      body: [
+        "- IDS escalation triggered at 03:01 when outbound bandwidth spiked.",
+        "- Kastor estimates 1.2 TB of data already streamed to an external VPS.",
+        "- Unlisted service account `svc_boundary` leveraged DMZ Edge 02.",
+        "- Next steps include CCTV review, badge access correlation, and isolating the host.",
+      ],
     },
   },
   {
@@ -219,6 +332,15 @@ const EVIDENCE_FILES: EvidenceFile[] = [
       to: ["incident-response@legendarena.com"],
       cc: ["kastor@legendarena.com", "camille.beaumont@legendarena.com"],
       subject: "[URGENT] Data Exfiltration Detected - Ticket #5741",
+      flaggedPhrases: ["1.2 tb", "immediate containment"],
+      attachments: [
+        { filename: "dmz-edge-02.log", size: "512 KB", type: "log", suspicious: true },
+        { filename: "containment-playbook.pdf", size: "184 KB", type: "pdf" },
+      ],
+      thread: [
+        { sender: "Camille Beaumont", timestamp: "03:12", summary: "Acknowledged. Warming war room." },
+        { sender: "Kastor", timestamp: "03:13", summary: "Running badge access correlation now." },
+      ],
       body: [
         "Team,",
         "FW-DMZ-02 flagged sustained uploads at 03:02 AM. Estimated volume currently 1.2 TB.",
@@ -244,6 +366,11 @@ const EVIDENCE_FILES: EvidenceFile[] = [
       src: "/office-scene.jpg",
       alt: "Server room CCTV still",
       caption: "Unknown silhouette appears near rack #5 at 03:00:42 AM.",
+      metadata: {
+        resolution: "1920 x 1080",
+        capturedAt: "2025-11-12 03:00:42",
+        device: "CCTV Node SV-03",
+      },
     },
   },
   {
@@ -282,8 +409,8 @@ const EVIDENCE_FILES: EvidenceFile[] = [
     tags: ["employee", "ml-team", "background"],
     related: ["ev-008"],
     summary: "Background file on Isabella including system access roles and recent activity notes.",
-    preview: {
-      kind: "text",
+      preview: {
+        kind: "document",
         body: [
           "- Principal ML engineer with privileged model deployment access.",
           "- Recently requested elevated permissions to the DMZ analytics node.",
@@ -304,9 +431,9 @@ const EVIDENCE_FILES: EvidenceFile[] = [
     tags: ["timeline", "sequence", "analysis"],
     related: ["ev-002", "ev-010"],
     summary: "Minute-by-minute timeline tracing detection, containment, and escalation events.",
-    preview: {
-      kind: "text",
-      body: [
+      preview: {
+        kind: "document",
+        body: [
         "03:00 — Shift handover completed; surveillance status nominal.",
         "03:02 — DMZ Edge anomaly detected; ticket #5741 generated.",
         "03:05 — Incident response channel activated; evidence sweep initiated.",
@@ -803,21 +930,21 @@ const PreviewContent = styled.div`
   gap: 0.6rem;
 `;
 
-const CodeBlock = styled.pre`
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 0.75rem;
-  padding: 0.85rem;
-  color: ${({ theme }) => theme.colors.white};
-  font-size: 0.78rem;
-  overflow-x: auto;
-  font-family: ${({ theme }) => theme.fonts.mono};
-`;
-
-const Paragraph = styled.p`
+const Paragraph = styled.p<{ $highlighted?: boolean }>`
   margin: 0;
   color: ${({ theme }) => theme.colors.white};
+  background: ${({ $highlighted }) => ($highlighted ? "rgba(33, 150, 243, 0.18)" : "transparent")};
+  border: ${({ $highlighted }) => ($highlighted ? "1px solid rgba(33, 150, 243, 0.35)" : "1px solid transparent")};
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.75rem;
   font-size: 0.88rem;
   line-height: 1.6;
+  transition: background 0.2s ease, border 0.2s ease;
+  position: relative;
+
+  &:hover {
+    background: ${({ $highlighted }) => ($highlighted ? "rgba(33, 150, 243, 0.24)" : "rgba(255, 255, 255, 0.06)")};
+  }
 `;
 
 const TableWrapper = styled.div`
@@ -849,25 +976,154 @@ const DataTable = styled.table`
   }
 `;
 
-const ImagePreviewContainer = styled.div`
-  border-radius: 0.8rem;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
+const ViewerToolbar = styled.div`
   display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+`;
+
+const ParagraphRow = styled.div`
+  display: flex;
+  gap: 0.4rem;
+  align-items: flex-start;
+`;
+
+const ParagraphActions = styled.div`
+  display: inline-flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 0.25rem;
+  padding-top: 0.2rem;
+`;
 
-  img {
-    width: 100%;
-    display: block;
-    object-fit: cover;
+const InlineIconButton = styled.button<{ $active?: boolean }>`
+  appearance: none;
+  border: 1px solid ${({ $active }) => ($active ? "rgba(33, 150, 243, 0.6)" : "rgba(255, 255, 255, 0.12)")};
+  background: ${({ $active }) => ($active ? "rgba(33, 150, 243, 0.18)" : "rgba(255, 255, 255, 0.06)")};
+  color: ${({ theme }) => theme.colors.white};
+  border-radius: 0.6rem;
+  padding: 0.25rem;
+  cursor: pointer;
+  transition: background 0.2s ease, border 0.2s ease;
+  display: inline-flex;
+
+  &:hover {
+    background: ${({ $active }) => ($active ? "rgba(33, 150, 243, 0.26)" : "rgba(255, 255, 255, 0.12)")};
   }
+`;
 
-  span {
-    padding: 0 0.85rem 0.65rem;
-    font-size: 0.78rem;
-    color: ${({ theme }) => theme.colors.lightGray};
+const ToolbarGroup = styled.div`
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+`;
+
+const ToolbarButton = styled.button<{ $variant?: "primary" | "ghost" | "danger" }>`
+  appearance: none;
+  border-radius: 999px;
+  border: ${({ $variant }) => {
+    if ($variant === "ghost") return "1px solid rgba(255, 255, 255, 0.18)";
+    if ($variant === "danger") return "1px solid rgba(244, 67, 54, 0.4)";
+    return "1px solid transparent";
+  }};
+  background: ${({ $variant, theme }) => {
+    if ($variant === "primary") return theme.colors.primary;
+    if ($variant === "danger") return "rgba(244, 67, 54, 0.18)";
+    return "rgba(255, 255, 255, 0.06)";
+  }};
+  color: ${({ $variant }) => ($variant === "primary" ? "#ffffff" : "rgba(255, 255, 255, 0.85)")};
+  padding: 0.4rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  transition: transform 0.16s ease, background 0.2s ease, border 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    background: ${({ $variant, theme }) => {
+      if ($variant === "primary") return theme.colors.primary;
+      if ($variant === "danger") return "rgba(244, 67, 54, 0.28)";
+      return "rgba(255, 255, 255, 0.12)";
+    }};
+  }
+`;
+
+const MiniInput = styled.input`
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0.6rem;
+  color: ${({ theme }) => theme.colors.white};
+  font-size: 0.75rem;
+  padding: 0.35rem 0.6rem;
+  min-width: 140px;
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+const MiniSelect = styled.select`
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 0.6rem;
+  color: ${({ theme }) => theme.colors.white};
+  font-size: 0.75rem;
+  padding: 0.35rem 0.6rem;
+  min-width: 120px;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+const InlineBadge = styled.span<{ $tone?: "info" | "warning" | "danger" }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: ${({ $tone }) => {
+    switch ($tone) {
+      case "warning":
+        return "#ffd54f";
+      case "danger":
+        return "#ef9a9a";
+      default:
+        return "#90caf9";
+    }
+  }};
+  background: ${({ $tone }) => {
+    switch ($tone) {
+      case "warning":
+        return "rgba(255, 193, 7, 0.18)";
+      case "danger":
+        return "rgba(244, 67, 54, 0.18)";
+      default:
+        return "rgba(33, 150, 243, 0.18)";
+    }
+  }};
+`;
+
+const ImageCanvas = styled.div`
+  width: 100%;
+  height: 320px;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  position: relative;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
   }
 `;
 
@@ -926,6 +1182,62 @@ const RelatedList = styled.ul`
   font-size: 0.85rem;
 `;
 
+const BookmarkList = styled.ul`
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.4rem;
+`;
+
+const BookmarkItem = styled.li`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.78rem;
+  color: ${({ theme }) => theme.colors.white};
+`;
+
+const BookmarkActions = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+`;
+
+const ChartContainer = styled.div`
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.85rem;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 1rem;
+  display: grid;
+  gap: 0.75rem;
+`;
+
+const BarWrapper = styled.div`
+  display: grid;
+  gap: 0.35rem;
+`;
+
+const Bar = styled.div<{ $value: number }>`
+  height: 16px;
+  border-radius: 0.65rem;
+  background: linear-gradient(90deg, rgba(33, 150, 243, 0.65) 0%, rgba(33, 150, 243, 1) ${({ $value }) => Math.min($value, 100)}%, rgba(255, 255, 255, 0.08) ${({ $value }) =>
+      Math.min($value, 100)}%);
+  transition: background 0.3s ease;
+`;
+
+const BarLabel = styled.span`
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.75);
+  display: flex;
+  justify-content: space-between;
+`;
+
 const Toast = styled(motion.div)`
   position: absolute;
   bottom: 1rem;
@@ -962,6 +1274,800 @@ function flattenFolders(node: FolderNode, depth = 0, parentIds: string[] = []) {
 
 const FLATTENED_FOLDERS = flattenFolders(FOLDER_TREE);
 
+interface EmailViewerProps {
+  preview: EmailPreview;
+  globalQuery: string;
+  highlightedKeys: Set<string>;
+  onToggleHighlight: (targetKey: string, label: string) => void;
+  onAddBookmark: (label: string, target: string) => void;
+}
+
+function EmailViewer({ preview, globalQuery, highlightedKeys, onToggleHighlight, onAddBookmark }: EmailViewerProps) {
+  const [localQuery, setLocalQuery] = useState("");
+  const activeQuery = localQuery || globalQuery;
+  const flaggedSet = useMemo(
+    () => new Set((preview.flaggedPhrases ?? []).map((phrase) => phrase.toLowerCase())),
+    [preview.flaggedPhrases],
+  );
+
+  return (
+    <div style={{ display: "grid", gap: "0.75rem" }}>
+      <ViewerToolbar>
+        <ToolbarGroup>
+          <MiniInput
+            value={localQuery}
+            placeholder="Search email content..."
+            onChange={(event) => setLocalQuery(event.target.value)}
+            aria-label="Search within email"
+          />
+          {localQuery && (
+            <ToolbarButton $variant="ghost" onClick={() => setLocalQuery("")}>
+              <RefreshCw size={14} />
+              Clear
+            </ToolbarButton>
+          )}
+        </ToolbarGroup>
+        {preview.attachments?.length ? (
+          <InlineBadge $tone="warning">
+            <AlertTriangle size={12} />
+            Attachments ({preview.attachments.length})
+          </InlineBadge>
+        ) : null}
+      </ViewerToolbar>
+
+      <div style={{ display: "grid", gap: "0.5rem" }}>
+        <MetaCard>
+          <span>From</span>
+          <span>{preview.from}</span>
+        </MetaCard>
+        <MetaCard>
+          <span>To</span>
+          <span>{preview.to.join(", ")}</span>
+        </MetaCard>
+        {preview.cc && preview.cc.length > 0 && (
+          <MetaCard>
+            <span>CC</span>
+            <span>{preview.cc.join(", ")}</span>
+          </MetaCard>
+        )}
+        <MetaCard>
+          <span>Subject</span>
+          <span>{highlightText(preview.subject, activeQuery)}</span>
+        </MetaCard>
+      </div>
+
+      {preview.attachments && preview.attachments.length > 0 && (
+        <div>
+          <h4 style={{ margin: "0 0 0.4rem", fontSize: "0.85rem", color: "rgba(255,255,255,0.75)" }}>Attachments</h4>
+          <BookmarkList>
+            {preview.attachments.map((attachment) => (
+              <BookmarkItem key={attachment.filename}>
+                <span>
+                  {attachment.filename} ({attachment.size}) — {attachment.type}
+                </span>
+                {attachment.suspicious && (
+                  <InlineBadge $tone="danger">
+                    <AlertTriangle size={12} />
+                    Suspicious
+                  </InlineBadge>
+                )}
+              </BookmarkItem>
+            ))}
+          </BookmarkList>
+        </div>
+      )}
+
+      {preview.flaggedPhrases && preview.flaggedPhrases.length > 0 && (
+        <InlineBadge $tone="danger">
+          <AlertTriangle size={12} />
+          Suspicious phrasing detected: {preview.flaggedPhrases.join(", ")}
+        </InlineBadge>
+      )}
+
+      <div style={{ display: "grid", gap: "0.5rem" }}>
+        {preview.body.map((line, index) => {
+          const targetKey = `email-body-${index}`;
+          const label = `Email line ${index + 1}`;
+          const highlighted = highlightedKeys.has(targetKey);
+          const lowerLine = line.toLowerCase();
+          const autoFlagged = Array.from(flaggedSet).some((phrase) => lowerLine.includes(phrase));
+
+          return (
+            <ParagraphRow key={targetKey}>
+              <Paragraph
+                data-annotation-target={targetKey}
+                $highlighted={highlighted || autoFlagged}
+                onClick={() => onToggleHighlight(targetKey, label)}
+              >
+                {highlightText(line, activeQuery)}
+              </Paragraph>
+              <ParagraphActions>
+                <InlineIconButton
+                  $active={highlighted}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onToggleHighlight(targetKey, label);
+                  }}
+                  aria-label={highlighted ? "Remove highlight" : "Highlight email line"}
+                >
+                  <Highlighter size={14} />
+                </InlineIconButton>
+                <InlineIconButton
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onAddBookmark(label, targetKey);
+                  }}
+                  aria-label="Bookmark email line"
+                >
+                  <BookmarkPlus size={14} />
+                </InlineIconButton>
+              </ParagraphActions>
+            </ParagraphRow>
+          );
+        })}
+      </div>
+
+      {preview.thread && preview.thread.length > 0 && (
+        <div style={{ display: "grid", gap: "0.45rem" }}>
+          <h4 style={{ margin: "0", fontSize: "0.85rem", color: "rgba(255,255,255,0.75)" }}>Thread history</h4>
+          <BookmarkList>
+            {preview.thread.map((message, index) => (
+              <BookmarkItem key={`${message.sender}-${index}`}>
+                <span>
+                  <strong>{message.sender}</strong> — {message.timestamp}
+                  <br />
+                  {highlightText(message.summary, activeQuery)}
+                </span>
+              </BookmarkItem>
+            ))}
+          </BookmarkList>
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface DocumentViewerProps {
+  preview: DocumentPreview;
+  filename: string;
+  globalQuery: string;
+  highlightedKeys: Set<string>;
+  onToggleHighlight: (targetKey: string, label: string) => void;
+  onAddBookmark: (label: string, target: string) => void;
+}
+
+function DocumentViewer({
+  preview,
+  filename,
+  globalQuery,
+  highlightedKeys,
+  onToggleHighlight,
+  onAddBookmark,
+}: DocumentViewerProps) {
+  const [localQuery, setLocalQuery] = useState("");
+  const [copyState, setCopyState] = useState<"idle" | "copied">("idle");
+  const activeQuery = localQuery || globalQuery;
+
+  const documentText = useMemo(() => preview.body.join("\n\n"), [preview.body]);
+
+  const handleCopy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(documentText);
+      setCopyState("copied");
+      setTimeout(() => setCopyState("idle"), 2000);
+    } catch (error) {
+      console.warn("Failed to copy document content", error);
+    }
+  }, [documentText]);
+
+  const handleDownload = useCallback(() => {
+    const blob = new Blob([documentText], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = preview.filenameHint ?? filename.replace(/\.[^/.]+$/, ".txt");
+    anchor.click();
+    URL.revokeObjectURL(url);
+  }, [documentText, preview.filenameHint, filename]);
+
+  const handlePrint = useCallback(() => {
+    const printWindow = window.open("", "_blank", "noopener,noreferrer");
+    if (!printWindow) return;
+    printWindow.document.write(`<pre style="font-family: 'Inter', sans-serif; white-space: pre-wrap;">${preview.body
+      .map((paragraph) => paragraph.replace(/[&<>"']/g, (match) => `&#${match.charCodeAt(0)};`))
+      .join("\n\n")}</pre>`);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+  }, [preview.body]);
+
+  return (
+    <div style={{ display: "grid", gap: "0.75rem" }}>
+      <ViewerToolbar>
+        <ToolbarGroup>
+          <MiniInput
+            value={localQuery}
+            placeholder="Search within document..."
+            onChange={(event) => setLocalQuery(event.target.value)}
+            aria-label="Search within document"
+          />
+          {localQuery && (
+            <ToolbarButton $variant="ghost" onClick={() => setLocalQuery("")}>
+              <RefreshCw size={14} />
+              Clear
+            </ToolbarButton>
+          )}
+        </ToolbarGroup>
+          <ToolbarGroup>
+            <ToolbarButton $variant="ghost" onClick={handleCopy}>
+              <ClipboardCopy size={14} />
+              {copyState === "copied" ? "Copied" : "Copy text"}
+            </ToolbarButton>
+          <ToolbarButton $variant="ghost" onClick={handleDownload}>
+            <DownloadIcon size={14} />
+            Download
+          </ToolbarButton>
+          <ToolbarButton $variant="ghost" onClick={handlePrint}>
+            <Printer size={14} />
+            Print
+          </ToolbarButton>
+        </ToolbarGroup>
+      </ViewerToolbar>
+
+      {preview.body.map((paragraph, index) => {
+        const targetKey = `paragraph-${index}`;
+        const label = `Paragraph ${index + 1}`;
+        const highlighted = highlightedKeys.has(targetKey);
+
+        return (
+          <ParagraphRow key={targetKey}>
+            <Paragraph
+              data-annotation-target={targetKey}
+              $highlighted={highlighted}
+              onClick={() => onToggleHighlight(targetKey, label)}
+            >
+              {highlightText(paragraph, activeQuery)}
+            </Paragraph>
+            <ParagraphActions>
+              <InlineIconButton
+                $active={highlighted}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onToggleHighlight(targetKey, label);
+                }}
+                aria-label={highlighted ? "Remove highlight" : "Highlight paragraph"}
+              >
+                <Highlighter size={14} />
+              </InlineIconButton>
+              <InlineIconButton
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onAddBookmark(label, targetKey);
+                }}
+                aria-label="Bookmark paragraph"
+              >
+                <BookmarkPlus size={14} />
+              </InlineIconButton>
+            </ParagraphActions>
+          </ParagraphRow>
+        );
+      })}
+    </div>
+  );
+}
+
+interface LogViewerProps {
+  preview: LogPreview;
+  globalQuery: string;
+  highlightedKeys: Set<string>;
+  onToggleHighlight: (targetKey: string, label: string) => void;
+  onAddBookmark: (label: string, target: string) => void;
+}
+
+function LogViewer({ preview, globalQuery, highlightedKeys, onToggleHighlight, onAddBookmark }: LogViewerProps) {
+  const [levelFilter, setLevelFilter] = useState<LogLevel | "ALL">("ALL");
+  const [localQuery, setLocalQuery] = useState("");
+  const [jumpTarget, setJumpTarget] = useState("");
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const defaultHighlightSet = useMemo(
+    () => new Set((preview.highlight ?? []).map((lineIndex) => lineIndex + 1)),
+    [preview.highlight],
+  );
+
+  const enrichedLines = useMemo(
+    () =>
+      preview.lines.map((line, index) => ({
+        lineNumber: index + 1,
+        content: line,
+        level: deriveLogLevel(line),
+      })),
+    [preview.lines],
+  );
+
+  const globalNeedle = globalQuery.trim().toLowerCase();
+
+  const filteredLines = useMemo(() => {
+    const queryLower = localQuery.trim().toLowerCase();
+    return enrichedLines.filter((entry) => {
+      if (levelFilter !== "ALL" && entry.level !== levelFilter) return false;
+      if (queryLower && !entry.content.toLowerCase().includes(queryLower)) return false;
+      return true;
+    });
+  }, [enrichedLines, levelFilter, localQuery]);
+
+  const exportFiltered = useCallback(() => {
+    const blob = new Blob([filteredLines.map((entry) => entry.content).join("\n")], {
+      type: "text/plain;charset=utf-8",
+    });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "filtered-log.txt";
+    anchor.click();
+    URL.revokeObjectURL(url);
+  }, [filteredLines]);
+
+  const handleJump = useCallback(() => {
+    const targetLine = Number.parseInt(jumpTarget, 10);
+    if (Number.isNaN(targetLine)) return;
+    const element = containerRef.current?.querySelector<HTMLElement>(`[data-line-number="${targetLine}"]`);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "center" });
+      element.animate(
+        [
+          { backgroundColor: "rgba(33, 150, 243, 0.45)" },
+          { backgroundColor: "rgba(33, 150, 243, 0.0)" },
+        ],
+        { duration: 800 },
+      );
+    }
+  }, [jumpTarget]);
+
+  const combinedCode = filteredLines.map((entry) => entry.content).join("\n");
+
+  return (
+    <div style={{ display: "grid", gap: "0.75rem" }}>
+      <ViewerToolbar>
+        <ToolbarGroup>
+          <MiniSelect value={levelFilter} onChange={(event) => setLevelFilter(event.target.value as LogLevel | "ALL")}>
+            <option value="ALL">All levels</option>
+            <option value="INFO">Info</option>
+            <option value="DEBUG">Debug</option>
+            <option value="WARN">Warn</option>
+            <option value="ERROR">Error</option>
+            <option value="CRITICAL">Critical</option>
+          </MiniSelect>
+          <MiniInput
+            value={localQuery}
+            placeholder="Filter log lines..."
+            onChange={(event) => setLocalQuery(event.target.value)}
+            aria-label="Filter log lines"
+          />
+          {localQuery && (
+            <InlineIconButton
+              onClick={() => setLocalQuery("")}
+              aria-label="Clear log filter"
+              style={{ padding: "0.35rem" }}
+            >
+              <RefreshCw size={14} />
+            </InlineIconButton>
+          )}
+        </ToolbarGroup>
+        <ToolbarGroup>
+          <MiniInput
+            value={jumpTarget}
+            onChange={(event) => setJumpTarget(event.target.value)}
+            placeholder="Jump to line..."
+            aria-label="Jump to log line"
+            style={{ minWidth: "110px" }}
+          />
+          <ToolbarButton $variant="ghost" onClick={handleJump}>
+            Go
+          </ToolbarButton>
+          <ToolbarButton $variant="ghost" onClick={exportFiltered}>
+            <DownloadIcon size={14} />
+            Export filtered
+          </ToolbarButton>
+        </ToolbarGroup>
+      </ViewerToolbar>
+
+      <InlineBadge $tone="info">Click to highlight, right-click to bookmark specific log lines.</InlineBadge>
+
+      <div ref={containerRef} style={{ maxHeight: 280, overflow: "auto", borderRadius: "0.75rem" }}>
+        {filteredLines.length === 0 ? (
+          <div style={{ padding: "1rem", color: "rgba(255,255,255,0.6)", fontSize: "0.85rem" }}>
+            No log entries match the current filters.
+          </div>
+        ) : (
+          <SyntaxHighlighter
+            language={preview.language ?? "bash"}
+            style={oneDark}
+            showLineNumbers
+            wrapLines
+            customStyle={{ borderRadius: "0.75rem", background: "rgba(0, 0, 0, 0.45)" }}
+            lineNumberStyle={{ color: "rgba(255,255,255,0.45)" }}
+            lineProps={(lineIndex) => {
+              const entry = filteredLines[lineIndex - 1];
+              if (!entry) return {};
+              const targetKey = `log-${entry.lineNumber}`;
+              const isHighlighted =
+                highlightedKeys.has(targetKey) || defaultHighlightSet.has(entry.lineNumber);
+              const matchesGlobal = globalNeedle && entry.content.toLowerCase().includes(globalNeedle);
+              return {
+                "data-line-number": entry.lineNumber,
+                style: {
+                  cursor: "pointer",
+                  background: isHighlighted
+                    ? "rgba(33, 150, 243, 0.18)"
+                    : matchesGlobal
+                    ? "rgba(255, 193, 7, 0.12)"
+                    : "transparent",
+                  borderLeft: defaultHighlightSet.has(entry.lineNumber) ? "2px solid #ffcc80" : undefined,
+                },
+                onClick: () => onToggleHighlight(targetKey, `Log line ${entry.lineNumber}`),
+                onContextMenu: (event: MouseEvent<HTMLSpanElement>) => {
+                  event.preventDefault();
+                  onAddBookmark(`Log line ${entry.lineNumber}`, targetKey);
+                },
+                title: "Click to toggle highlight. Right-click to bookmark.",
+              };
+            }}
+          >
+            {combinedCode || "// no filtered content"}
+          </SyntaxHighlighter>
+        )}
+      </div>
+    </div>
+  );
+}
+
+interface ImageViewerProps {
+  preview: ImagePreview;
+}
+
+function ImageViewer({ preview }: ImageViewerProps) {
+  const [zoom, setZoom] = useState(1);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const pointerState = useRef({ active: false, startX: 0, startY: 0, baseX: 0, baseY: 0 });
+
+  const handlePointerDown = useCallback(
+    (event: PointerEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      pointerState.current = {
+        active: true,
+        startX: event.clientX,
+        startY: event.clientY,
+        baseX: offset.x,
+        baseY: offset.y,
+      };
+      event.currentTarget.setPointerCapture(event.pointerId);
+    },
+    [offset],
+  );
+
+  const handlePointerMove = useCallback(
+    (event: PointerEvent<HTMLDivElement>) => {
+      if (!pointerState.current.active) return;
+      const deltaX = (event.clientX - pointerState.current.startX) / zoom;
+      const deltaY = (event.clientY - pointerState.current.startY) / zoom;
+      setOffset({
+        x: pointerState.current.baseX + deltaX,
+        y: pointerState.current.baseY + deltaY,
+      });
+    },
+    [zoom],
+  );
+
+  const handlePointerUp = useCallback((event: PointerEvent<HTMLDivElement>) => {
+    if (pointerState.current.active) {
+      pointerState.current.active = false;
+    }
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  }, []);
+
+  const applyZoom = useCallback((delta: number) => {
+    setZoom((prev) => Math.min(3, Math.max(1, Number.parseFloat((prev + delta).toFixed(2)))));
+  }, []);
+
+  const resetView = useCallback(() => {
+    setZoom(1);
+    setOffset({ x: 0, y: 0 });
+  }, []);
+
+  return (
+    <div style={{ display: "grid", gap: "0.75rem" }}>
+      <ViewerToolbar>
+        <ToolbarGroup>
+          <ToolbarButton $variant="ghost" onClick={() => applyZoom(0.2)}>
+            <ZoomIn size={14} />
+            Zoom in
+          </ToolbarButton>
+          <ToolbarButton $variant="ghost" onClick={() => applyZoom(-0.2)}>
+            <ZoomOut size={14} />
+            Zoom out
+          </ToolbarButton>
+          <ToolbarButton $variant="ghost" onClick={resetView}>
+            <RotateCcw size={14} />
+            Reset
+          </ToolbarButton>
+        </ToolbarGroup>
+        <InlineBadge $tone="info">Drag image to pan when zoomed in.</InlineBadge>
+      </ViewerToolbar>
+
+      <ImageCanvas
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerLeave={handlePointerUp}
+      >
+        <img
+          src={preview.src}
+          alt={preview.alt}
+          style={{
+            transform: `scale(${zoom}) translate(${offset.x}px, ${offset.y}px)`,
+            transformOrigin: "center center",
+            transition: pointerState.current.active ? "none" : "transform 0.2s ease",
+          }}
+        />
+      </ImageCanvas>
+
+      {preview.caption && <span style={{ color: "rgba(255,255,255,0.75)", fontSize: "0.8rem" }}>{preview.caption}</span>}
+
+      {preview.metadata && (
+        <PreviewMeta>
+          {preview.metadata.resolution && (
+            <MetaCard>
+              <span>Resolution</span>
+              <span>{preview.metadata.resolution}</span>
+            </MetaCard>
+          )}
+          {preview.metadata.capturedAt && (
+            <MetaCard>
+              <span>Captured</span>
+              <span>{preview.metadata.capturedAt}</span>
+            </MetaCard>
+          )}
+          {preview.metadata.device && (
+            <MetaCard>
+              <span>Device</span>
+              <span>{preview.metadata.device}</span>
+            </MetaCard>
+          )}
+        </PreviewMeta>
+      )}
+    </div>
+  );
+}
+
+interface DataTableViewerProps {
+  preview: TablePreview;
+  globalQuery: string;
+  highlightedKeys: Set<string>;
+  onToggleHighlight: (targetKey: string, label: string) => void;
+  onAddBookmark: (label: string, target: string) => void;
+}
+
+function DataTableViewer({
+  preview,
+  globalQuery,
+  highlightedKeys,
+  onToggleHighlight,
+  onAddBookmark,
+}: DataTableViewerProps) {
+  const [sortColumn, setSortColumn] = useState<string>(preview.headers[0] ?? "");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [filterColumn, setFilterColumn] = useState<string>("");
+  const [filterValue, setFilterValue] = useState<string>("");
+  const [chartColumn, setChartColumn] = useState<string>(preview.headers[0] ?? "");
+  const [showChart, setShowChart] = useState<boolean>(false);
+
+  const rows = useMemo(
+    () =>
+      preview.rows.map((cells, index) => {
+        const record: Record<string, string> = {};
+        preview.headers.forEach((header, headerIndex) => {
+          record[header] = cells[headerIndex] ?? "";
+        });
+        return { id: index, cells, record };
+      }),
+    [preview.headers, preview.rows],
+  );
+
+  const filteredRows = useMemo(() => {
+    if (!filterColumn || !filterValue.trim()) return rows;
+    const needle = filterValue.trim().toLowerCase();
+    return rows.filter((row) => (row.record[filterColumn] ?? "").toLowerCase().includes(needle));
+  }, [filterColumn, filterValue, rows]);
+
+  const sortedRows = useMemo(() => {
+    if (!sortColumn) return filteredRows;
+    const accessor = (value: string) => {
+      const numeric = Number.parseFloat(value.replace(/[^\d.-]/g, ""));
+      if (!Number.isNaN(numeric) && /\d/.test(value)) return numeric;
+      return value.toLowerCase();
+    };
+
+    const clone = [...filteredRows];
+    clone.sort((a, b) => {
+      const first = accessor(a.record[sortColumn] ?? "");
+      const second = accessor(b.record[sortColumn] ?? "");
+      if (typeof first === "number" && typeof second === "number") {
+        return sortDirection === "asc" ? first - second : second - first;
+      }
+      return sortDirection === "asc"
+        ? String(first).localeCompare(String(second))
+        : String(second).localeCompare(String(first));
+    });
+    return clone;
+  }, [filteredRows, sortColumn, sortDirection]);
+
+  const exportCsv = useCallback(() => {
+    const csvLines = [
+      preview.headers.join(","),
+      ...sortedRows.map((row) => row.cells.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(",")),
+    ];
+    const blob = new Blob([csvLines.join("\n")], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "evidence-data.csv";
+    anchor.click();
+    URL.revokeObjectURL(url);
+  }, [preview.headers, sortedRows]);
+
+  const chartData = useMemo(() => {
+    if (!showChart) return [];
+    const counts = new Map<string, number>();
+    sortedRows.forEach((row) => {
+      const key = row.record[chartColumn] ?? "Unknown";
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    });
+    const maxValue = Math.max(...Array.from(counts.values()), 1);
+    return Array.from(counts.entries()).map(([label, value]) => ({
+      label,
+      value,
+      percentage: (value / maxValue) * 100,
+    }));
+  }, [sortedRows, showChart, chartColumn]);
+
+  const activeQuery = globalQuery.toLowerCase();
+
+  return (
+    <div style={{ display: "grid", gap: "0.75rem" }}>
+      <ViewerToolbar>
+        <ToolbarGroup>
+          <MiniSelect value={sortColumn} onChange={(event) => setSortColumn(event.target.value)}>
+            {preview.headers.map((header) => (
+              <option key={`sort-${header}`} value={header}>
+                Sort by {header}
+              </option>
+            ))}
+          </MiniSelect>
+          <MiniSelect value={sortDirection} onChange={(event) => setSortDirection(event.target.value as "asc" | "desc")}>
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </MiniSelect>
+        </ToolbarGroup>
+        <ToolbarGroup>
+          <MiniSelect value={filterColumn} onChange={(event) => setFilterColumn(event.target.value)}>
+            <option value="">No filter</option>
+            {preview.headers.map((header) => (
+              <option key={`filter-${header}`} value={header}>
+                Filter {header}
+              </option>
+            ))}
+          </MiniSelect>
+          <MiniInput
+            value={filterValue}
+            placeholder="Filter value..."
+            onChange={(event) => setFilterValue(event.target.value)}
+            aria-label="Filter data table"
+          />
+          {filterValue && (
+            <InlineIconButton
+              onClick={() => setFilterValue("")}
+              aria-label="Clear filter"
+              style={{ padding: "0.35rem" }}
+            >
+              <RefreshCw size={14} />
+            </InlineIconButton>
+          )}
+        </ToolbarGroup>
+        <ToolbarGroup>
+          <ToolbarButton $variant="ghost" onClick={() => setShowChart((prev) => !prev)}>
+            <Table2 size={14} />
+            {showChart ? "Hide chart" : "Generate chart"}
+          </ToolbarButton>
+          <ToolbarButton $variant="ghost" onClick={exportCsv}>
+            <DownloadIcon size={14} />
+            Export CSV
+          </ToolbarButton>
+        </ToolbarGroup>
+      </ViewerToolbar>
+
+      <TableWrapper>
+        <DataTable>
+          <thead>
+            <tr>
+              {preview.headers.map((header) => (
+                <th key={`header-${header}`}>{header}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {sortedRows.map((row) => {
+              const targetKey = `data-row-${row.id}`;
+              const highlighted = highlightedKeys.has(targetKey);
+              return (
+                <tr
+                  key={`row-${row.id}`}
+                  data-annotation-target={targetKey}
+                  style={{
+                    background: highlighted ? "rgba(33, 150, 243, 0.18)" : "transparent",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => onToggleHighlight(targetKey, `Row ${row.id + 1}`)}
+                  onDoubleClick={() => onAddBookmark(`Row ${row.id + 1}`, targetKey)}
+                >
+                  {row.cells.map((cell, cellIndex) => {
+                    const cellContent = cell;
+                    const shouldHighlight = activeQuery && cellContent.toLowerCase().includes(activeQuery);
+                    return (
+                      <td key={`cell-${row.id}-${cellIndex}`}>
+                        {shouldHighlight ? highlightText(cellContent, globalQuery) : cellContent}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </DataTable>
+      </TableWrapper>
+
+      {showChart && chartData.length > 0 && (
+        <ChartContainer>
+          <ToolbarGroup>
+            <MiniSelect value={chartColumn} onChange={(event) => setChartColumn(event.target.value)}>
+              {preview.headers.map((header) => (
+                <option key={`chart-${header}`} value={header}>
+                  Chart by {header}
+                </option>
+              ))}
+            </MiniSelect>
+            <InlineBadge $tone="info">
+              <Sparkles size={12} />
+              Frequency distribution
+            </InlineBadge>
+          </ToolbarGroup>
+          <BarWrapper>
+            {chartData.map((entry) => (
+              <div key={`bar-${entry.label}`}>
+                <BarLabel>
+                  <span>{entry.label}</span>
+                  <span>{entry.value}</span>
+                </BarLabel>
+                <Bar $value={entry.percentage} />
+              </div>
+            ))}
+          </BarWrapper>
+        </ChartContainer>
+      )}
+
+      {preview.insight && (
+        <Paragraph $highlighted={false}>
+          <Sparkles size={14} style={{ marginRight: "0.35rem" }} />
+          {preview.insight}
+        </Paragraph>
+      )}
+    </div>
+  );
+}
+
 export function FilesView() {
   const [activeFolderId, setActiveFolderId] = useState<string>("episode-4");
   const [expandedFolderIds, setExpandedFolderIds] = useState<Set<string>>(new Set(["episode-4"]));
@@ -973,8 +2079,19 @@ export function FilesView() {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [selectedFileId, setSelectedFileId] = useState<string>(EVIDENCE_FILES[0].id);
   const [importantIds, setImportantIds] = useState<Set<string>>(new Set(["ev-001", "ev-010", "ev-012"]));
-  const [notes, setNotes] = useState<Record<string, string>>({});
+  const [annotations, setAnnotations] = useState<AnnotationState>(() => loadAnnotationsFromStorage());
+  const [notes, setNotes] = useState<Record<string, string>>(() => loadNotesFromStorage());
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(ANNOTATIONS_STORAGE_KEY, JSON.stringify(annotations));
+  }, [annotations]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(notes));
+  }, [notes]);
 
   const handleFolderToggle = (folderId: string) => {
     setExpandedFolderIds((prev) => {
@@ -1045,6 +2162,13 @@ export function FilesView() {
   const selectedFileFallback = filteredFiles.find((file) => file.id === selectedFileId) ?? filteredFiles[0] ?? null;
   const selectedFile = selectedFileFallback ?? null;
 
+  const emptyAnnotation = useMemo(() => createDefaultAnnotation(), []);
+  const currentAnnotations = selectedFile ? annotations[selectedFile.id] ?? emptyAnnotation : emptyAnnotation;
+  const highlightedKeys = useMemo(
+    () => new Set(currentAnnotations.highlights),
+    [currentAnnotations.highlights],
+  );
+
   const folderBreadcrumb = useMemo(() => {
     if (!selectedFile) return [];
     return selectedFile.folderPath.map((folderId) => folderNameMap.get(folderId) ?? folderId);
@@ -1069,6 +2193,82 @@ export function FilesView() {
     if (!selectedFile) return;
     setToastMessage(`Shared '${selectedFile.title}' with Kastor for follow-up.`);
   };
+
+  const handleToggleAnnotationHighlight = useCallback(
+    (targetKey: string, label: string) => {
+      if (!selectedFile) return;
+      let message = "";
+      setAnnotations((prev) => {
+        const entry = prev[selectedFile.id] ?? createDefaultAnnotation();
+        const hasHighlight = entry.highlights.includes(targetKey);
+        message = hasHighlight ? `Removed highlight (${label}).` : `Highlighted ${label}.`;
+        const highlights = hasHighlight
+          ? entry.highlights.filter((key) => key !== targetKey)
+          : [...entry.highlights, targetKey];
+        return {
+          ...prev,
+          [selectedFile.id]: { ...entry, highlights },
+        };
+      });
+      if (message) {
+        setToastMessage(message);
+      }
+    },
+    [selectedFile],
+  );
+
+  const handleAddBookmark = useCallback(
+    (label: string, target: string) => {
+      if (!selectedFile) return;
+      let message = "";
+      setAnnotations((prev) => {
+        const entry = prev[selectedFile.id] ?? createDefaultAnnotation();
+        if (entry.bookmarks.some((bookmark) => bookmark.target === target)) {
+          message = "Bookmark already exists.";
+          return prev;
+        }
+        const bookmark = { id: createBookmarkId(), label, target };
+        message = `Bookmarked ${label}.`;
+        return {
+          ...prev,
+          [selectedFile.id]: { ...entry, bookmarks: [...entry.bookmarks, bookmark] },
+        };
+      });
+      if (message) {
+        setToastMessage(message);
+      }
+    },
+    [selectedFile],
+  );
+
+  const handleRemoveBookmark = useCallback(
+    (bookmarkId: string) => {
+      if (!selectedFile) return;
+      setAnnotations((prev) => {
+        const entry = prev[selectedFile.id] ?? createDefaultAnnotation();
+        return {
+          ...prev,
+          [selectedFile.id]: { ...entry, bookmarks: entry.bookmarks.filter((bookmark) => bookmark.id !== bookmarkId) },
+        };
+      });
+      setToastMessage("Bookmark removed.");
+    },
+    [selectedFile],
+  );
+
+  const handleNavigateToBookmark = useCallback((target: string) => {
+    const element = document.querySelector<HTMLElement>(`[data-annotation-target="${target}"]`);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "center" });
+      element.animate(
+        [
+          { backgroundColor: "rgba(33, 150, 243, 0.45)" },
+          { backgroundColor: "rgba(33, 150, 243, 0.0)" },
+        ],
+        { duration: 600 },
+      );
+    }
+  }, []);
 
   const handleNoteChange = (value: string) => {
     if (!selectedFile) return;
@@ -1299,112 +2499,100 @@ export function FilesView() {
                 </ActionButton>
               </ActionBar>
 
-              <PreviewContent>
-                {(() => {
-                  switch (selectedFile.preview.kind) {
-                    case "text":
-                      return selectedFile.preview.body.map((paragraph, index) => (
-                        <Paragraph key={index}>{highlightText(paragraph, searchQuery)}</Paragraph>
-                      ));
-                    case "log":
-                      return (
-                        <CodeBlock>
-                          {selectedFile.preview.lines.map((line, index) => {
-                            const isHighlight = selectedFile.preview.highlight?.includes(index) ?? false;
-                            return (
-                              <div key={index} style={{ color: isHighlight ? "#ffcc80" : undefined }}>
-                                {highlightText(line, searchQuery)}
-                              </div>
-                            );
-                          })}
-                        </CodeBlock>
-                      );
-                    case "email":
-                      return (
-                        <div style={{ display: "grid", gap: "0.45rem" }}>
-                          <MetaCard>
-                            <span>From</span>
-                            <span>{selectedFile.preview.from}</span>
-                          </MetaCard>
-                          <MetaCard>
-                            <span>To</span>
-                            <span>{selectedFile.preview.to.join(", ")}</span>
-                          </MetaCard>
-                          {selectedFile.preview.cc && (
-                            <MetaCard>
-                              <span>CC</span>
-                              <span>{selectedFile.preview.cc.join(", ")}</span>
-                            </MetaCard>
-                          )}
-                          <MetaCard>
-                            <span>Subject</span>
-                            <span>{highlightText(selectedFile.preview.subject, searchQuery)}</span>
-                          </MetaCard>
-                          <CodeBlock>
-                            {selectedFile.preview.body.map((line, index) => (
-                              <div key={index}>{highlightText(line, searchQuery)}</div>
-                            ))}
-                          </CodeBlock>
-                        </div>
-                      );
-                    case "data":
-                      return (
-                        <>
-                          <TableWrapper>
-                            <DataTable>
-                              <thead>
-                                <tr>
-                                  {selectedFile.preview.headers.map((header) => (
-                                    <th key={header}>{header}</th>
-                                  ))}
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {selectedFile.preview.rows.map((row, rowIndex) => (
-                                  <tr key={`${selectedFile.id}-row-${rowIndex}`}>
-                                    {row.map((cell, cellIndex) => (
-                                      <td key={cellIndex}>{highlightText(cell, searchQuery)}</td>
-                                    ))}
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </DataTable>
-                          </TableWrapper>
-                          {selectedFile.preview.insight && (
-                            <Paragraph>
-                              <Sparkles size={14} style={{ marginRight: "0.35rem" }} />
-                              {highlightText(selectedFile.preview.insight, searchQuery)}
-                            </Paragraph>
-                          )}
-                        </>
-                      );
-                    case "image":
-                      return (
-                        <ImagePreviewContainer>
-                          <img src={selectedFile.preview.src} alt={selectedFile.preview.alt} />
-                          {selectedFile.preview.caption && <span>{selectedFile.preview.caption}</span>}
-                        </ImagePreviewContainer>
-                      );
-                    case "video":
-                      return (
-                        <Paragraph>
-                          <Video size={14} style={{ marginRight: "0.35rem" }} />
-                          {selectedFile.preview.duration} briefing. {selectedFile.preview.summary}
-                        </Paragraph>
-                      );
-                    case "encrypted":
-                      return (
-                        <Paragraph>
-                          <ShieldAlert size={14} style={{ marginRight: "0.35rem" }} />
-                          {selectedFile.preview.hint} Required key: {selectedFile.preview.requiredKey}.
-                        </Paragraph>
-                      );
-                    case "document":
-                    default:
-                      return null;
-                  }
-                })()}
-              </PreviewContent>
+                <PreviewContent>
+                  {(() => {
+                    switch (selectedFile.preview.kind) {
+                      case "document":
+                        return (
+                          <DocumentViewer
+                            preview={selectedFile.preview}
+                            filename={selectedFile.filename}
+                            globalQuery={searchQuery}
+                            highlightedKeys={highlightedKeys}
+                            onToggleHighlight={handleToggleAnnotationHighlight}
+                            onAddBookmark={handleAddBookmark}
+                          />
+                        );
+                      case "email":
+                        return (
+                          <EmailViewer
+                            preview={selectedFile.preview}
+                            globalQuery={searchQuery}
+                            highlightedKeys={highlightedKeys}
+                            onToggleHighlight={handleToggleAnnotationHighlight}
+                            onAddBookmark={handleAddBookmark}
+                          />
+                        );
+                      case "log":
+                        return (
+                          <LogViewer
+                            preview={selectedFile.preview}
+                            globalQuery={searchQuery}
+                            highlightedKeys={highlightedKeys}
+                            onToggleHighlight={handleToggleAnnotationHighlight}
+                            onAddBookmark={handleAddBookmark}
+                          />
+                        );
+                      case "data":
+                        return (
+                          <DataTableViewer
+                            preview={selectedFile.preview}
+                            globalQuery={searchQuery}
+                            highlightedKeys={highlightedKeys}
+                            onToggleHighlight={handleToggleAnnotationHighlight}
+                            onAddBookmark={handleAddBookmark}
+                          />
+                        );
+                      case "image":
+                        return <ImageViewer preview={selectedFile.preview} />;
+                      case "video":
+                        return (
+                          <Paragraph>
+                            <Video size={14} style={{ marginRight: "0.35rem" }} />
+                            {selectedFile.preview.duration} briefing. {selectedFile.preview.summary}
+                          </Paragraph>
+                        );
+                      case "encrypted":
+                        return (
+                          <Paragraph>
+                            <ShieldAlert size={14} style={{ marginRight: "0.35rem" }} />
+                            {selectedFile.preview.hint} Required key: {selectedFile.preview.requiredKey}.
+                          </Paragraph>
+                        );
+                      default:
+                        return null;
+                    }
+                  })()}
+                </PreviewContent>
+
+                {currentAnnotations.bookmarks.length > 0 && (
+                  <div>
+                    <h4 style={{ margin: "0 0 0.45rem", fontSize: "0.85rem", color: "rgba(255,255,255,0.75)" }}>
+                      Bookmarks
+                    </h4>
+                    <BookmarkList>
+                      {currentAnnotations.bookmarks.map((bookmark) => (
+                        <BookmarkItem key={bookmark.id}>
+                          <span>{bookmark.label}</span>
+                          <BookmarkActions>
+                            <InlineIconButton
+                              onClick={() => handleNavigateToBookmark(bookmark.target)}
+                              aria-label="Jump to bookmark"
+                            >
+                              <BookmarkCheck size={14} />
+                            </InlineIconButton>
+                            <InlineIconButton
+                              onClick={() => handleRemoveBookmark(bookmark.id)}
+                              aria-label="Remove bookmark"
+                            >
+                              <StarOff size={14} />
+                            </InlineIconButton>
+                          </BookmarkActions>
+                        </BookmarkItem>
+                      ))}
+                    </BookmarkList>
+                  </div>
+                )}
 
               {selectedFile.related.length > 0 && (
                 <div>
