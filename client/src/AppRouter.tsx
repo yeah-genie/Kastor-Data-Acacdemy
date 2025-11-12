@@ -11,6 +11,7 @@ import ChatTab from "./pages/dashboard/ChatTab";
 import DataTab from "./pages/dashboard/DataTab";
 import FilesTab from "./pages/dashboard/FilesTab";
 import TeamTab from "./pages/dashboard/TeamTab";
+import DevToolsPanel from "@/components/devtools/DevToolsPanel";
 
 export const AppRouter = () => {
   return (
@@ -28,6 +29,7 @@ export const AppRouter = () => {
           </Route>
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
+        <DevToolsPanel />
       </Suspense>
     </BrowserRouter>
   );

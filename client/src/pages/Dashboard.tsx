@@ -11,6 +11,7 @@ import {
   TabProvider,
   useTabContext,
 } from "@/contexts/TabContext";
+import { useGameStore } from "@/store/gameStore";
 
 const dashboardTabs: DashboardTab[] = [
   {
@@ -48,6 +49,7 @@ const DashboardContent = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { currentTab, setTab, newNotifications } = useTabContext();
+  const setCurrentTabPersisted = useGameStore((state) => state.setCurrentTab);
 
   const activeTabFromRoute = useMemo(
     () => pathToTab(location.pathname),
@@ -57,12 +59,14 @@ const DashboardContent = () => {
   useEffect(() => {
     if (activeTabFromRoute !== currentTab) {
       setTab(activeTabFromRoute, { silent: true });
+      setCurrentTabPersisted(activeTabFromRoute);
     }
-  }, [activeTabFromRoute, currentTab, setTab]);
+  }, [activeTabFromRoute, currentTab, setCurrentTabPersisted, setTab]);
 
   const handleTabChange = (tabId: DashboardTab["id"]) => {
     if (tabId === currentTab) return;
     setTab(tabId);
+    setCurrentTabPersisted(tabId);
     navigate(`/dashboard/${tabId}`);
   };
 
@@ -82,9 +86,10 @@ const DashboardContent = () => {
 
 export const DashboardPage = () => {
   const location = useLocation();
+  const storedTab = useGameStore((state) => state.currentTab);
   const initialTab = useMemo(
-    () => pathToTab(location.pathname),
-    [location.pathname],
+    () => storedTab ?? pathToTab(location.pathname),
+    [location.pathname, storedTab],
   );
 
   return (

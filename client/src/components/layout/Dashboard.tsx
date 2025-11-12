@@ -2,6 +2,7 @@ import { PropsWithChildren, ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Settings } from "lucide-react";
 import styled, { css } from "styled-components";
+import { fadeInOut } from "@/utils/animations";
 
 export type DashboardTabId = "chat" | "data" | "files" | "team" | (string & {});
 
@@ -366,48 +367,48 @@ export const DashboardLayout = ({
             </SidebarTabButton>
           );
         })}
-      </SidebarSpacer>
+        </SidebarSpacer>
 
-      <ContentWrapper>
-        <Sidebar>
-          <NavSectionTitle>Investigation Tabs</NavSectionTitle>
-          {tabs.map((tab) => {
-            const badgeCount = notificationBadges?.[tab.id];
-            return (
-              <SidebarTabButton
-                key={tab.id}
-                type="button"
-                onClick={() => handleTabChange(tab.id)}
-                $active={tab.id === activeTab}
+        <ContentWrapper>
+          <Sidebar>
+            <NavSectionTitle>Investigation Tabs</NavSectionTitle>
+            {tabs.map((tab) => {
+              const badgeCount = notificationBadges?.[tab.id];
+              return (
+                <SidebarTabButton
+                  key={tab.id}
+                  type="button"
+                  onClick={() => handleTabChange(tab.id)}
+                  $active={tab.id === activeTab}
+                >
+                  <TabIconWrapper $active={tab.id === activeTab}>
+                    {tab.icon}
+                  </TabIconWrapper>
+                  <SidebarTabLabel>{tab.label}</SidebarTabLabel>
+                  {!!badgeCount && badgeCount > 0 ? (
+                    <NotificationBadge>{badgeCount}</NotificationBadge>
+                  ) : null}
+                </SidebarTabButton>
+              );
+            })}
+          </Sidebar>
+
+          <ContentArea>
+            <AnimatePresence mode="wait">
+              <ContentViewport
+                key={activeTab}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                variants={fadeInOut}
               >
-                <TabIconWrapper $active={tab.id === activeTab}>
-                  {tab.icon}
-                </TabIconWrapper>
-                <SidebarTabLabel>{tab.label}</SidebarTabLabel>
-                {!!badgeCount && badgeCount > 0 ? (
-                  <NotificationBadge>{badgeCount}</NotificationBadge>
-                ) : null}
-              </SidebarTabButton>
-            );
-          })}
-        </Sidebar>
+                {children}
+              </ContentViewport>
+            </AnimatePresence>
+          </ContentArea>
+        </ContentWrapper>
 
-        <ContentArea>
-          <AnimatePresence mode="wait">
-            <ContentViewport
-              key={activeTab}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
-            >
-              {children}
-            </ContentViewport>
-          </AnimatePresence>
-        </ContentArea>
-      </ContentWrapper>
-
-      <BottomNav>
+        <BottomNav>
         {tabs.map((tab) => {
           const isActive = tab.id === activeTab;
           const badgeCount = notificationBadges?.[tab.id];

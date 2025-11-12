@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import ChatView, { ParticipantProfile } from "@/components/chat/ChatView";
 import type { Message, Evidence, Choice } from "@/types";
 import type { ChoiceMetadata } from "@/components/chat/ChoiceButton";
+import { useGameStore } from "@/store/gameStore";
 
 type RichChoice = Choice & { metadata?: ChoiceMetadata };
 
@@ -122,6 +123,8 @@ export const ChatTab = () => {
   const [choices, setChoices] = useState<RichChoice[]>(initialChoices);
   const [typingIndicator, setTypingIndicator] = useState<{ senderId: string } | undefined>();
   const [isWaitingResponse, setIsWaitingResponse] = useState(false);
+  const addEvidenceToStore = useGameStore((state) => state.addEvidence);
+  const recordChoice = useGameStore((state) => state.makeChoice);
 
   const participants = useMemo<Record<string, ParticipantProfile>>(
     () => ({
@@ -160,7 +163,10 @@ export const ChatTab = () => {
         timestamp: new Date().toISOString(),
         type: "text",
       });
-      extraMessages.forEach(pushMessage);
+        extraMessages.forEach((message) => {
+          pushMessage(message);
+          (message.attachments ?? []).forEach((attachment) => addEvidenceToStore(attachment));
+        });
       setTypingIndicator(undefined);
       setIsWaitingResponse(false);
     }, 1500);
@@ -193,6 +199,8 @@ export const ChatTab = () => {
     pushMessage(playerChoiceMessage);
     setChoices([]);
     setIsWaitingResponse(true);
+
+    recordChoice(choice);
 
     simulateKastorReply(
       choice.id === "choice-investigate-logs"

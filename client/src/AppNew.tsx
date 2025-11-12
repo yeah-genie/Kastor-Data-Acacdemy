@@ -8,6 +8,7 @@ import EpisodeSelectionScreen from "./components/EpisodeSelectionScreen";
 import { GameScene } from "./components/GameScene";
 import SceneTransition from "./components/SceneTransition";
 import "@fontsource/inter";
+import { useGameStore } from "@/store/gameStore";
 
 type Screen =
   | "splash"
@@ -20,7 +21,11 @@ function AppNew() {
   const [currentScreen, setCurrentScreen] = useState<Screen>("splash");
   const [selectedEpisode, setSelectedEpisode] = useState<number | null>(null);
   const { phase, setPhase, startCase, setCurrentNode } = useDetectiveGame();
-  const { setBackgroundMusic, setSuccessSound, setHitSound } = useAudio();
+  const { setBackgroundMusic, setSuccessSound, setHitSound, registerEffect } = useAudio();
+  const startEpisode = useGameStore((state) => state.startEpisode);
+  const loadProgress = useGameStore((state) => state.loadProgress);
+  const saveSlots = useGameStore((state) => state.saveSlots);
+  const autoSaveSlot = useGameStore((state) => state.autoSaveSlot);
 
   // Initialize audio
   useEffect(() => {
@@ -36,82 +41,93 @@ function AppNew() {
     const hitSound = new Audio("/sounds/hit.mp3");
     hitSound.volume = 0.4;
     setHitSound(hitSound);
-  }, [setBackgroundMusic, setSuccessSound, setHitSound]);
 
-  // Check for save data
-  const hasSaveData = false; // TODO: Implement save system
+      registerEffect("ui-hit", "/sounds/hit.mp3", { volume: 0.4 });
+      registerEffect("ui-success", "/sounds/success.mp3", { volume: 0.5 });
+      registerEffect("ui-message", "/sounds/hit.mp3", { volume: 0.2 });
+    }, [registerEffect, setBackgroundMusic, setSuccessSound, setHitSound]);
 
-  // Episode data
-  const episodes = [
-    {
-      id: 1,
-      title: "The Missing Balance Patch",
-      difficulty: 2,
-      duration: "30-40 min",
-      thumbnail: "/episodes/ep1-thumbnail.png",
-      isLocked: false
-    },
-    {
-      id: 2,
-      title: "The Ghost User's Ranking Manipulation",
-      difficulty: 3,
-      duration: "45-60 min",
-      thumbnail: "/episodes/ep2-thumbnail.png",
-      isLocked: true
-    },
-    {
-      id: 3,
-      title: "The Perfect Victory",
-      difficulty: 4,
-      duration: "50-60 min",
-      thumbnail: "/episodes/ep3-thumbnail.png",
-      isLocked: true,
-      isDemo: true
-    }
-  ];
+    const hasSaveData = Object.keys(saveSlots).length > 0;
 
-  // Handlers
-  const handleSplashComplete = () => {
-    setCurrentScreen("menu");
-  };
+    // Episode data
+    const episodes = [
+      {
+        id: 1,
+        title: "The Missing Balance Patch",
+        difficulty: 2,
+        duration: "30-40 min",
+        thumbnail: "/episodes/ep1-thumbnail.png",
+        isLocked: false,
+      },
+      {
+        id: 2,
+        title: "The Ghost User's Ranking Manipulation",
+        difficulty: 3,
+        duration: "45-60 min",
+        thumbnail: "/episodes/ep2-thumbnail.png",
+        isLocked: true,
+      },
+      {
+        id: 3,
+        title: "The Perfect Victory",
+        difficulty: 4,
+        duration: "50-60 min",
+        thumbnail: "/episodes/ep3-thumbnail.png",
+        isLocked: true,
+        isDemo: true,
+      },
+    ];
 
-  const handleNewGame = () => {
-    setCurrentScreen("episodes");
-  };
+    // Handlers
+    const handleSplashComplete = () => {
+      setCurrentScreen("menu");
+    };
 
-  const handleContinue = () => {
-    // TODO: Load save data
-    setCurrentScreen("game");
-  };
+    const handleNewGame = () => {
+      setCurrentScreen("episodes");
+    };
 
-  const handleEpisodes = () => {
-    setCurrentScreen("episodes");
-  };
+    const handleContinue = () => {
+      if (hasSaveData) {
+        loadProgress(autoSaveSlot);
+        setCurrentScreen("game");
+        setPhase("stage1");
+      }
+    };
 
-  const handleSettings = () => {
-    setCurrentScreen("settings");
-  };
+    const handleEpisodes = () => {
+      setCurrentScreen("episodes");
+    };
 
-  const handleSelectEpisode = (episodeId: number) => {
-    setSelectedEpisode(episodeId);
-    startCase(episodeId, false); // Start new case without resume mode
+    const handleSettings = () => {
+      setCurrentScreen("settings");
+    };
 
-    // Set initial node based on episode
-    switch (episodeId) {
-      case 1:
-        setCurrentNode("start");
-        break;
-      case 2:
-        setCurrentNode("ep2_start");
-        break;
-      case 3:
-        setCurrentNode("ep3_start");
-        break;
-    }
+    const handleSelectEpisode = (episodeId: number) => {
+      setSelectedEpisode(episodeId);
+      startCase(episodeId, false);
 
-    setPhase("intro");
-    setCurrentScreen("game");
-  };
+      switch (episodeId) {
+        case 1:
+          setCurrentNode("start");
+          startEpisode("episode-1", "start");
+          break;
+        case 2:
+          setCurrentNode("ep2_start");
+          startEpisode("episode-2", "ep2_start");
+          break;
+        case 3:
+          setCurrentNode("ep3_start");
+          startEpisode("episode-3", "ep3_start");
+          break;
+        default:
+          startEpisode(`episode-${episodeId}`);
+          break;
+      }
+
+      setPhase("intro");
+      setCurrentScreen("game");
+    };
 
   const handleBackToMenu = () => {
     setCurrentScreen("menu");

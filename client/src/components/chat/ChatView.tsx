@@ -18,6 +18,8 @@ import type { Choice, Evidence, Message } from "@/types";
 import { ChoiceButton, ChoiceMetadata, RichChoice } from "./ChoiceButton";
 import { EvidenceCard } from "./EvidenceCard";
 import { EvidenceModal } from "./EvidenceModal";
+import { useAudio } from "@/lib/stores/useAudio";
+import { listItemVariants, reducedMotionEnabled, scaleOnHover } from "@/utils/animations";
 
 export interface ParticipantProfile {
   id: string;
@@ -290,10 +292,22 @@ export const ChatView = ({
   const [choiceLocked, setChoiceLocked] = useState(false);
   const [selectedEvidence, setSelectedEvidence] = useState<Evidence | null>(null);
   const messageEndRef = useRef<HTMLDivElement | null>(null);
+  const playMessageSound = useAudio((state) => state.playMessageSound);
+  const playChoiceSound = useAudio((state) => state.playHit);
+  const prefersReducedMotion = useMemo(() => reducedMotionEnabled(), []);
 
   useEffect(() => {
-    messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, typingIndicator]);
+    const behavior: ScrollBehavior = prefersReducedMotion ? "auto" : "smooth";
+    messageEndRef.current?.scrollIntoView({ behavior });
+  }, [messages, prefersReducedMotion, typingIndicator]);
+
+  useEffect(() => {
+    if (!messages.length) return;
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage.sender !== "player") {
+      playMessageSound();
+    }
+  }, [messages, playMessageSound]);
 
   useEffect(() => {
     if (!choices?.length) {
@@ -315,9 +329,10 @@ export const ChatView = ({
     async (choice: RichChoice) => {
       if (choiceLocked) return;
       setChoiceLocked(true);
+      playChoiceSound();
       await onChoiceSelect?.(choice);
     },
-    [choiceLocked, onChoiceSelect],
+    [choiceLocked, onChoiceSelect, playChoiceSound],
   );
 
   const typingProfile = typingIndicator?.senderId
@@ -346,9 +361,9 @@ export const ChatView = ({
 
   return (
     <ChatShell>
-      <MessageArea>
+        <MessageArea>
         <AnimatePresence initial={false}>
-          {messages.map((message) => {
+            {messages.map((message, index) => {
             const variant = getVariant(message, participants);
             const profile = participants[message.sender];
             const align =
@@ -357,10 +372,11 @@ export const ChatView = ({
               <MessageGroup
                 key={message.id}
                 $align={align}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.25, ease: "easeOut" }}
+                  variants={prefersReducedMotion ? undefined : listItemVariants}
+                  initial={prefersReducedMotion ? undefined : "hidden"}
+                  animate={prefersReducedMotion ? undefined : "visible"}
+                  exit={prefersReducedMotion ? undefined : "hidden"}
+                  custom={index}
               >
                 {variant !== "player" && variant !== "system" ? (
                   <MessageHeader>
@@ -375,13 +391,26 @@ export const ChatView = ({
                   </MessageHeader>
                 ) : null}
 
-                <MessageBubble
-                  $variant={variant as "player" | "ai" | "character" | "system"}
-                  $accent={profile?.accentColor}
-                  initial={{ opacity: 0, y: 15, scale: 0.98 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ duration: 0.25, ease: "easeOut" }}
-                >
+                  <MessageBubble
+                    $variant={variant as "player" | "ai" | "character" | "system"}
+                    $accent={profile?.accentColor}
+                    initial={
+                      prefersReducedMotion
+                        ? undefined
+                        : { opacity: 0, y: 12, scale: 0.98 }
+                    }
+                    animate={
+                      prefersReducedMotion
+                        ? undefined
+                        : { opacity: 1, y: 0, scale: 1 }
+                    }
+                    whileHover={
+                      prefersReducedMotion
+                        ? undefined
+                        : { scale: 1.02, boxShadow: "0 18px 32px rgba(33, 150, 243, 0.18)" }
+                    }
+                    transition={{ duration: 0.24, ease: "easeOut" }}
+                  >
                   {variant === "player" ? (
                     <Timestamp style={{ display: "block", marginBottom: "0.25rem", textAlign: "right" }}>
                       {formatTimestamp(message.timestamp)}
