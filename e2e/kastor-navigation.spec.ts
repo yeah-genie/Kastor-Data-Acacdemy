@@ -65,6 +65,99 @@ test.describe('Kastor Data Academy Navigation Test', () => {
 
     await safeScreenshot(page, 'e2e/screenshots/02-title-check.png');
 
+    // 2.5. "TAP TO START" 버튼 클릭하여 메인 게임 화면으로 진입
+    console.log('Step 2.5: Clicking "Tap to Start" button...');
+
+    const startButtonSelectors = [
+      'text="TAP TO START"',
+      'text="Tap to Start"',
+      'button:has-text("TAP TO START")',
+      'button:has-text("Tap to Start")',
+      '[class*="start"]',
+      'div:has-text("TAP TO START")',
+    ];
+
+    let startClicked = false;
+    for (const selector of startButtonSelectors) {
+      try {
+        const startButton = await page.locator(selector).first();
+        if (await startButton.isVisible({ timeout: 3000 })) {
+          await startButton.click();
+          startClicked = true;
+          console.log(`✓ Clicked start button with selector: ${selector}`);
+          await page.waitForTimeout(3000); // 게임 화면 로딩 대기
+          await safeScreenshot(page, 'e2e/screenshots/02.5-after-start-click.png');
+          break;
+        }
+      } catch (e) {
+        continue;
+      }
+    }
+
+    if (!startClicked) {
+      console.log('⚠ Could not find or click start button, continuing...');
+    }
+
+    // 2.6. "New Game" 버튼 클릭하여 게임 시작
+    console.log('Step 2.6: Clicking "New Game" button...');
+
+    const newGameSelectors = [
+      'text="New Game"',
+      'button:has-text("New Game")',
+      '[class*="new-game"]',
+    ];
+
+    let newGameClicked = false;
+    for (const selector of newGameSelectors) {
+      try {
+        const newGameButton = await page.locator(selector).first();
+        if (await newGameButton.isVisible({ timeout: 3000 })) {
+          await newGameButton.click();
+          newGameClicked = true;
+          console.log(`✓ Clicked "New Game" button with selector: ${selector}`);
+          await page.waitForTimeout(5000); // 게임 로딩 대기 (에피소드 선택 등)
+          await safeScreenshot(page, 'e2e/screenshots/02.6-after-new-game.png');
+          break;
+        }
+      } catch (e) {
+        continue;
+      }
+    }
+
+    if (!newGameClicked) {
+      console.log('⚠ Could not find or click "New Game" button, continuing...');
+    }
+
+    // 2.7. 에피소드 "START" 버튼 클릭하여 게임 플레이 시작
+    console.log('Step 2.7: Clicking episode "START" button...');
+
+    const episodeStartSelectors = [
+      'text="START"',
+      'button:has-text("START")',
+      '[class*="start"]',
+    ];
+
+    let episodeStartClicked = false;
+    for (const selector of episodeStartSelectors) {
+      try {
+        const startButton = await page.locator(selector).first();
+        if (await startButton.isVisible({ timeout: 3000 })) {
+          await startButton.click();
+          episodeStartClicked = true;
+          console.log(`✓ Clicked episode "START" button with selector: ${selector}`);
+          await page.waitForTimeout(8000); // 게임 플레이 화면 로딩 대기 (더 길게)
+          await safeScreenshot(page, 'e2e/screenshots/02.7-after-episode-start.png');
+          break;
+        }
+      } catch (e) {
+        continue;
+      }
+    }
+
+    if (!episodeStartClicked) {
+      console.log('⚠ Could not find or click episode "START" button, continuing...');
+    }
+
     // 3. 하단 또는 측면의 탭("Chat", "Data", "Files", "Team")을 차례로 클릭한다.
     console.log('Step 3: Clicking through tabs...');
 
@@ -222,29 +315,123 @@ test.describe('Kastor Data Academy Navigation Test', () => {
     // 7. 메시지 입력창이 있다면 "로그 필터링 진행합니다"라고 입력하고 전송 버튼을 클릭한다.
     console.log('Step 7: Sending chat message...');
 
+    // 입력창이 로딩될 때까지 대기 - 더 길게
+    console.log('  Waiting for chat input to load...');
+    await page.waitForTimeout(5000);
+
+    // 페이지 내용 확인
+    const pageContent = await page.content();
+    console.log('  Page has input tags:', pageContent.includes('<input'));
+    console.log('  Page has textarea tags:', pageContent.includes('<textarea'));
+
+    // "Continue the conversation" 텍스트가 있는 요소 찾기
+    const conversationText = await page.locator('text=/[Cc]ontinue.*conversation/').count();
+    console.log(`  Found "Continue conversation" text: ${conversationText} times`);
+
+    // 클릭 가능한 영역 찾기
+    try {
+      const clickableArea = await page.locator('[placeholder*="conversation"]').or(
+        page.locator('text=/[Cc]ontinue/')
+      ).first();
+
+      if (await clickableArea.isVisible({ timeout: 2000 })) {
+        console.log('  Found clickable conversation area, clicking...');
+        await clickableArea.click();
+        await page.waitForTimeout(1000);
+      }
+    } catch (e) {
+      console.log('  Could not click conversation area');
+    }
+
     const inputSelectors = [
+      'input[placeholder*="conversation"]',
+      'input[placeholder*="Continue"]',
+      'input',
       'textarea',
       'input[type="text"]',
-      'input[placeholder*="메시지"]',
-      'input[placeholder*="message"]',
       '[contenteditable="true"]'
     ];
 
     let messageInput = null;
     for (const selector of inputSelectors) {
       try {
-        const input = await page.locator(selector).last(); // last() to get the most likely input
-        if (await input.isVisible({ timeout: 3000 })) {
-          messageInput = input;
-          console.log(`✓ Found input field with selector: ${selector}`);
-          break;
+        const inputs = await page.locator(selector).all();
+        console.log(`  Checking selector: ${selector}, found ${inputs.length} elements`);
+
+        for (const input of inputs) {
+          if (await input.isVisible({ timeout: 1000 })) {
+            const placeholder = await input.getAttribute('placeholder').catch(() => '');
+            console.log(`    Found visible input with placeholder: "${placeholder}"`);
+
+            if (placeholder && placeholder.toLowerCase().includes('convers')) {
+              messageInput = input;
+              console.log(`✓ Found input field with selector: ${selector}`);
+              break;
+            }
+          }
         }
+
+        if (messageInput) break;
       } catch (e) {
+        console.log(`    Selector ${selector} error: ${e.message}`);
         continue;
       }
     }
 
-    if (messageInput) {
+    // 대체 방법: 모든 input을 찾아서 시도
+    if (!messageInput) {
+      console.log('  Trying all visible inputs...');
+      const allInputs = await page.locator('input').all();
+      for (const input of allInputs) {
+        try {
+          if (await input.isVisible({ timeout: 1000 })) {
+            messageInput = input;
+            console.log(`✓ Found fallback input field`);
+            break;
+          }
+        } catch (e) {
+          continue;
+        }
+      }
+    }
+
+    // 마지막 시도: 화면 하단 클릭 후 바로 키보드 입력 (커스텀 컴포넌트 대응)
+    if (!messageInput) {
+      console.log('  Last resort: direct keyboard input...');
+      try {
+        // "Continue the conversation" 영역 클릭
+        const conversationArea = await page.locator('text=/[Cc]ontinue.*conversation/').first();
+        if (await conversationArea.isVisible({ timeout: 2000 })) {
+          console.log('  Clicking conversation placeholder...');
+          await conversationArea.click();
+          await page.waitForTimeout(1000);
+
+          // 스크린샷
+          await safeScreenshot(page, 'e2e/screenshots/07.1-after-click.png');
+
+          // 바로 키보드로 타이핑 (input을 찾지 못해도 타이핑 시도)
+          console.log('  Typing message directly via keyboard...');
+          await page.keyboard.type('로그 필터링 진행합니다', { delay: 100 });
+          await page.waitForTimeout(500);
+
+          await safeScreenshot(page, 'e2e/screenshots/07.2-after-typing.png');
+
+          // Enter 키 또는 전송 버튼 클릭
+          console.log('  Pressing Enter to send...');
+          await page.keyboard.press('Enter');
+          await page.waitForTimeout(2000);
+
+          await safeScreenshot(page, 'e2e/screenshots/07.3-after-send.png');
+
+          console.log('✓ Message sent via keyboard');
+          messageInput = 'keyboard'; // 성공 표시
+        }
+      } catch (e) {
+        console.log(`  Keyboard input failed: ${e.message}`);
+      }
+    }
+
+    if (messageInput && messageInput !== 'keyboard') {
       // 입력 전 스크린샷
       await safeScreenshot(page, 'e2e/screenshots/07-before-input.png');
 
@@ -257,12 +444,14 @@ test.describe('Kastor Data Academy Navigation Test', () => {
 
       // 전송 버튼 찾기
       const sendButtonSelectors = [
+        'button[type="submit"]',
         'button:has-text("전송")',
         'button:has-text("Send")',
-        'button[type="submit"]',
         'button[aria-label*="send"]',
         'button[aria-label*="전송"]',
-        'button svg' // 보통 send 아이콘이 있는 버튼
+        'button:has(svg)', // SVG 아이콘이 있는 버튼
+        'button[class*="send"]',
+        'button[class*="submit"]'
       ];
 
       let sendClicked = false;
@@ -299,6 +488,9 @@ test.describe('Kastor Data Academy Navigation Test', () => {
       }
 
       await safeScreenshot(page, 'e2e/screenshots/09-final-result.png');
+    } else if (messageInput === 'keyboard') {
+      // 키보드 입력 방식을 사용한 경우 (이미 위에서 처리됨)
+      console.log('✓ Used keyboard input method');
     } else {
       console.log('⚠ Could not find message input field');
       await safeScreenshot(page, 'e2e/screenshots/07-no-input-found.png');

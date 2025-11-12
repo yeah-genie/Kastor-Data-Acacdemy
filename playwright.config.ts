@@ -8,7 +8,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: [['html'], ['list']],
   use: {
-    baseURL: 'https://kastor-data-academy.vercel.app',
+    baseURL: 'http://localhost:5000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
