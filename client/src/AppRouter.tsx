@@ -12,6 +12,8 @@ import DataTab from "./pages/dashboard/DataTab";
 import FilesTab from "./pages/dashboard/FilesTab";
 import TeamTab from "./pages/dashboard/TeamTab";
 import ProgressTab from "./pages/dashboard/ProgressTab";
+import BetaLanding from "./pages/BetaLanding";
+import LandingPage from "./pages/LandingPage";
 import DevToolsPanel from "@/components/devtools/DevToolsPanel";
 
 export const AppRouter = () => {
@@ -19,7 +21,9 @@ export const AppRouter = () => {
     <BrowserRouter>
       <Suspense fallback={null}>
         <Routes>
-          <Route path="/" element={<AppNew />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/app" element={<AppNew />} />
+          <Route path="/beta" element={<BetaLanding />} />
           <Route path="/dashboard" element={<DashboardPage />}>
             <Route index element={<DashboardIndexRedirect />} />
             <Route path="chat" element={<ChatTab />} />

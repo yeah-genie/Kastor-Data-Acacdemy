@@ -29,6 +29,7 @@ export interface Evidence {
   relatedTo: string[];
   importance: EvidenceImportance;
   isNew: boolean;
+  unlockedBy?: string;
 }
 
 export type MessageType = "text" | "evidence" | "system" | "choice" | "alert";
@@ -73,11 +74,19 @@ export interface Scene {
   id: string;
   type: SceneType;
   title: string;
+  autoPlay?: boolean;
   messages?: Message[];
   dataContent?: unknown;
   interactiveContent?: unknown;
   nextScene?: string;
   requirements?: SceneRequirements;
+}
+
+export interface EpisodeAchievement {
+  id: string;
+  title: string;
+  description: string;
+  points: number;
 }
 
 export interface Episode {
@@ -87,10 +96,12 @@ export interface Episode {
   description: string;
   difficulty: 1 | 2 | 3 | 4 | 5;
   estimatedTime: string;
+  thumbnail?: string;
   scenes: Scene[];
   characters: string[];
   evidence: Evidence[];
-  learningObjectives: string[];
+  learningObjectives?: string[];
+  achievements?: EpisodeAchievement[];
 }
 
 export interface GameState {
@@ -188,8 +199,19 @@ export const isScene = (value: unknown): value is Scene => {
     typeof value.id === "string" &&
     typeof value.type === "string" &&
     typeof value.title === "string" &&
+    (value.autoPlay === undefined || typeof value.autoPlay === "boolean") &&
     hasValidMessages &&
     hasValidRequirements
+  );
+};
+
+export const isEpisodeAchievement = (value: unknown): value is EpisodeAchievement => {
+  if (!isObject(value)) return false;
+  return (
+    typeof value.id === "string" &&
+    typeof value.title === "string" &&
+    typeof value.description === "string" &&
+    typeof value.points === "number"
   );
 };
 
@@ -204,16 +226,23 @@ export const isEpisode = (value: unknown): value is Episode => {
     Array.isArray(value.evidence) &&
     value.evidence.every((evidence) => isEvidence(evidence));
 
+  const hasValidAchievements =
+    value.achievements === undefined ||
+    (Array.isArray(value.achievements) &&
+      value.achievements.every((achievement) => isEpisodeAchievement(achievement)));
+
   return (
     typeof value.id === "string" &&
     typeof value.number === "number" &&
     typeof value.title === "string" &&
     typeof value.description === "string" &&
     typeof value.estimatedTime === "string" &&
+    (value.thumbnail === undefined || typeof value.thumbnail === "string") &&
     hasValidScenes &&
     Array.isArray(value.characters) &&
     hasValidEvidence &&
-    Array.isArray(value.learningObjectives)
+    (value.learningObjectives === undefined || Array.isArray(value.learningObjectives)) &&
+    hasValidAchievements
   );
 };
 
