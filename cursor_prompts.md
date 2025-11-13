@@ -1561,5 +1561,3 @@ Balance humor with helpfulness.
 - Behance: Search "investigation interface"
 
 ---
-
-**이 프롬프트로 Cursor와 함께 단계적으로 개발하면 됩니다! 🎮**

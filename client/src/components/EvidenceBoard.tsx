@@ -239,9 +239,9 @@ function EvidenceBoardInner({ onClose, onSwitchToList }: EvidenceBoardProps) {
         >
           <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#d1d5db" />
           <Controls className="!bg-white !border-gray-200 shadow-lg" />
-          <Panel position="bottom-center" className="bg-white/95 text-gray-700 px-4 py-2 rounded-2xl text-sm border border-gray-200 shadow-sm mb-4 hidden md:block">
-            <p>💡 노드를 드래그해서 배치하고, 연결점을 드래그해서 증거 연결</p>
-          </Panel>
+            <Panel position="bottom-center" className="bg-white/95 text-gray-700 px-4 py-2 rounded-2xl text-sm border border-gray-200 shadow-sm mb-4 hidden md:block">
+              <p>💡 Drag nodes to reposition them and pull from the handles to connect evidence.</p>
+            </Panel>
         </ReactFlow>
       </div>
     </div>

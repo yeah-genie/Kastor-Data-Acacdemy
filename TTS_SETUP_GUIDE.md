@@ -92,7 +92,7 @@ The Kastor Data Academy now supports voicemail messages with Text-to-Speech (TTS
 Add voicemail messages to your story nodes:
 
 ```typescript
-import { Message } from "@/data/case1-episode-final";
+import { Message } from "@/data/episode-types";
 
 const voicemailMessage: Message = {
   id: "vm1",
@@ -119,7 +119,7 @@ const voicemailMessage: Message = {
    - `client/src/lib/tts.ts` - TTS service functions
    - `client/src/components/VoicemailPlayer.tsx` - Voicemail UI component
    - `client/src/components/ChatMessage.tsx` - Integrated voicemail rendering
-   - `client/src/data/case1-episode-final.ts` - Extended Message interface
+   - `client/src/data/episode-types.ts` - Extended Message interface definitions
 
 ### API Endpoint
 

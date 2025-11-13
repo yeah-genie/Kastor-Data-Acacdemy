@@ -1,34 +1,33 @@
-import { useEffect } from "react";
-import { useDetectiveGame } from "./lib/stores/useDetectiveGame";
-import { useAudio } from "./lib/stores/useAudio";
-import { StartMenu } from "./components/StartMenu";
-import { GameScene } from "./components/GameScene";
-import "@fontsource/inter";
+import { Navigate, Route, Routes } from "react-router-dom";
+
+import AppNew from "./AppNew";
+import { TabProvider } from "./contexts/TabContext";
+import DashboardLayout from "./components/layout/Dashboard";
+import { ChatView } from "./components/chat";
+import { DataView } from "./components/data";
+import { FilesView } from "./components/files";
+import { TeamView } from "./components/team";
 
 function App() {
-  const { phase } = useDetectiveGame();
-  const { setBackgroundMusic, setSuccessSound, setHitSound } = useAudio();
-
-  useEffect(() => {
-    const bgMusic = new Audio("/sounds/background.mp3");
-    bgMusic.loop = true;
-    bgMusic.volume = 0.3;
-    setBackgroundMusic(bgMusic);
-
-    const successSound = new Audio("/sounds/success.mp3");
-    successSound.volume = 0.5;
-    setSuccessSound(successSound);
-
-    const hitSound = new Audio("/sounds/hit.mp3");
-    hitSound.volume = 0.4;
-    setHitSound(hitSound);
-  }, [setBackgroundMusic, setSuccessSound, setHitSound]);
-
   return (
-    <div className="min-h-screen bg-slate-900">
-      {phase === "menu" && <StartMenu />}
-      {phase !== "menu" && <GameScene />}
-    </div>
+    <Routes>
+      <Route path="/" element={<AppNew />} />
+      <Route
+        path="/dashboard"
+        element={
+          <TabProvider>
+            <DashboardLayout />
+          </TabProvider>
+        }
+      >
+        <Route index element={<Navigate to="chat" replace />} />
+        <Route path="chat" element={<ChatView />} />
+        <Route path="data" element={<DataView />} />
+        <Route path="files" element={<FilesView />} />
+        <Route path="team" element={<TeamView />} />
+      </Route>
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
 
