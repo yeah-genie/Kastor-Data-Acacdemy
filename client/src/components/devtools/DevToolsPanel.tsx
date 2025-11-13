@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import styled from "styled-components";
 import { useGameStore } from "@/store/gameStore";
 
@@ -76,15 +76,26 @@ const CodeBlock = styled.pre`
 
 export const DevToolsPanel = () => {
   const [open, setOpen] = useState(false);
-  const storeSnapshot = useGameStore((state) => ({
-    currentEpisode: state.currentEpisode,
-    currentScene: state.currentScene,
-    progress: state.gameProgress,
-    unlockedScenes: state.unlockedScenes,
-    collectedEvidence: state.collectedEvidence.map((item) => item.id),
-    completedEpisodes: state.completedEpisodes,
-    autoSaveSlot: state.autoSaveSlot,
-  }));
+
+  // Get individual values to avoid infinite re-renders
+  const currentEpisode = useGameStore((state) => state.currentEpisode);
+  const currentScene = useGameStore((state) => state.currentScene);
+  const progress = useGameStore((state) => state.gameProgress);
+  const unlockedScenes = useGameStore((state) => state.unlockedScenes);
+  const collectedEvidence = useGameStore((state) => state.collectedEvidence);
+  const completedEpisodes = useGameStore((state) => state.completedEpisodes);
+  const autoSaveSlot = useGameStore((state) => state.autoSaveSlot);
+
+  // Memoize the snapshot to avoid re-creating on every render
+  const storeSnapshot = useMemo(() => ({
+    currentEpisode,
+    currentScene,
+    progress,
+    unlockedScenes,
+    collectedEvidence: collectedEvidence.map((item) => item.id),
+    completedEpisodes,
+    autoSaveSlot,
+  }), [currentEpisode, currentScene, progress, unlockedScenes, collectedEvidence, completedEpisodes, autoSaveSlot]);
 
   if (import.meta.env.PROD) return null;
 
