@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'providers/game_state_provider.dart';
 import 'screens/dashboard/dashboard_screen.dart';
+import 'screens/episode/episode_selection_screen.dart';
 
 void main() {
   runApp(
@@ -126,7 +127,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => const DashboardScreen(),
+                        builder: (context) => const EpisodeSelectionScreen(),
                       ),
                     );
                   },
