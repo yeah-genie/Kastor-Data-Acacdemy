@@ -1,471 +1,527 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import styled, { keyframes } from "styled-components";
+import {
+  FormEvent,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  useGameStore,
-  selectMessages,
-  selectChoices,
-  selectTypingIndicator,
-  selectIsAwaitingResponse,
-} from "@/store/gameStore";
-import type { Message, Evidence } from "@/types";
-import EvidenceCard from "./EvidenceCard";
-import EvidenceModal from "./EvidenceModal";
+  Paperclip,
+  Send,
+  ShieldAlert,
+} from "lucide-react";
+import styled, { css } from "styled-components";
+import type { Choice, Evidence, Message } from "@/types";
+import { ChoiceButton, ChoiceMetadata, RichChoice } from "./ChoiceButton";
+import { EvidenceCard } from "./EvidenceCard";
+import { EvidenceModal } from "./EvidenceModal";
+import { useAudio } from "@/lib/stores/useAudio";
+import { listItemVariants, reducedMotionEnabled, scaleOnHover } from "@/utils/animations";
 
-const ChatLayout = styled.div`
-  height: 100%;
+export interface ParticipantProfile {
+  id: string;
+  name: string;
+  avatar?: string;
+  accentColor?: string;
+  role?: string;
+}
+
+export interface ChatViewProps {
+  messages: Message[];
+  participants: Record<string, ParticipantProfile>;
+  onSendMessage: (content: string) => Promise<void> | void;
+  isWaitingResponse?: boolean;
+  typingIndicator?: {
+    senderId: string;
+    message?: string;
+  };
+  choices?: Array<Choice & { metadata?: ChoiceMetadata }>;
+  onChoiceSelect?: (choice: RichChoice) => Promise<void> | void;
+  attachmentsEnabled?: boolean;
+  onAttachmentRequest?: () => void;
+  onEvidenceOpen?: (evidence: Evidence) => void;
+}
+
+const ChatShell = styled.div`
   display: flex;
   flex-direction: column;
-  position: relative;
-  padding: 1.25rem;
-  background: linear-gradient(180deg, rgba(35, 47, 68, 0.22), transparent),
-    rgba(20, 21, 34, 0.75);
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+  height: 100%;
+  min-height: 620px;
 `;
 
-const ScrollArea = styled.div`
+const MessageArea = styled.div`
   flex: 1;
   overflow-y: auto;
-  padding-right: 0.75rem;
+  padding: clamp(1rem, 2vw, 2rem);
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.15rem;
+  scroll-behavior: smooth;
 
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.12);
-    border-radius: 999px;
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    padding-bottom: 2.5rem;
   }
 `;
 
-const MessageRow = styled.div<{ $align: "left" | "right" | "center" }>`
+const MessageGroup = styled(motion.div)<{ $align: "left" | "right" | "center" }>`
   display: flex;
   flex-direction: column;
-  align-items: ${({ $align }) =>
-    $align === "left" ? "flex-start" : $align === "right" ? "flex-end" : "center"};
   gap: 0.4rem;
+  align-items: ${({ $align }) =>
+    $align === "right" ? "flex-end" : $align === "center" ? "center" : "flex-start"};
 `;
 
-const Bubble = styled(motion.div)<{ $variant: "player" | "kastor" | "system" | "default" }>`
-  max-width: min(520px, 75%);
-  padding: 0.95rem 1.15rem;
-  border-radius: 18px;
-  line-height: 1.5;
+const MessageBubble = styled(motion.div)<{
+  $variant: "player" | "ai" | "character" | "system";
+  $accent?: string;
+}>`
+  max-width: min(480px, 75%);
+  width: fit-content;
+  padding: 0.9rem 1.25rem;
+  border-radius: 20px;
+  line-height: 1.55;
   font-size: 0.95rem;
-  color: ${({ theme, $variant }) => {
-    switch ($variant) {
-      case "player":
-        return theme.colors.white;
-      case "kastor":
-        return theme.colors.white;
-      case "system":
-        return theme.colors.lightGray;
-      default:
-        return theme.colors.white;
-    }
-  }};
-  background: ${({ theme, $variant }) => {
-    switch ($variant) {
-      case "player":
-        return `linear-gradient(135deg, ${theme.colors.primary}, rgba(33, 150, 243, 0.8))`;
-      case "kastor":
-        return "linear-gradient(135deg, rgba(77, 182, 172, 0.2), rgba(29, 233, 182, 0.08))";
-      case "system":
-        return "transparent";
-      default:
-        return "rgba(255, 255, 255, 0.05)";
-    }
-  }};
-  border: ${({ $variant }) => ($variant === "system" ? "none" : "1px solid rgba(255,255,255,0.05)")};
-  box-shadow: ${({ $variant }) =>
-    $variant === "player"
-      ? "0 12px 28px rgba(33, 150, 243, 0.35)"
-      : $variant === "kastor"
-        ? "0 12px 28px rgba(77, 182, 172, 0.18)"
-        : "none"};
-  text-align: ${({ $variant }) => ($variant === "system" ? "center" : "left")};
-`;
-
-const MessageMeta = styled.div`
-  display: flex;
-  gap: 0.35rem;
-  align-items: center;
-  font-size: 0.75rem;
-  color: ${({ theme }) => theme.colors.lightGray};
-  font-weight: 500;
-`;
-
-const SenderLabel = styled.span<{ $variant: "player" | "kastor" | "system" | "default" }>`
-  color: ${({ theme, $variant }) => {
-    switch ($variant) {
-      case "player":
-        return "rgba(255,255,255,0.82)";
-      case "kastor":
-        return "#21ffd0";
-      case "system":
-        return theme.colors.lightGray;
-      default:
-        return theme.colors.primary;
-    }
-  }};
-  font-family: ${({ theme }) => theme.fonts.heading};
-`;
-
-const AttachmentStack = styled.div`
-  margin-top: 0.65rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-  width: min(520px, 75%);
-`;
-
-const ChoiceShelf = styled(AnimatePresence)`
-  margin-top: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-`;
-
-const ChoiceButton = styled(motion.button)`
-  width: 100%;
-  padding: 1rem 1.25rem;
-  border-radius: 16px;
-  border: 2px solid rgba(33, 150, 243, 0.6);
-  background: rgba(33, 150, 243, 0.06);
+  box-shadow: 0 16px 35px rgba(0, 0, 0, 0.35);
+  background: rgba(30, 30, 30, 0.9);
   color: ${({ theme }) => theme.colors.white};
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  text-align: left;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 16px 30px rgba(33, 150, 243, 0.22);
-    background: rgba(33, 150, 243, 0.12);
-  }
-
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.6;
-    transform: none;
-    box-shadow: none;
-  }
-`;
-
-const InputDock = styled.form`
-  margin-top: auto;
-  display: flex;
-  align-items: flex-end;
-  gap: 0.75rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-`;
-
-const ChatInput = styled.textarea`
-  flex: 1;
-  min-height: 52px;
-  max-height: 150px;
-  resize: none;
-  background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
+
+  ${({ $variant, theme }) =>
+    $variant === "player" &&
+    css`
+      background: linear-gradient(
+        135deg,
+        rgba(33, 150, 243, 0.95),
+        rgba(33, 150, 243, 0.6)
+      );
+      box-shadow: 0 18px 40px rgba(33, 150, 243, 0.35);
+      border: none;
+    `}
+
+  ${({ $variant, $accent }) =>
+    $variant === "character" &&
+    $accent &&
+    css`
+      border-left: 4px solid ${$accent};
+    `}
+
+  ${({ $variant }) =>
+    $variant === "system" &&
+    css`
+      max-width: 100%;
+      text-align: center;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      padding: 0.85rem 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px dashed rgba(255, 255, 255, 0.2);
+    `}
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    max-width: 85%;
+    font-size: 0.92rem;
+  }
+`;
+
+const MessageHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.7);
+`;
+
+const Avatar = styled.div<{ $src?: string }>`
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: ${({ theme }) => theme.colors.darkGray};
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  color: ${({ theme }) => theme.colors.white};
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.4);
+
+  ${({ $src }) =>
+    $src &&
+    css`
+      background-image: url(${$src});
+      background-size: cover;
+      background-position: center;
+    `}
+`;
+
+const Timestamp = styled.span`
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.45);
+`;
+
+const TypingIndicatorBubble = styled(motion.div)`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+`;
+
+const Dot = styled(motion.span)`
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.8);
+`;
+
+const ChoiceContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  padding: 1rem;
+  margin-top: 0.5rem;
+`;
+
+const InputBar = styled.form`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem clamp(1rem, 3vw, 2rem);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(12, 12, 12, 0.85);
+  backdrop-filter: blur(12px);
+`;
+
+const InputField = styled.textarea`
+  flex: 1;
+  resize: none;
+  min-height: 52px;
+  max-height: 140px;
+  border-radius: 14px;
   padding: 0.85rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(20, 20, 20, 0.7);
   color: ${({ theme }) => theme.colors.white};
   font-size: 0.95rem;
-  line-height: 1.4;
-  font-family: ${({ theme }) => theme.fonts.body};
-  transition: border 0.18s ease, box-shadow 0.18s ease;
+  line-height: 1.5;
 
   &:focus {
     outline: none;
     border-color: ${({ theme }) => theme.colors.primary};
-    box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.18);
-  }
-
-  &::placeholder {
-    color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.25);
   }
 `;
 
-const IconButton = styled.button`
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
+const IconButton = styled.button<{ $variant?: "default" | "primary" }>`
   border: none;
-  background: rgba(255, 255, 255, 0.08);
-  color: ${({ theme }) => theme.colors.white};
-  display: flex;
+  border-radius: 12px;
+  padding: 0.65rem 0.8rem;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  background: ${({ $variant, theme }) =>
+    $variant === "primary" ? theme.colors.primary : "rgba(255, 255, 255, 0.1)"};
+  color: ${({ theme }) => theme.colors.white};
   cursor: pointer;
-  transition: transform 0.15s ease, background 0.18s ease, box-shadow 0.18s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 
-  &:hover {
-    transform: translateY(-1px);
-    background: rgba(255, 255, 255, 0.12);
-    box-shadow: 0 10px 20px rgba(33, 150, 243, 0.18);
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: ${({ $variant }) =>
+        $variant === "primary"
+          ? "0 10px 25px rgba(33, 150, 243, 0.35)"
+          : "0 10px 25px rgba(0,0,0,0.3)"};
+    }
   }
 
   &:disabled {
-    opacity: 0.4;
+    opacity: 0.5;
     cursor: not-allowed;
-    transform: none;
     box-shadow: none;
   }
 `;
 
-const SendButton = styled(IconButton)<{ $primary?: boolean }>`
-  background: ${({ theme }) => theme.colors.primary};
-  color: ${({ theme }) => theme.colors.white};
-
-  &:hover {
-    background: rgba(33, 150, 243, 0.9);
-  }
-`;
-
-const dots = keyframes`
-  0%, 80%, 100% { transform: scale(0.6); opacity: 0.3; }
-  40% { transform: scale(1); opacity: 1; }
-`;
-
-const TypingBubble = styled.div`
-  display: inline-flex;
+const AttachmentHint = styled.div`
+  display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 0.6rem 0.85rem;
-  border-radius: 12px;
-  background: rgba(33, 150, 243, 0.12);
-  gap: 0.35rem;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.55);
 `;
 
-const Dot = styled.span`
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(33, 150, 243, 0.6);
-  animation: ${dots} 1.4s ease-in-out infinite;
-
-  &:nth-child(1) {
-    animation-delay: 0s;
-  }
-  &:nth-child(2) {
-    animation-delay: 0.2s;
-  }
-  &:nth-child(3) {
-    animation-delay: 0.4s;
-  }
+const EvidenceWrapper = styled.div`
+  padding-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 `;
 
-const ChoiceHint = styled.div`
-  font-size: 0.85rem;
-  color: ${({ theme }) => theme.colors.lightGray};
-  font-weight: 500;
-`;
-
-const actorProfiles: Record<
-  string,
-  { displayName: string; avatar: string; variant: "player" | "kastor" | "default" }
-> = {
-  player: { displayName: "You", avatar: "🕵️", variant: "player" },
-  kastor: { displayName: "Kastor", avatar: "🦉", variant: "kastor" },
-  "maya-zhang": { displayName: "Maya Zhang", avatar: "🧠", variant: "default" },
-  "camille-beaumont": { displayName: "Camille Beaumont", avatar: "📡", variant: "default" },
-  "isabella-torres": { displayName: "Isabella Torres", avatar: "🖥️", variant: "default" },
-  "alex-reeves": { displayName: "Alex Reeves", avatar: "🔐", variant: "default" },
-  system: { displayName: "System", avatar: "⚙️", variant: "default" },
+const getVariant = (message: Message, participants: Record<string, ParticipantProfile>) => {
+  if (message.type === "system") return "system";
+  if (message.sender === "player") return "player";
+  if (message.sender === "kastor") return "ai";
+  if (participants[message.sender]) return "character";
+  return "ai";
 };
 
-const messageVariants: Record<"player" | "kastor" | "system" | "default", "player" | "kastor" | "system" | "default"> = {
-  player: "player",
-  kastor: "kastor",
-  system: "system",
-  default: "default",
+const formatTimestamp = (timestamp: string) => {
+  const date = new Date(timestamp);
+  if (Number.isNaN(date.getTime())) return timestamp;
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(date);
 };
 
-const bubbleMotion = {
-  initial: { opacity: 0, y: 12, filter: "blur(2px)" },
-  animate: { opacity: 1, y: 0, filter: "blur(0px)" },
-};
-
-const choiceMotion = {
-  initial: { opacity: 0, y: 10 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: 10 },
-};
-
-export const ChatView = () => {
-  const messages = useGameStore(selectMessages);
-  const choices = useGameStore(selectChoices);
-  const typingIndicator = useGameStore(selectTypingIndicator);
-  const isAwaitingResponse = useGameStore(selectIsAwaitingResponse);
-  const sendPlayerMessage = useGameStore((state) => state.sendPlayerMessage);
-  const makeChoice = useGameStore((state) => state.makeChoice);
-  const startEpisode = useGameStore((state) => state.startEpisode);
-
+export const ChatView = ({
+  messages,
+  participants,
+  onSendMessage,
+  isWaitingResponse,
+  typingIndicator,
+  choices,
+  onChoiceSelect,
+  attachmentsEnabled = true,
+  onAttachmentRequest,
+  onEvidenceOpen,
+}: ChatViewProps) => {
   const [inputValue, setInputValue] = useState("");
+  const [choiceLocked, setChoiceLocked] = useState(false);
   const [selectedEvidence, setSelectedEvidence] = useState<Evidence | null>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const messageEndRef = useRef<HTMLDivElement | null>(null);
+  const playMessageSound = useAudio((state) => state.playMessageSound);
+  const playChoiceSound = useAudio((state) => state.playHit);
+  const prefersReducedMotion = useMemo(() => reducedMotionEnabled(), []);
 
   useEffect(() => {
-    if (messages.length === 0) {
-      startEpisode("episode-4");
+    const behavior: ScrollBehavior = prefersReducedMotion ? "auto" : "smooth";
+    messageEndRef.current?.scrollIntoView({ behavior });
+  }, [messages, prefersReducedMotion, typingIndicator]);
+
+  useEffect(() => {
+    if (!messages.length) return;
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage.sender !== "player") {
+      playMessageSound();
     }
-  }, [messages.length, startEpisode]);
+  }, [messages, playMessageSound]);
 
   useEffect(() => {
-    const container = scrollRef.current;
-    if (!container) return;
-    container.scrollTo({
-      top: container.scrollHeight,
-      behavior: "smooth",
-    });
-  }, [messages, typingIndicator, choices]);
+    if (!choices?.length) {
+      setChoiceLocked(false);
+    }
+  }, [choices]);
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    if (!inputValue.trim()) return;
-    sendPlayerMessage(inputValue);
-    setInputValue("");
-  };
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === "Enter" && !event.shiftKey) {
+  const handleSubmit = useCallback(
+    async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      handleSubmit(event as unknown as React.FormEvent);
+      if (!inputValue.trim()) return;
+      await onSendMessage(inputValue.trim());
+      setInputValue("");
+    },
+    [inputValue, onSendMessage],
+  );
+
+  const handleChoiceClick = useCallback(
+    async (choice: RichChoice) => {
+      if (choiceLocked) return;
+      setChoiceLocked(true);
+      playChoiceSound();
+      await onChoiceSelect?.(choice);
+    },
+    [choiceLocked, onChoiceSelect, playChoiceSound],
+  );
+
+  const typingProfile = typingIndicator?.senderId
+    ? participants[typingIndicator.senderId]
+    : undefined;
+
+  const renderMessageContent = (message: Message): ReactNode => {
+    if (message.type === "system") {
+      return message.content;
     }
+    return message.content;
   };
 
-  const classifiedMessages = useMemo(() => {
-    return messages.map((message): { data: Message; variant: "player" | "kastor" | "system" | "default"; align: "left" | "right" | "center"; profile: (typeof actorProfiles)[string] } => {
-      if (message.type === "system") {
-        return { data: message, variant: "system", align: "center", profile: actorProfiles.system };
-      }
-      const profile = actorProfiles[message.sender] ?? {
-        displayName: message.sender,
-        avatar: "👤",
-        variant: "default",
-      };
-      const variant = messageVariants[profile.variant];
-      const align =
-        variant === "player"
-          ? "right"
-          : variant === "system"
-            ? "center"
-            : "left";
-      return {
-        data: message,
-        variant,
-        align,
-        profile,
-      };
-    });
-  }, [messages]);
+  const handleEvidenceView = (evidence: Evidence) => {
+    setSelectedEvidence(evidence);
+    onEvidenceOpen?.(evidence);
+  };
+
+  const relatedEvidence = useMemo(() => {
+    if (!selectedEvidence) return [];
+    const relatedIds = new Set(selectedEvidence.relatedTo);
+    return messages
+      .flatMap((msg) => msg.attachments ?? [])
+      .filter((item) => relatedIds.has(item.id) && item.id !== selectedEvidence.id);
+  }, [messages, selectedEvidence]);
 
   return (
-    <ChatLayout>
-      <ScrollArea ref={scrollRef}>
-        {classifiedMessages.map(({ data, variant, align, profile }) => (
-          <MessageRow key={data.id} $align={align}>
-            {variant !== "system" && (
-              <MessageMeta>
-                <span>{profile.avatar}</span>
-                <SenderLabel $variant={variant}>{profile.displayName}</SenderLabel>
-                {data.timestamp && <span>· {data.timestamp}</span>}
-              </MessageMeta>
-            )}
-            <Bubble
-              $variant={variant}
-              variants={bubbleMotion}
-              initial="initial"
-              animate="animate"
-              transition={{ duration: 0.2, ease: "easeOut" }}
-            >
-              {data.content && <span>{data.content}</span>}
-              {data.attachments && data.attachments.length > 0 && (
-                <AttachmentStack>
-                  {data.attachments.map((attachment) => (
-                    <EvidenceCard
-                      key={`${data.id}-${attachment.id}`}
-                      evidence={attachment}
-                      onView={setSelectedEvidence}
-                    />
-                  ))}
-                </AttachmentStack>
-              )}
-            </Bubble>
-          </MessageRow>
-        ))}
-        {typingIndicator && (
-          <MessageRow $align="left">
-            <MessageMeta>
-              <span>🦉</span>
-              <SenderLabel $variant="kastor">{typingIndicator.actor}</SenderLabel>
-              <span>· typing</span>
-            </MessageMeta>
-            <TypingBubble>
-              <Dot />
-              <Dot />
-              <Dot />
-            </TypingBubble>
-          </MessageRow>
-        )}
-      </ScrollArea>
+    <ChatShell>
+        <MessageArea>
+        <AnimatePresence initial={false}>
+            {messages.map((message, index) => {
+            const variant = getVariant(message, participants);
+            const profile = participants[message.sender];
+            const align =
+              variant === "player" ? "right" : variant === "system" ? "center" : "left";
+            return (
+              <MessageGroup
+                key={message.id}
+                $align={align}
+                  variants={prefersReducedMotion ? undefined : listItemVariants}
+                  initial={prefersReducedMotion ? undefined : "hidden"}
+                  animate={prefersReducedMotion ? undefined : "visible"}
+                  exit={prefersReducedMotion ? undefined : "hidden"}
+                  custom={index}
+              >
+                {variant !== "player" && variant !== "system" ? (
+                  <MessageHeader>
+                    <Avatar $src={profile?.avatar}>
+                      {profile?.avatar ? null : profile?.name?.[0] ?? "?"}
+                    </Avatar>
+                    <div>
+                      <strong>{profile?.name ?? message.sender}</strong>
+                      {profile?.role ? <div style={{ fontSize: "0.7rem" }}>{profile.role}</div> : null}
+                    </div>
+                    <Timestamp>{formatTimestamp(message.timestamp)}</Timestamp>
+                  </MessageHeader>
+                ) : null}
 
-      <ChoiceShelf>
-        <AnimatePresence>
-          {choices.length > 0 && (
-            <motion.div
-              key="choices"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 16 }}
-            >
-              <ChoiceHint>Choose a response:</ChoiceHint>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.65rem" }}>
-                {choices.map((choice) => (
-                  <ChoiceButton
-                    key={choice.id}
-                    variants={choiceMotion}
-                    initial="initial"
-                    animate="animate"
-                    exit="exit"
-                    transition={{ duration: 0.18, ease: "easeOut" }}
-                    onClick={() => makeChoice(choice.id)}
+                  <MessageBubble
+                    $variant={variant as "player" | "ai" | "character" | "system"}
+                    $accent={profile?.accentColor}
+                    initial={
+                      prefersReducedMotion
+                        ? undefined
+                        : { opacity: 0, y: 12, scale: 0.98 }
+                    }
+                    animate={
+                      prefersReducedMotion
+                        ? undefined
+                        : { opacity: 1, y: 0, scale: 1 }
+                    }
+                    whileHover={
+                      prefersReducedMotion
+                        ? undefined
+                        : { scale: 1.02, boxShadow: "0 18px 32px rgba(33, 150, 243, 0.18)" }
+                    }
+                    transition={{ duration: 0.24, ease: "easeOut" }}
                   >
-                    {choice.text}
-                  </ChoiceButton>
-                ))}
-              </div>
-            </motion.div>
-          )}
+                  {variant === "player" ? (
+                    <Timestamp style={{ display: "block", marginBottom: "0.25rem", textAlign: "right" }}>
+                      {formatTimestamp(message.timestamp)}
+                    </Timestamp>
+                  ) : null}
+                  {renderMessageContent(message)}
+                  {message.attachments?.length ? (
+                    <EvidenceWrapper>
+                      {message.attachments.map((item) => (
+                        <EvidenceCard
+                          key={item.id}
+                          evidence={item}
+                          onView={handleEvidenceView}
+                        />
+                      ))}
+                    </EvidenceWrapper>
+                  ) : null}
+                </MessageBubble>
+              </MessageGroup>
+            );
+          })}
         </AnimatePresence>
-      </ChoiceShelf>
 
-      <InputDock onSubmit={handleSubmit}>
-        <ChatInput
-          placeholder={isAwaitingResponse ? "Waiting for Kastor..." : "Type your response…"}
+        {typingIndicator ? (
+          <MessageGroup $align="left">
+            <TypingIndicatorBubble
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Dot animate={{ scale: [1, 1.3, 1] }} transition={{ duration: 0.8, repeat: Infinity }} />
+              <Dot
+                animate={{ scale: [1, 1.3, 1] }}
+                transition={{ duration: 0.8, repeat: Infinity, delay: 0.2 }}
+              />
+              <Dot
+                animate={{ scale: [1, 1.3, 1] }}
+                transition={{ duration: 0.8, repeat: Infinity, delay: 0.4 }}
+              />
+              <span style={{ fontSize: "0.75rem", opacity: 0.7 }}>
+                {typingProfile?.name ?? "Someone"} is typing…
+              </span>
+            </TypingIndicatorBubble>
+          </MessageGroup>
+        ) : null}
+
+        <div ref={messageEndRef} />
+      </MessageArea>
+
+      {choices?.length ? (
+        <ChoiceContainer>
+          <AnimatePresence>
+            {choices.map((choice) => (
+              <ChoiceButton
+                key={choice.id}
+                choice={choice}
+                disabled={choiceLocked}
+                onSelect={handleChoiceClick}
+              />
+            ))}
+          </AnimatePresence>
+        </ChoiceContainer>
+      ) : null}
+
+      <InputBar onSubmit={handleSubmit}>
+        <InputField
           value={inputValue}
+          placeholder={isWaitingResponse ? "Waiting for Kastor…" : "Type your response…"}
           onChange={(event) => setInputValue(event.target.value)}
-          onKeyDown={handleKeyDown}
-          disabled={isAwaitingResponse}
-          aria-label="chat-input"
+          disabled={isWaitingResponse}
+          rows={1}
         />
-        <IconButton type="button" disabled title="Attach evidence (Coming soon)">
-          📎
+        {attachmentsEnabled ? (
+          <div>
+            <IconButton
+              type="button"
+              onClick={onAttachmentRequest}
+              disabled={isWaitingResponse}
+              title="Attach evidence"
+            >
+              <Paperclip size={18} />
+            </IconButton>
+            <AttachmentHint>
+              <ShieldAlert size={14} />
+              Attach evidence to bolster your case
+            </AttachmentHint>
+          </div>
+        ) : null}
+        <IconButton
+          type="submit"
+          $variant="primary"
+          disabled={isWaitingResponse || !inputValue.trim()}
+        >
+          <Send size={18} />
         </IconButton>
-        <SendButton type="submit" disabled={!inputValue.trim() || isAwaitingResponse} $primary>
-          ➤
-        </SendButton>
-      </InputDock>
+      </InputBar>
 
-      <EvidenceModal evidence={selectedEvidence} onClose={() => setSelectedEvidence(null)} />
-    </ChatLayout>
+      <EvidenceModal
+        evidence={selectedEvidence}
+        onClose={() => setSelectedEvidence(null)}
+        relatedEvidence={relatedEvidence}
+        onNavigate={(id) => {
+          const target = messages
+            .flatMap((msg) => msg.attachments ?? [])
+            .find((item) => item.id === id);
+          if (target) {
+            setSelectedEvidence(target);
+          }
+        }}
+      />
+    </ChatShell>
   );
 };
 

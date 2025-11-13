@@ -1,4 +1,6 @@
-export const theme = {
+import { DefaultTheme } from "styled-components";
+
+export const theme: DefaultTheme = {
   colors: {
     primary: "#2196F3",
     secondary: "#FF9800",
@@ -20,6 +22,30 @@ export const theme = {
     tablet: "1024px",
     desktop: "1440px",
   },
-} as const;
+};
 
-export type Theme = typeof theme;
+declare module "styled-components" {
+  export interface DefaultTheme {
+    colors: {
+      primary: string;
+      secondary: string;
+      success: string;
+      danger: string;
+      dark: string;
+      darkGray: string;
+      mediumGray: string;
+      lightGray: string;
+      white: string;
+    };
+    fonts: {
+      heading: string;
+      body: string;
+      mono: string;
+    };
+    breakpoints: {
+      mobile: string;
+      tablet: string;
+      desktop: string;
+    };
+  }
+}

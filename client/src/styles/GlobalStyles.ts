@@ -1,35 +1,45 @@
 import { createGlobalStyle } from "styled-components";
-import { theme } from "./theme";
 
 export const GlobalStyles = createGlobalStyle`
-  :root {
-    font-family: ${theme.fonts.body};
-    color: ${theme.colors.white};
-    background-color: ${theme.colors.dark};
-    line-height: 1.5;
-    font-weight: 400;
-    color-scheme: only dark;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-  }
-
   *, *::before, *::after {
     box-sizing: border-box;
   }
 
-  body {
-    margin: 0;
-    min-height: 100vh;
-    background-color: ${theme.colors.dark};
+  html, body, #root {
+    height: 100%;
   }
 
-  button {
-    font-family: inherit;
-    cursor: pointer;
+  body {
+    margin: 0;
+    font-family: ${({ theme }) => theme.fonts.body};
+    background-color: ${({ theme }) => theme.colors.dark};
+    color: ${({ theme }) => theme.colors.white};
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: ${({ theme }) => theme.fonts.heading};
+    margin: 0;
+  }
+
+  code, pre {
+    font-family: ${({ theme }) => theme.fonts.mono};
   }
 
   a {
     color: inherit;
     text-decoration: none;
+  }
+
+  ul, ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  button {
+    font: inherit;
+    cursor: pointer;
   }
 `;

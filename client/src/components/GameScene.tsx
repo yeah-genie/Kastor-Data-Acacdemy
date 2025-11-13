@@ -31,7 +31,13 @@ import CharacterUnlockModal, { type CharacterData } from "./CharacterUnlockModal
 import SkillUnlockModal, { type SkillData } from "./SkillUnlockModal";
 import { episode1Unlocks } from "@/data/episode1-unlocks";
 
-export function GameScene() {
+type GameSceneVariant = "standalone" | "embedded";
+
+interface GameSceneProps {
+  variant?: GameSceneVariant;
+}
+
+export function GameScene({ variant = "standalone" }: GameSceneProps = {}) {
   const {
     phase,
     currentNode,
@@ -50,6 +56,7 @@ export function GameScene() {
     score,
     highlightedEvidenceId,
   } = useDetectiveGame();
+  const isStandalone = variant === "standalone";
 
   const { isMuted, toggleMute, playSuccess, playHit } = useAudio();
 
@@ -488,16 +495,29 @@ export function GameScene() {
 
   if (!currentStoryNode) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+      <div
+        className={
+          isStandalone
+            ? "min-h-screen bg-slate-900 flex items-center justify-center"
+            : "min-h-[320px] bg-slate-900/80 flex items-center justify-center rounded-3xl"
+        }
+      >
         <div className="text-white">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
+    <div
+      className={
+        isStandalone
+          ? "min-h-screen bg-gray-100 flex flex-col"
+          : "bg-gradient-to-b from-[#10131f] via-[#10131f] to-[#080a12] rounded-3xl border border-white/5 shadow-xl flex flex-col overflow-hidden"
+      }
+    >
       {/* Chat Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+      {isStandalone ? (
+        <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button 
             onClick={handleBackToMenu}
@@ -546,12 +566,56 @@ export function GameScene() {
             )}
           </button>
         </div>
-      </div>
+        </div>
+      ) : (
+        <div className="px-5 py-4 border-b border-white/10 bg-white/5 flex items-center justify-between">
+          <div className="flex flex-col gap-1">
+            <span className="text-xs uppercase tracking-[0.2em] text-white/50">Current Case</span>
+            <span className="text-base font-semibold text-white">
+              {caseMetadata[currentCase]?.title || "Case Investigation"}
+            </span>
+            <span className="text-[11px] text-white/40">
+              {phase === "stage1" && "Stage 1 · Testimony & Hypothesis"}
+              {phase === "stage2" && "Stage 2 · Data Collection"}
+              {phase === "stage3" && "Stage 3 · Data Preprocessing"}
+              {phase === "stage4" && "Stage 4 · Evidence Analysis"}
+              {phase === "stage5" && "Stage 5 · Insight & Resolution"}
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="px-3 py-1.5 bg-white/10 rounded-lg border border-white/10 text-white text-sm font-semibold shadow-inner">
+              {score} XP
+            </div>
+            <button
+              onClick={toggleMute}
+              className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-white transition-colors"
+            >
+              {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+            </button>
+            <button
+              onClick={() => {
+                setShowNotebook(true);
+                clearNewEvidenceFlag();
+              }}
+              className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-white transition-colors relative"
+            >
+              <BookOpen className="w-4 h-4" />
+              {hasNewEvidence && (
+                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-amber-400 rounded-full border border-white"></span>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Chat Messages Area */}
-      <div 
+      <div
         onClick={handleChatClick}
-        className="flex-1 overflow-y-auto px-4 py-4 space-y-3 cursor-pointer"
+        className={
+          isStandalone
+            ? "flex-1 overflow-y-auto px-4 py-4 space-y-3 cursor-pointer"
+            : "flex-1 overflow-y-auto px-4 md:px-6 py-6 md:py-7 space-y-3 md:space-y-4 cursor-pointer bg-gradient-to-b from-white/3 via-white/1 to-transparent"
+        }
       >
         {currentStoryNode.messages.slice(0, visibleMessages)
           .filter(message => !message.celebration)
@@ -621,16 +685,32 @@ export function GameScene() {
       </div>
 
       {/* Bottom Input Area */}
-      <div className="bg-white border-t border-gray-200 px-3 py-2 safe-area-bottom">
+      <div
+        className={
+          isStandalone
+            ? "bg-white border-t border-gray-200 px-3 py-2 safe-area-bottom"
+            : "bg-white/8 border-t border-white/10 px-4 py-3 backdrop-blur"
+        }
+      >
         <div className="flex items-center gap-2">
-          <button 
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-400"
+          <button
+            className={
+              isStandalone
+                ? "p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-400"
+                : "p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors text-white/70"
+            }
             disabled
           >
             <Plus className="w-6 h-6" />
           </button>
-          <div className="flex-1 bg-gray-100 rounded-full px-4 py-2.5 flex items-center justify-between">
-            <span className="text-gray-500 text-sm">
+          <div
+            className={
+              isStandalone
+                ? "flex-1 bg-gray-100 rounded-full px-4 py-2.5 flex items-center justify-between"
+                : "flex-1 bg-white/5 rounded-full px-4 py-2.5 flex items-center justify-between text-white/80 border border-white/10"
+            }
+          >
+            <span className={isStandalone ? "text-gray-500 text-sm" : "text-xs md:text-sm"}>
               {visibleMessages < currentStoryNode.messages.length 
                 ? "Continue the conversation..." 
                 : showQuestion || showEvidencePresentation
@@ -643,16 +723,24 @@ export function GameScene() {
               }
             </span>
           </div>
-          <button 
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-400"
+          <button
+            className={
+              isStandalone
+                ? "p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-400"
+                : "p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors text-white/70"
+            }
             disabled
           >
             <Mic className="w-5 h-5" />
           </button>
-          <button 
+          <button
             onClick={handleChatClick}
             disabled={isTyping || !isAwaitingAdvance || showTypingIndicator || (visibleMessages === currentStoryNode.messages.length && (showQuestion || showEvidencePresentation))}
-            className="p-2.5 rounded-full bg-blue-500 hover:bg-blue-600 transition-colors text-white disabled:bg-gray-300 disabled:cursor-not-allowed shadow-sm"
+            className={
+              isStandalone
+                ? "p-2.5 rounded-full bg-blue-500 hover:bg-blue-600 transition-colors text-white disabled:bg-gray-300 disabled:cursor-not-allowed shadow-sm"
+                : "p-2.5 rounded-full bg-gradient-to-br from-[#00d9ff] to-[#0097b2] hover:from-[#00c8eb] hover:to-[#0088a2] transition-colors text-white disabled:bg-white/10 disabled:cursor-not-allowed shadow-[0_8px_18px_rgba(0,217,255,0.35)]"
+            }
           >
             <Send className="w-5 h-5" />
           </button>
@@ -720,13 +808,15 @@ export function GameScene() {
         </div>
       )}
 
-      <ResumeGameModal
-        isOpen={showBackModal}
-        onContinue={handleBackModalContinue}
-        onStartOver={handleBackModalStartOver}
-        onClose={handleBackModalContinue}
-        isBackButton={true}
-      />
+      {isStandalone && (
+        <ResumeGameModal
+          isOpen={showBackModal}
+          onContinue={handleBackModalContinue}
+          onStartOver={handleBackModalStartOver}
+          onClose={handleBackModalContinue}
+          isBackButton={true}
+        />
+      )}
 
       {currentStoryNode?.hints && currentStoryNode.hints.length > 0 && (
         <HintSystem

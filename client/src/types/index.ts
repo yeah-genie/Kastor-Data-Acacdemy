@@ -1,9 +1,16 @@
+type LooseRecord = Record<string, unknown>;
+
+const isObject = (value: unknown): value is LooseRecord =>
+  typeof value === "object" && value !== null;
+
+export type CharacterStatus = "active" | "suspect" | "cleared" | "arrested";
+
 export interface Character {
   id: string;
   name: string;
   role: string;
   avatar?: string;
-  status: "active" | "suspect" | "cleared" | "arrested";
+  status: CharacterStatus;
   trustLevel: number;
   background: string[];
   suspiciousActivity: string[];
@@ -11,6 +18,7 @@ export interface Character {
 }
 
 export type EvidenceType = "document" | "log" | "email" | "image" | "video";
+export type EvidenceImportance = "low" | "medium" | "high" | "critical";
 
 export interface Evidence {
   id: string;
@@ -19,26 +27,11 @@ export interface Evidence {
   content: unknown;
   dateCollected: string;
   relatedTo: string[];
-  importance: "low" | "medium" | "high" | "critical";
+  importance: EvidenceImportance;
   isNew: boolean;
 }
 
-export type MessageType = "text" | "evidence" | "system" | "choice";
-
-export interface Message {
-  id: string;
-  sender: string;
-  content: string;
-  timestamp: string;
-  type: MessageType;
-  attachments?: Evidence[];
-  choices?: Choice[];
-  dataVisualization?: unknown;
-  isQuestion?: boolean;
-  isCharacterCards?: boolean;
-  isEvidencePresentation?: boolean;
-  metadata?: Record<string, unknown>;
-}
+export type MessageType = "text" | "evidence" | "system" | "choice" | "alert";
 
 export interface ChoiceConsequence {
   relationshipChange?: Record<string, number>;
@@ -51,10 +44,25 @@ export interface Choice {
   text: string;
   nextScene?: string;
   consequence?: ChoiceConsequence;
-  clueAwarded?: string;
 }
 
-export type SceneType = "chat" | "data" | "files" | "team" | "interactive";
+export interface Message {
+  id: string;
+  sender: string;
+  content: string;
+  timestamp: string;
+  type: MessageType;
+  attachments?: Evidence[];
+  choices?: Choice[];
+}
+
+export type SceneType =
+  | "chat"
+  | "data"
+  | "files"
+  | "team"
+  | "interactive"
+  | "cinematic";
 
 export interface SceneRequirements {
   evidence?: string[];
@@ -70,7 +78,6 @@ export interface Scene {
   interactiveContent?: unknown;
   nextScene?: string;
   requirements?: SceneRequirements;
-  choices?: Choice[];
 }
 
 export interface Episode {
@@ -95,157 +102,132 @@ export interface GameState {
   characterRelationships: Record<string, number>;
   progress: number;
   completedEpisodes: string[];
-  currentTab: string;
 }
 
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === "object" && value !== null && !Array.isArray(value);
-
 export const isCharacter = (value: unknown): value is Character => {
-  if (!isRecord(value)) return false;
+  if (!isObject(value)) return false;
+
   return (
     typeof value.id === "string" &&
     typeof value.name === "string" &&
     typeof value.role === "string" &&
     (value.avatar === undefined || typeof value.avatar === "string") &&
-    ["active", "suspect", "cleared", "arrested"].includes(String(value.status)) &&
+    typeof value.status === "string" &&
     typeof value.trustLevel === "number" &&
     Array.isArray(value.background) &&
-    value.background.every((item) => typeof item === "string") &&
     Array.isArray(value.suspiciousActivity) &&
-    value.suspiciousActivity.every((item) => typeof item === "string") &&
-    Array.isArray(value.relatedEvidence) &&
-    value.relatedEvidence.every((item) => typeof item === "string")
+    Array.isArray(value.relatedEvidence)
   );
 };
 
 export const isEvidence = (value: unknown): value is Evidence => {
-  if (!isRecord(value)) return false;
+  if (!isObject(value)) return false;
+
   return (
     typeof value.id === "string" &&
-    ["document", "log", "email", "image", "video"].includes(String(value.type)) &&
+    typeof value.type === "string" &&
     typeof value.title === "string" &&
     typeof value.dateCollected === "string" &&
     Array.isArray(value.relatedTo) &&
-    value.relatedTo.every((item) => typeof item === "string") &&
-    ["low", "medium", "high", "critical"].includes(String(value.importance)) &&
+    typeof value.importance === "string" &&
     typeof value.isNew === "boolean"
   );
 };
 
 export const isChoice = (value: unknown): value is Choice => {
-  if (!isRecord(value)) return false;
-  const hasValidConsequence =
-    value.consequence === undefined ||
-    (isRecord(value.consequence) &&
-      (value.consequence.relationshipChange === undefined ||
-        (isRecord(value.consequence.relationshipChange) &&
-          Object.values(value.consequence.relationshipChange).every(
-            (change) => typeof change === "number",
-          ))) &&
-      (value.consequence.evidenceUnlock === undefined ||
-        (Array.isArray(value.consequence.evidenceUnlock) &&
-          value.consequence.evidenceUnlock.every((item) => typeof item === "string"))) &&
-      (value.consequence.sceneUnlock === undefined ||
-        (Array.isArray(value.consequence.sceneUnlock) &&
-          value.consequence.sceneUnlock.every((item) => typeof item === "string"))));
+  if (!isObject(value)) return false;
 
-  return (
-    typeof value.id === "string" &&
-    typeof value.text === "string" &&
-    (value.nextScene === undefined || typeof value.nextScene === "string") &&
-    hasValidConsequence
-  );
+  if (value.consequence !== undefined && !isObject(value.consequence)) {
+    return false;
+  }
+
+  return typeof value.id === "string" && typeof value.text === "string";
 };
 
 export const isMessage = (value: unknown): value is Message => {
-  if (!isRecord(value)) return false;
+  if (!isObject(value)) return false;
+
   const hasValidAttachments =
     value.attachments === undefined ||
-    (Array.isArray(value.attachments) && value.attachments.every(isEvidence));
+    (Array.isArray(value.attachments) &&
+      value.attachments.every((attachment) => isEvidence(attachment)));
+
   const hasValidChoices =
     value.choices === undefined ||
-    (Array.isArray(value.choices) && value.choices.every(isChoice));
+    (Array.isArray(value.choices) &&
+      value.choices.every((choice) => isChoice(choice)));
 
   return (
     typeof value.id === "string" &&
     typeof value.sender === "string" &&
     typeof value.content === "string" &&
     typeof value.timestamp === "string" &&
-    ["text", "evidence", "system", "choice"].includes(String(value.type)) &&
+    typeof value.type === "string" &&
     hasValidAttachments &&
     hasValidChoices
   );
 };
 
 export const isScene = (value: unknown): value is Scene => {
-  if (!isRecord(value)) return false;
+  if (!isObject(value)) return false;
 
   const hasValidMessages =
     value.messages === undefined ||
-    (Array.isArray(value.messages) && value.messages.every(isMessage));
+    (Array.isArray(value.messages) &&
+      value.messages.every((message) => isMessage(message)));
 
   const hasValidRequirements =
     value.requirements === undefined ||
-    (isRecord(value.requirements) &&
+    (isObject(value.requirements) &&
       (value.requirements.evidence === undefined ||
-        (Array.isArray(value.requirements.evidence) &&
-          value.requirements.evidence.every((item) => typeof item === "string"))) &&
+        Array.isArray(value.requirements.evidence)) &&
       (value.requirements.choices === undefined ||
-        (Array.isArray(value.requirements.choices) &&
-          value.requirements.choices.every((item) => typeof item === "string"))));
+        Array.isArray(value.requirements.choices)));
 
   return (
     typeof value.id === "string" &&
-    ["chat", "data", "files", "team", "interactive"].includes(String(value.type)) &&
+    typeof value.type === "string" &&
     typeof value.title === "string" &&
-    (value.dataContent === undefined || typeof value.dataContent !== "undefined") &&
-    (value.interactiveContent === undefined || typeof value.interactiveContent !== "undefined") &&
-    (value.nextScene === undefined || typeof value.nextScene === "string") &&
     hasValidMessages &&
     hasValidRequirements
   );
 };
 
 export const isEpisode = (value: unknown): value is Episode => {
-  if (!isRecord(value)) return false;
+  if (!isObject(value)) return false;
 
   const hasValidScenes =
-    Array.isArray(value.scenes) && value.scenes.every(isScene);
+    Array.isArray(value.scenes) &&
+    value.scenes.every((scene) => isScene(scene));
+
+  const hasValidEvidence =
+    Array.isArray(value.evidence) &&
+    value.evidence.every((evidence) => isEvidence(evidence));
 
   return (
     typeof value.id === "string" &&
     typeof value.number === "number" &&
     typeof value.title === "string" &&
     typeof value.description === "string" &&
-    [1, 2, 3, 4, 5].includes(Number(value.difficulty)) &&
     typeof value.estimatedTime === "string" &&
     hasValidScenes &&
     Array.isArray(value.characters) &&
-    value.characters.every((item) => typeof item === "string") &&
-    Array.isArray(value.evidence) &&
-    value.evidence.every(isEvidence) &&
-    Array.isArray(value.learningObjectives) &&
-    value.learningObjectives.every((item) => typeof item === "string")
+    hasValidEvidence &&
+    Array.isArray(value.learningObjectives)
   );
 };
 
 export const isGameState = (value: unknown): value is GameState => {
-  if (!isRecord(value)) return false;
-
-  const isStringArray = (maybe: unknown) =>
-    Array.isArray(maybe) && maybe.every((item) => typeof item === "string");
+  if (!isObject(value)) return false;
 
   return (
     typeof value.currentEpisode === "string" &&
     typeof value.currentScene === "string" &&
-    isStringArray(value.unlockedScenes) &&
-    isStringArray(value.collectedEvidence) &&
-    isStringArray(value.madeChoices) &&
-    isRecord(value.characterRelationships) &&
-    Object.values(value.characterRelationships).every((score) => typeof score === "number") &&
+    Array.isArray(value.unlockedScenes) &&
+    Array.isArray(value.collectedEvidence) &&
+    Array.isArray(value.madeChoices) &&
+    isObject(value.characterRelationships) &&
     typeof value.progress === "number" &&
-    isStringArray(value.completedEpisodes) &&
-    typeof value.currentTab === "string"
+    Array.isArray(value.completedEpisodes)
   );
 };

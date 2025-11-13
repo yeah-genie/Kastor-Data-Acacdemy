@@ -1,72 +1,53 @@
-import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { useTabContext, TabKey } from "../../context/TabContext";
+import { ReactNode } from "react";
+import { motion } from "framer-motion";
+import styled from "styled-components";
+import { useTabContext } from "@/contexts/TabContext";
 
-const TAB_ORDER: TabKey[] = ["chat", "data", "files", "team"];
+const MotionSection = styled(motion.section)`
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const variants = {
+  initial: (direction: "forward" | "backward" | "none") => ({
+    opacity: 0,
+    y: direction === "forward" ? 24 : direction === "backward" ? -24 : 16,
+    scale: 0.98,
+  }),
+  animate: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.25, ease: "easeOut" },
+  },
+  exit: (direction: "forward" | "backward" | "none") => ({
+    opacity: 0,
+    y: direction === "forward" ? -20 : direction === "backward" ? 20 : -16,
+    scale: 0.98,
+    transition: { duration: 0.18, ease: "easeIn" },
+  }),
+};
 
 interface TabContainerProps {
-  locationKey: string;
   children: ReactNode;
 }
 
-export const TabContainer = ({ locationKey, children }: TabContainerProps) => {
-  const { currentTab } = useTabContext();
-  const previousTab = useRef<TabKey>(currentTab);
-  const [direction, setDirection] = useState(0);
-
-  const orderIndex = useMemo(
-    () =>
-      TAB_ORDER.reduce<Record<TabKey, number>>((acc, tab, index) => {
-        acc[tab] = index;
-        return acc;
-      }, {} as Record<TabKey, number>),
-    [],
-  );
-
-  useEffect(() => {
-    const prev = previousTab.current;
-    if (prev !== currentTab) {
-      setDirection(orderIndex[currentTab] > orderIndex[prev] ? 1 : -1);
-      previousTab.current = currentTab;
-    } else {
-      setDirection(0);
-    }
-  }, [currentTab, orderIndex]);
+export function TabContainer({ children }: TabContainerProps) {
+  const { transitionDirection } = useTabContext();
 
   return (
-    <AnimatePresence mode="wait" custom={direction} initial={false}>
-      <motion.div
-        key={locationKey}
-        initial="initial"
-        animate="enter"
-        exit="exit"
-        variants={variants}
-        custom={direction}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
-        style={{ height: "100%" }}
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
+    <MotionSection
+      variants={variants}
+      custom={transitionDirection}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+    >
+      {children}
+    </MotionSection>
   );
-};
-
-const variants = {
-  initial: (direction: number) => ({
-    opacity: 0,
-    x: direction === 0 ? 0 : direction > 0 ? 40 : -40,
-    filter: "blur(4px)",
-  }),
-  enter: {
-    opacity: 1,
-    x: 0,
-    filter: "blur(0px)",
-  },
-  exit: (direction: number) => ({
-    opacity: 0,
-    x: direction === 0 ? 0 : direction > 0 ? -40 : 40,
-    filter: "blur(4px)",
-  }),
-};
+}
 
 export default TabContainer;

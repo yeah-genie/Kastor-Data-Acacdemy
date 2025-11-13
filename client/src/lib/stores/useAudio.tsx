@@ -1,18 +1,19 @@
 import { create } from "zustand";
+import { globalSoundManager } from "@/utils/soundManager";
 
 interface AudioState {
   backgroundMusic: HTMLAudioElement | null;
   hitSound: HTMLAudioElement | null;
   successSound: HTMLAudioElement | null;
   isMuted: boolean;
-  
-  // Setter functions
+  masterVolume: number;
   setBackgroundMusic: (music: HTMLAudioElement) => void;
   setHitSound: (sound: HTMLAudioElement) => void;
   setSuccessSound: (sound: HTMLAudioElement) => void;
-  
-  // Control functions
+  registerEffect: (id: string, src: string, options?: { loop?: boolean; volume?: number }) => void;
   toggleMute: () => void;
+  setVolume: (volume: number) => void;
+  playEffect: (id: string, options?: { interrupt?: boolean; volume?: number }) => void;
   playHit: () => void;
   playSuccess: () => void;
   playMessageSound: () => void;
@@ -22,75 +23,103 @@ export const useAudio = create<AudioState>((set, get) => ({
   backgroundMusic: null,
   hitSound: null,
   successSound: null,
-  isMuted: false, // Start unmuted by default
-  
-  setBackgroundMusic: (music) => set({ backgroundMusic: music }),
+  isMuted: false,
+  masterVolume: 0.7,
+
+  setBackgroundMusic: (music) => {
+    music.loop = true;
+    music.volume = get().isMuted ? 0 : get().masterVolume * 0.4;
+    set({ backgroundMusic: music });
+  },
   setHitSound: (sound) => set({ hitSound: sound }),
   setSuccessSound: (sound) => set({ successSound: sound }),
-  
-  toggleMute: () => {
-    const { isMuted } = get();
-    const newMutedState = !isMuted;
-    
-    // Just update the muted state
-    set({ isMuted: newMutedState });
-    
-    // Log the change
-    console.log(`Sound ${newMutedState ? 'muted' : 'unmuted'}`);
-  },
-  
-  playHit: () => {
-    const { hitSound, isMuted } = get();
-    if (hitSound) {
-      // If sound is muted, don't play anything
-      if (isMuted) {
-        console.log("Hit sound skipped (muted)");
-        return;
-      }
-      
-      // Clone the sound to allow overlapping playback
-      const soundClone = hitSound.cloneNode() as HTMLAudioElement;
-      soundClone.volume = 0.3;
-      soundClone.play().catch(error => {
-        console.log("Hit sound play prevented:", error);
-      });
+
+  registerEffect: (id, src, options) => {
+    if (globalSoundManager) {
+      globalSoundManager.preload(id, src, options);
     }
   },
-  
-  playSuccess: () => {
-    const { isMuted } = get();
-    if (isMuted) {
-      console.log("Success sound skipped (muted)");
+
+  toggleMute: () => {
+    const { isMuted, backgroundMusic } = get();
+    const nextMuted = !isMuted;
+    set({ isMuted: nextMuted });
+    if (globalSoundManager) {
+      globalSoundManager.muted = nextMuted;
+    }
+    if (backgroundMusic) {
+      backgroundMusic.muted = nextMuted;
+      if (nextMuted) {
+        backgroundMusic.pause();
+      } else {
+        backgroundMusic
+          .play()
+          .then(() => {})
+          .catch(() => {});
+      }
+    }
+  },
+
+  setVolume: (volume) => {
+    const clamped = Math.max(0, Math.min(1, volume));
+    set({ masterVolume: clamped });
+    if (globalSoundManager) {
+      globalSoundManager.masterVolume = clamped;
+    }
+    const { backgroundMusic } = get();
+    if (backgroundMusic) {
+      backgroundMusic.volume = clamped * 0.4;
+    }
+  },
+
+  playEffect: (id, options) => {
+    if (globalSoundManager) {
+      globalSoundManager.play(id, options);
+    }
+  },
+
+  playHit: () => {
+    const { hitSound, isMuted, masterVolume } = get();
+    if (isMuted) return;
+    if (globalSoundManager) {
+      globalSoundManager.play("ui-hit", { volume: masterVolume * 0.4 });
       return;
     }
-    
+    if (!hitSound) return;
+    const clone = hitSound.cloneNode() as HTMLAudioElement;
+    clone.volume = masterVolume * 0.4;
+    clone.play().catch(() => {});
+  },
+
+  playSuccess: () => {
+    const { isMuted, masterVolume } = get();
+    if (isMuted) return;
+    if (globalSoundManager) {
+      globalSoundManager.play("ui-success", { volume: masterVolume * 0.5 });
+      return;
+    }
     try {
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
-      
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
-      
-      oscillator.frequency.value = 800;
-      oscillator.type = 'sine';
-      
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
-      
+      oscillator.frequency.value = 860;
+      oscillator.type = "triangle";
+      gainNode.gain.setValueAtTime(0.25 * masterVolume, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.18);
       oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.15);
-    } catch (error) {
-      console.log("Success sound play prevented:", error);
+      oscillator.stop(audioContext.currentTime + 0.18);
+    } catch {
+      // ignore playback errors
     }
   },
-  
+
   playMessageSound: () => {
-    const { hitSound, isMuted } = get();
-    if (hitSound && !isMuted) {
-      const soundClone = hitSound.cloneNode() as HTMLAudioElement;
-      soundClone.volume = 0.1;
-      soundClone.play().catch(() => {});
+    const { isMuted, masterVolume } = get();
+    if (isMuted) return;
+    if (globalSoundManager) {
+      globalSoundManager.play("ui-message", { volume: masterVolume * 0.3 });
     }
-  }
+  },
 }));
