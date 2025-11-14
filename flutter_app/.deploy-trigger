@@ -1,0 +1,3 @@
+Deployment triggered at: 2025-11-14
+Purpose: Initialize GitHub Pages deployment
+This file triggers the deploy-web.yml workflow
