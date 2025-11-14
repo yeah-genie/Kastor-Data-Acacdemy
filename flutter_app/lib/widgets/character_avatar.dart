@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class CharacterAvatar extends StatelessWidget {
   final String characterName;
@@ -14,6 +15,21 @@ class CharacterAvatar extends StatelessWidget {
     this.showName = false,
   });
 
+  String _getSvgAssetPath(String name) {
+    // Map character names to SVG file names
+    final nameMap = {
+      'kastor': 'kastor',
+      'detective': 'detective',
+      'maya': 'maya',
+      'narrator': 'narrator',
+      'system': 'system',
+    };
+
+    final lowerName = name.toLowerCase();
+    final svgName = nameMap[lowerName] ?? 'system';
+    return 'assets/characters/$svgName.svg';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -24,11 +40,7 @@ class CharacterAvatar extends StatelessWidget {
           height: size,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            gradient: LinearGradient(
-              colors: _getGradientColors(characterName),
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            color: _getBackgroundColor(characterName),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.2),
@@ -37,13 +49,21 @@ class CharacterAvatar extends StatelessWidget {
               ),
             ],
           ),
-          child: Center(
-            child: Text(
-              _getInitial(characterName),
-              style: TextStyle(
-                fontSize: size * 0.4,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+          child: ClipOval(
+            child: SvgPicture.asset(
+              _getSvgAssetPath(characterName),
+              width: size,
+              height: size,
+              fit: BoxFit.cover,
+              placeholderBuilder: (context) => Center(
+                child: Text(
+                  _getInitial(characterName),
+                  style: TextStyle(
+                    fontSize: size * 0.4,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ),
           ),
@@ -64,6 +84,19 @@ class CharacterAvatar extends StatelessWidget {
 
   String _getInitial(String name) {
     return name.isNotEmpty ? name[0].toUpperCase() : '?';
+  }
+
+  Color _getBackgroundColor(String name) {
+    // 캐릭터별 배경 색상
+    final colorMap = {
+      'kastor': Colors.purple.shade100,
+      'detective': Colors.blue.shade100,
+      'maya': Colors.pink.shade100,
+      'narrator': Colors.grey.shade100,
+      'system': Colors.indigo.shade100,
+    };
+
+    return colorMap[name.toLowerCase()] ?? Colors.grey.shade200;
   }
 
   List<Color> _getGradientColors(String name) {
@@ -170,6 +203,32 @@ class CharacterPortrait extends StatelessWidget {
     this.size = 120,
   });
 
+  String _getSvgAssetPath(String name) {
+    final nameMap = {
+      'kastor': 'kastor',
+      'detective': 'detective',
+      'maya': 'maya',
+      'narrator': 'narrator',
+      'system': 'system',
+    };
+
+    final lowerName = name.toLowerCase();
+    final svgName = nameMap[lowerName] ?? 'system';
+    return 'assets/characters/$svgName.svg';
+  }
+
+  Color _getBackgroundColor(String name) {
+    final colorMap = {
+      'kastor': Colors.purple.shade100,
+      'detective': Colors.blue.shade100,
+      'maya': Colors.pink.shade100,
+      'narrator': Colors.grey.shade100,
+      'system': Colors.indigo.shade100,
+    };
+
+    return colorMap[name.toLowerCase()] ?? Colors.grey.shade200;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -181,20 +240,25 @@ class CharacterPortrait extends StatelessWidget {
           height: size,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            gradient: LinearGradient(
-              colors: _getGradientColors(characterName),
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            color: _getBackgroundColor(characterName),
           ),
-        ),
-        // 이니셜
-        Text(
-          _getInitial(characterName),
-          style: TextStyle(
-            fontSize: size * 0.4,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+          child: ClipOval(
+            child: SvgPicture.asset(
+              _getSvgAssetPath(characterName),
+              width: size,
+              height: size,
+              fit: BoxFit.cover,
+              placeholderBuilder: (context) => Center(
+                child: Text(
+                  _getInitial(characterName),
+                  style: TextStyle(
+                    fontSize: size * 0.4,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
         // 감정 아이콘
