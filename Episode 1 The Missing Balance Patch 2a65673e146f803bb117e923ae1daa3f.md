@@ -160,6 +160,8 @@ KASTOR: "Gentle hill vs rocket. Pick the most suspicious."
 
 🎵 MINI CELEBRATION — Key observation
 
+KASTOR: "Quick summary — Shadow's line shoots up on Day 28. That means something changed fast, so we check notes and logs first."
+
 ### Scene 1.2 — Document Check
 
 [Official Patch Notes]
@@ -178,6 +180,16 @@ KASTOR: "Not in the official notes. Someone went rogue."
 
 Call Maya → "admin01 = Kaito Nakamura (junior balance). No overtime that day."
 
+[Auth Audit Logs]
+2025-10-28T23:45:12Z auth.session START user=admin01 session_id=SED-ABC123 ip=203.0.113.45 device_fingerprint=DFP:7a9c...
+2025-10-28T23:47:02Z auth.action MODIFY character=Shadow field=base_stats session_id=SED-ABC123 author=admin01
+2025-10-28T23:47:03Z auth.action ATTEMPT_CLEAR_LOGS session_id=SED-ABC123 author=admin01 result=FAILED
+2025-10-28T23:50:03Z auth.session LOGIN user=Noctis session_id=PLR-XYZ789 ip=203.0.113.45 device_fingerprint=DFP:7a9c...
+
+KASTOR: "Look — same IP and device fingerprint. It's like the same phone being used to edit the game's numbers and then to play. Super suspicious."
+
+NOTE: Kaito was a junior balance designer with access to internal staging tools. Production edits normally require approval, but audit logs show a debug token (`debug_token=DBG-3344`) was used during the modification window, allowing a direct change. Whether that token was used by Kaito or stolen will be part of the investigation.
+
 ### Scene 2 — Timeline & Lukas Interview
 
 [Filter admin01]
@@ -186,17 +198,19 @@ Call Maya → "admin01 = Kaito Nakamura (junior balance). No overtime that day."
 
 23:35 Home login → 23:47 Shadow modified → 23:52 log deletion attempt
 
-Call LUKAS: "I did a 22:30 check only. Ryan's a good kid... wait, home login?" Shock.
+Call LUKAS: "I only checked at 22:30. Kaito's a good kid... a home login at 23:35? That doesn't add up." Shock.
 
 ### Scene 3 — IP Tracking & Diego Interview
 
-IP 192.168.45.178 → Player Noctis (Shadow main 95%)
+IP 203.0.113.45 (corporate VPN exit IP), which was used by player Noctis (Shadow main, 95%).
 
-Day 28 playtime 23:50–01:30, win rate 48%→88%
+Day 28 playtime: 23:50–01:30. Win rate jumped from 48% to 88% during that session.
 
-Another player ShadowFan99 19:00–21:00 (alibi)
+Another player, ShadowFan99, was online earlier (19:00–21:00) and has an alibi.
 
-Call DIEGO: "It wasn't me! I stopped at 9!" Relief.
+KASTOR: "In simple words — the same public IP was used to change Shadow and then to play as Noctis. Think of it like the same computer signing both the edit log and the game session. That's why it looks fishy."
+
+Call DIEGO: "It wasn't me — I stopped playing at nine o'clock!" Relief.
 
 ### Scene 4 — Confrontation with Kaito
 
@@ -205,6 +219,7 @@ DETECTIVE: "23:35 home login. 23:47 Shadow mod. 23:50 Noctis log-in."
 KAITO: "Me? That's ridiculous."
 
 KASTOR: "IP matches. Timeline matches. Logs match."
+KASTOR: "That basically means the same device was used to change the character and then to play it — like finding the same phone at both spots."
 
 KAITO: "That's... I just..." → "I'm sorry... I just wanted to win."
 
@@ -212,7 +227,7 @@ KAITO: "That's... I just..." → "I'm sorry... I just wanted to win."
 
 Summary: Kaito modified Shadow using dev access, then played as Noctis.
 
-Motivation: Prove himself after repeated losses.
+Motivation: Kaito believed he was acting on his own to prove himself after repeated losses — later evidence (and Episode 5) will show he was manipulated by an external operator (The Fixer).
 
 Outcomes (choose):
 
@@ -228,7 +243,7 @@ MAYA: Disappointed but understanding. LUKAS: Betrayed. DIEGO: Relieved.
 
 Summary: Kaito modified Shadow using dev access, then played as Noctis.
 
-Motivation: Prove himself after repeated losses.
+Motivation: Kaito believed he was acting on his own to prove himself after repeated losses — later evidence (and Episode 5) will show he was manipulated by an external operator (The Fixer).
 
 Outcomes (choose):
 
@@ -239,7 +254,6 @@ Outcomes (choose):
 MAYA: Disappointed but understanding. LUKAS: Betrayed. DIEGO: Relieved.
 
 🎉 MAJOR CELEBRATION — Case Closed
-
 ---
 
 ### 🕵️‍♂️ BONUS: Behind The Scenes
@@ -250,86 +264,41 @@ MAYA: Disappointed but understanding. LUKAS: Betrayed. DIEGO: Relieved.
 
 ```
 === OPERATION: SHADOW TEST ===
-Objective: Test run + Insider recruitment
+Objective: Test run and insider recruitment.
 Target: Legend Arena
 Status: COMPLETED
 
-PHASE 1: Target Selection
-- Subject identified: Ryan Nakamura (Balance Designer, Junior)
-- Psychological profile:
-  * High competitive drive
-  * Need for recognition
-  * Resentment toward team (ideas ignored)
-  * Vulnerability assessment: EXPLOITABLE
+PHASE 1 — Target Selection:
+The subject identified was Kaito Nakamura, a junior balance designer. He showed a high competitive drive, wanted recognition, and felt his ideas were often ignored — traits that made him vulnerable.
 
-PHASE 2: Indirect Contact
-- Anonymous forum posts deployed
-- Topic: "Shadow nerf urgency"
-- Goal: Create echo chamber → Ryan sympathizes
-- Psychological trigger: "Don't you want to be a hero?"
+PHASE 2 — Indirect Contact:
+Anonymous forum posts were placed to amplify calls for a "Shadow" nerf. The goal was to create an echo chamber so Kaito would start to sympathize with the idea that decisive action was needed. The emotional trigger was framed as "Don't you want to be a hero?" to push him toward taking matters into his own hands.
 
-PHASE 3: The Email
-[Interactive: Email Search in Ryan's inbox]
+PHASE 3 — The Email:
+We found a message in Kaito's inbox from shadow_balance_truth@protonmail.com. The mail, dated Day 26 at 18:32, claimed it had "been watching the data" and attached a supposedly balanced patch (balance_patch_v2.8_final.json). The tone pushed Kaito to act, suggesting the team wouldn't listen and that sometimes "heroes have to act alone." 
 
-FROM: [shadow_balance_truth@protonmail.com](mailto:shadow_balance_truth@protonmail.com)
-TO: [ryan.nakamura@legendarena.com](mailto:ryan.nakamura@legendarena.com)
-SUBJECT: You're right about Shadow
-DATE: Day 26, 18:32
+PHASE 4 — Execution Trigger:
+Psychological pressure convinced Kaito he was making a personal, corrective choice. In reality, he was following The Fixer's script.
 
-"I've been watching the data. Shadow is breaking the game.
-The team won't listen, but you understand.
-Here's a balanced patch. Review it.
-Sometimes heroes have to act alone."
+PHASE 5 — Observation:
+The operation was monitored in real time. The Fixer logged company response patterns, mapped security gaps, and confirmed the detectives were active and effective.
 
-ATTACHMENT: balance_patch_v2.8_final.json
+RESULTS:
+Kaito was terminated internally; the company's reputation took damage and security weaknesses were exposed. Unexpectedly, Kaito confessed, which altered how the Fixer adjusted future plans. The detective team was marked as a potential threat by the Fixer's observers.
 
-[Later investigation scene]
-KASTOR: "This email... can we trace it?"
-CAMILLE: "ProtonMail... Tor network... impossible."
-KASTOR: "Someone manipulated Ryan."
-DETECTIVE: "So Ryan was a victim too?"
-KASTOR: "Yes... but he still made the choice."
+NOTES:
+Kaito was stronger-willed than expected. The detective shows clear pattern recognition ability. Kastor's analytical skills are noted as a risk. The Fixer plans to adapt for future operations.
 
-PHASE 4: Execution Trigger
-- Psychological manipulation: "The team won't act, so you must"
-- Ryan believes it's his own decision
-- Reality: Following The Fixer's script
-
-PHASE 5: Observation
-- Incident monitored in real-time
-- Company response patterns: LOGGED
-- Marcus Chen's leadership style: ANALYZED
-- Security gaps identified: DOCUMENTED
-- Detective & Kastor existence: CONFIRMED
-
-=== RESULTS ===
-✓ Ryan terminated (internal division begins)
-✓ Company reputation damaged
-✓ Security vulnerabilities mapped
-✓ Key personnel weaknesses profiled
-✗ Ryan confessed (unexpected variable)
-✗ Detective team competent (marked as threat)
-
-=== NOTES ===
-- Ryan stronger-willed than anticipated
-- Detective shows pattern recognition ability
-- Kastor's analytical skills: above average
-- Adjust approach for future operations
-- Legend Arena remains viable target
-
-=== NEXT PHASE ===
-→ Episode 2: Ghost User case
-→ Escalate complexity
-→ Test Detective's limits
+NEXT PHASE:
+Episode 2 will focus on the Ghost User case, increasing complexity to test the detectives further.
 
 [Encrypted message fragment]
-F-7743: "Phase 1 complete. Subjects identified. 
-         Moving to Phase 2. Stand by."
+F-7743: "Phase 1 complete. Subjects identified. Moving to Phase 2. Stand by."
 ```
 
 KASTOR: (reviewing recovered logs much later) "This was planned from the start..."
 
-DETECTIVE: "Ryan was just... a test subject?"
+DETECTIVE: "Kaito was just... a test subject?"
 
 KASTOR: "And so were we. Someone's been watching all along."
 
