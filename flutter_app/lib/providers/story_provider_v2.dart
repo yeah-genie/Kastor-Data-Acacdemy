@@ -25,6 +25,8 @@ class StoryMessage {
     this.emailData,
     this.reaction,
   });
+
+  bool get isNarration => speaker == 'narrator' || speaker == 'system';
 }
 
 // Story choice for interactive decisions
@@ -120,11 +122,6 @@ class StoryNotifierV2 extends Notifier<StoryState> {
     );
   }
 
-  @override
-  void dispose() {
-    _cancelAllTimers();
-    super.dispose();
-  }
 
   void _cancelAllTimers() {
     for (final timer in _timers) {
@@ -148,12 +145,10 @@ class StoryNotifierV2 extends Notifier<StoryState> {
 
     Timer? timer;
     timer = Timer(delay, () {
-      if (mounted) {
-        callback();
-        _timers.remove(timer);
-        _messageQueue--;
-        state = state.copyWith(pendingMessages: _messageQueue);
-      }
+      callback();
+      _timers.remove(timer);
+      _messageQueue--;
+      state = state.copyWith(pendingMessages: _messageQueue);
     });
     _timers.add(timer);
   }
