@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/story_provider.dart';
+import '../../providers/settings_provider.dart';
 
 class ChatTab extends ConsumerStatefulWidget {
   const ChatTab({super.key});
@@ -23,6 +24,7 @@ class _ChatTabState extends ConsumerState<ChatTab> {
   @override
   Widget build(BuildContext context) {
     final storyState = ref.watch(storyProvider);
+    final settings = ref.watch(settingsProvider);
 
     // Auto-scroll to bottom when new messages arrive
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -57,8 +59,16 @@ class _ChatTabState extends ConsumerState<ChatTab> {
         // Name input (if waiting for name)
         if (storyState.waitingForInput) _buildNameInput(storyState.inputPrompt),
 
-        // Message input (only show if not waiting for input or choices)
-        if (!storyState.waitingForInput && storyState.currentChoices == null)
+        // Manual mode continue button
+        if (!settings.autoTextMode &&
+            !storyState.waitingForInput &&
+            storyState.currentChoices == null)
+          _buildManualContinueButton(),
+
+        // Message input (only show in auto mode if not waiting for input or choices)
+        if (settings.autoTextMode &&
+            !storyState.waitingForInput &&
+            storyState.currentChoices == null)
           _buildMessageInput(),
       ],
     );
@@ -427,6 +437,54 @@ class _ChatTabState extends ConsumerState<ChatTab> {
               ],
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildManualContinueButton() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1B4B),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 10,
+            offset: const Offset(0, -3),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        child: SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: () {
+              ref.read(storyProvider.notifier).continueStory();
+            },
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.all(16),
+              backgroundColor: const Color(0xFF6366F1),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.touch_app, size: 20),
+                const SizedBox(width: 8),
+                const Text(
+                  'Tap to continue',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

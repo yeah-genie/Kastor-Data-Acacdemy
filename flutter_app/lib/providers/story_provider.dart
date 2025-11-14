@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../utils/text_utils.dart';
@@ -82,10 +83,30 @@ class StoryState {
 
 // Story provider to manage Episode 1 story progression
 class StoryNotifier extends Notifier<StoryState> {
+  bool _isInitialized = false;
+  final List<Timer?> _timers = [];
+  int _messageQueue = 0;
+
   @override
   StoryState build() {
-    _initializeStory();
+    if (!_isInitialized) {
+      _isInitialized = true;
+      Future.microtask(() => _initializeStory());
+    }
     return StoryState(messages: [], currentSceneId: 'scene_0_start');
+  }
+
+  @override
+  void dispose() {
+    _cancelAllTimers();
+    super.dispose();
+  }
+
+  void _cancelAllTimers() {
+    for (final timer in _timers) {
+      timer?.cancel();
+    }
+    _timers.clear();
   }
 
   Duration _getDelay(int multiplier) {
@@ -95,56 +116,68 @@ class StoryNotifier extends Notifier<StoryState> {
 
   bool get _isAutoMode => ref.read(settingsProvider).autoTextMode;
 
+  void _scheduleMessage(Duration delay, VoidCallback callback) {
+    _messageQueue++;
+    Timer? timer;
+    timer = Timer(delay, () {
+      if (mounted) {
+        callback();
+        _timers.remove(timer);
+      }
+    });
+    _timers.add(timer);
+  }
+
   void _initializeStory() {
     // Scene 0: Partnership - Start with initial messages
     _addMessage('kastor', '(snoring) Zzzzz...');
 
     if (_isAutoMode) {
-      Future.delayed(_getDelay(1), () {
+      _scheduleMessage(_getDelay(1), () {
         _addMessage('narrator', '[Door opens — Detective enters]');
       });
 
-      Future.delayed(_getDelay(2), () {
+      _scheduleMessage(_getDelay(2), () {
         _addMessage('detective', '...Is this the right place?');
       });
 
-      Future.delayed(_getDelay(3), () {
+      _scheduleMessage(_getDelay(3), () {
         _addMessage('kastor', 'Hm? (stretches) Oh! New recruit?');
       });
 
-      Future.delayed(_getDelay(4), () {
+      _scheduleMessage(_getDelay(4), () {
         _addMessage('detective', 'Starting as a detective today.');
       });
 
-      Future.delayed(_getDelay(5), () {
+      _scheduleMessage(_getDelay(5), () {
         _addMessage('kastor', 'Detective? You don\'t look like one.');
       });
 
-      Future.delayed(_getDelay(6), () {
+      _scheduleMessage(_getDelay(6), () {
         _addMessage('detective', 'It\'s my first day!');
       });
 
-      Future.delayed(_getDelay(7), () {
+      _scheduleMessage(_getDelay(7), () {
         _addMessage('kastor', 'Shows. It\'s written all over your face. (grins)');
       });
 
-      Future.delayed(_getDelay(8), () {
+      _scheduleMessage(_getDelay(8), () {
         _addMessage('detective', '(This guy...)');
       });
 
-      Future.delayed(_getDelay(9), () {
+      _scheduleMessage(_getDelay(9), () {
         _addMessage('kastor', 'I\'m Kastor! Your partner!');
       });
 
-      Future.delayed(_getDelay(10), () {
+      _scheduleMessage(_getDelay(10), () {
         _addMessage('kastor', 'Nice to meet you... wait, what\'s your name again?');
       });
 
-      Future.delayed(_getDelay(11), () {
+      _scheduleMessage(_getDelay(11), () {
         _addMessage('detective', 'No, MY name.');
       });
 
-      Future.delayed(_getDelay(12), () {
+      _scheduleMessage(_getDelay(12), () {
         _addMessage('kastor', 'Oh~ YOUR name! What is it?');
         // Set waiting for name input
         state = state.copyWith(
@@ -159,8 +192,8 @@ class StoryNotifier extends Notifier<StoryState> {
     // Convert text expressions to emojis
     final convertedText = convertTextToEmoji(text);
 
-    // Add random reaction
-    final reaction = getRandomReaction(speaker);
+    // Add contextual reaction based on message content
+    final reaction = getContextualReaction(speaker, convertedText);
 
     final message = StoryMessage(
       id: 'msg_${DateTime.now().millisecondsSinceEpoch}',
@@ -181,10 +214,39 @@ class StoryNotifier extends Notifier<StoryState> {
   void continueStory() {
     if (_isAutoMode) return; // Only works in manual mode
 
-    // Trigger next message based on current scene
-    // This would need more sophisticated state management in production
-    if (state.messages.isEmpty) {
-      _initializeStory();
+    // In manual mode, add next message immediately
+    final messageCount = state.messages.length;
+
+    if (messageCount == 0) {
+      _addMessage('kastor', '(snoring) Zzzzz...');
+    } else if (messageCount == 1) {
+      _addMessage('narrator', '[Door opens — Detective enters]');
+    } else if (messageCount == 2) {
+      _addMessage('detective', '...Is this the right place?');
+    } else if (messageCount == 3) {
+      _addMessage('kastor', 'Hm? (stretches) Oh! New recruit?');
+    } else if (messageCount == 4) {
+      _addMessage('detective', 'Starting as a detective today.');
+    } else if (messageCount == 5) {
+      _addMessage('kastor', 'Detective? You don\'t look like one.');
+    } else if (messageCount == 6) {
+      _addMessage('detective', 'It\'s my first day!');
+    } else if (messageCount == 7) {
+      _addMessage('kastor', 'Shows. It\'s written all over your face. (grins)');
+    } else if (messageCount == 8) {
+      _addMessage('detective', '(This guy...)');
+    } else if (messageCount == 9) {
+      _addMessage('kastor', 'I\'m Kastor! Your partner!');
+    } else if (messageCount == 10) {
+      _addMessage('kastor', 'Nice to meet you... wait, what\'s your name again?');
+    } else if (messageCount == 11) {
+      _addMessage('detective', 'No, MY name.');
+    } else if (messageCount == 12) {
+      _addMessage('kastor', 'Oh~ YOUR name! What is it?');
+      state = state.copyWith(
+        waitingForInput: true,
+        inputPrompt: '[INPUT: Name]',
+      );
     }
   }
 
@@ -200,39 +262,39 @@ class StoryNotifier extends Notifier<StoryState> {
     _addMessage('detective', name);
 
     if (_isAutoMode) {
-      Future.delayed(_getDelay(1), () {
+      _scheduleMessage(_getDelay(1), () {
         _addMessage('kastor', 'Cool name! Spelled right?');
       });
 
-      Future.delayed(_getDelay(2), () {
+      _scheduleMessage(_getDelay(2), () {
         _addMessage('detective', 'I just typed it myself.');
       });
 
-      Future.delayed(_getDelay(3), () {
+      _scheduleMessage(_getDelay(3), () {
         _addMessage('kastor', 'Perfect! Name tags are non-refundable.');
       });
 
-      Future.delayed(_getDelay(4), () {
+      _scheduleMessage(_getDelay(4), () {
         _addMessage('detective', 'What...?');
       });
 
-      Future.delayed(_getDelay(5), () {
+      _scheduleMessage(_getDelay(5), () {
         _addMessage('narrator', '[Email notification — DING!]');
       });
 
-      Future.delayed(_getDelay(6), () {
+      _scheduleMessage(_getDelay(6), () {
         _addMessage('kastor', 'Ooh! Mail!');
       });
 
-      Future.delayed(_getDelay(7), () {
+      _scheduleMessage(_getDelay(7), () {
         _addMessage('detective', 'Already?');
       });
 
-      Future.delayed(_getDelay(8), () {
+      _scheduleMessage(_getDelay(8), () {
         _addMessage('kastor', 'Lucky you! No cases = boredom central. Click it!');
       });
 
-      Future.delayed(_getDelay(9), () {
+      _scheduleMessage(_getDelay(9), () {
         // Show email
         _showMayaEmail();
       });
