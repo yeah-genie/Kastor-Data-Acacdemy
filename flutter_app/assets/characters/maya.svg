@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Maya - Game Director Character -->
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#EC4899" opacity="0.2"/>
+
+  <!-- Main face circle -->
+  <circle cx="100" cy="100" r="70" fill="#FBBF24"/>
+
+  <!-- Hair/Headset combo (tech-savvy director) -->
+  <path d="M 50 80 Q 45 70 50 60 L 70 55 L 75 70 Z" fill="#581C87"/>
+  <path d="M 150 80 Q 155 70 150 60 L 130 55 L 125 70 Z" fill="#581C87"/>
+
+  <!-- Headset arcs -->
+  <path d="M 70 55 Q 100 30 130 55" stroke="#7C3AED" stroke-width="4" fill="none"/>
+  <rect x="45" y="75" width="15" height="20" rx="3" fill="#7C3AED"/>
+  <rect x="140" y="75" width="15" height="20" rx="3" fill="#7C3AED"/>
+
+  <!-- Eyes (stressed but determined) -->
+  <circle cx="80" cy="95" r="8" fill="#FFFFFF"/>
+  <circle cx="120" cy="95" r="8" fill="#FFFFFF"/>
+  <circle cx="82" cy="97" r="5" fill="#1E293B"/>
+  <circle cx="122" cy="97" r="5" fill="#1E293B"/>
+
+  <!-- Worried eyebrows -->
+  <path d="M 70 82 Q 75 80 80 82" stroke="#6B21A8" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M 120 82 Q 115 80 110 82" stroke="#6B21A8" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+  <!-- Concerned/stressed mouth -->
+  <path d="M 85 115 Q 100 110 115 115" stroke="#6B21A8" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+  <!-- Sweat drop (stressed) -->
+  <ellipse cx="135" cy="88" rx="4" ry="6" fill="#38BDF8" opacity="0.7"/>
+
+  <!-- Laptop/tablet icon (director tools) -->
+  <rect x="130" y="145" width="35" height="25" rx="2" fill="#1E293B"/>
+  <rect x="132" y="147" width="31" height="18" fill="#60A5FA"/>
+  <rect x="135" y="170" width="25" height="3" fill="#1E293B"/>
+</svg>

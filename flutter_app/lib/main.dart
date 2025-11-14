@@ -8,6 +8,7 @@ import 'screens/dashboard/dashboard_screen.dart';
 import 'screens/episode/episode_selection_screen.dart';
 import 'screens/settings/settings_screen.dart';
 import 'screens/tutorial/tutorial_screen.dart';
+import 'screens/demo/episode1_demo_screen.dart';
 
 void main() {
   runApp(
@@ -140,6 +141,18 @@ class _HomePageState extends ConsumerState<HomePage> {
                           );
                         }
                       : null,
+                ),
+                const SizedBox(height: 16),
+                _MenuButton(
+                  text: 'Episode 1 Demo (New!)',
+                  icon: Icons.new_releases,
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const Episode1DemoScreen(),
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 16),
                 _MenuButton(
