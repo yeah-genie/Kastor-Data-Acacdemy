@@ -1,0 +1,420 @@
+{
+  "episodeId": "episode1",
+  "title": "The Missing Balance Patch",
+  "description": "Shadow 캐릭터의 승률이 하루만에 50%에서 85%로 급증했다. 공식 패치 노트에는 변경사항이 없는데...",
+  "scenes": [
+    {
+      "id": "scene_0_1",
+      "title": "탐정 사무소",
+      "nodes": [
+        {
+          "id": "node_001",
+          "type": "narration",
+          "text": "허름한 탐정 사무소. 책상 위에 먼지가 쌓여있다. 누군가 자고 있다.",
+          "nextNodeId": "node_002"
+        },
+        {
+          "id": "node_002",
+          "type": "dialogue",
+          "speaker": "Kastor",
+          "text": "Zzzzz...",
+          "nextNodeId": "node_003"
+        },
+        {
+          "id": "node_003",
+          "type": "narration",
+          "text": "[문이 열리며 탐정이 들어온다]",
+          "nextNodeId": "node_004"
+        },
+        {
+          "id": "node_004",
+          "type": "dialogue",
+          "speaker": "Detective",
+          "text": "...여기가 맞나?",
+          "nextNodeId": "node_005"
+        },
+        {
+          "id": "node_005",
+          "type": "dialogue",
+          "speaker": "Kastor",
+          "text": "음? (기지개를 켜며) 오! 새 사람?",
+          "nextNodeId": "node_006"
+        },
+        {
+          "id": "node_006",
+          "type": "dialogue",
+          "speaker": "Detective",
+          "text": "신입 탐정입니다.",
+          "nextNodeId": "node_007"
+        },
+        {
+          "id": "node_007",
+          "type": "dialogue",
+          "speaker": "Kastor",
+          "text": "탐정? 그렇게 안 보이는데~",
+          "nextNodeId": "node_008"
+        },
+        {
+          "id": "node_008",
+          "type": "dialogue",
+          "speaker": "Detective",
+          "text": "첫 출근이에요!",
+          "nextNodeId": "node_009"
+        },
+        {
+          "id": "node_009",
+          "type": "dialogue",
+          "speaker": "Kastor",
+          "text": "알겠어. 얼굴에 다 써있어.",
+          "nextNodeId": "node_010"
+        },
+        {
+          "id": "node_010",
+          "type": "dialogue",
+          "speaker": "Detective",
+          "text": "(이 사람...)",
+          "nextNodeId": "node_011"
+        },
+        {
+          "id": "node_011",
+          "type": "dialogue",
+          "speaker": "Kastor",
+          "text": "난 Kastor! 네 파트너야! (활짝 웃으며)",
+          "nextNodeId": "node_012"
+        },
+        {
+          "id": "node_012",
+          "type": "dialogue",
+          "speaker": "Detective",
+          "text": "반갑습니다... 일단은요?",
+          "nextNodeId": "node_013"
+        },
+        {
+          "id": "node_013",
+          "type": "dialogue",
+          "speaker": "Kastor",
+          "text": "이름이 뭐야?",
+          "nextNodeId": "node_014"
+        },
+        {
+          "id": "node_014",
+          "type": "input",
+          "text": "당신의 이름을 입력하세요",
+          "nextNodeId": "node_015"
+        },
+        {
+          "id": "node_015",
+          "type": "dialogue",
+          "speaker": "Kastor",
+          "text": "멋진 이름이네! 철자 맞게 썼어?",
+          "nextNodeId": "node_016"
+        },
+        {
+          "id": "node_016",
+          "type": "dialogue",
+          "speaker": "Detective",
+          "text": "제가 직접 입력했는데요.",
+          "nextNodeId": "node_017"
+        },
+        {
+          "id": "node_017",
+          "type": "dialogue",
+          "speaker": "Kastor",
+          "text": "좋아! 명찰은 환불 안 돼.",
+          "nextNodeId": "node_018"
+        },
+        {
+          "id": "node_018",
+          "type": "dialogue",
+          "speaker": "Detective",
+          "text": "네?",
+          "nextNodeId": "node_019"
+        },
+        {
+          "id": "node_019",
+          "type": "dialogue",
+          "speaker": "Kastor",
+          "text": "농담이야~ 근데 진짜로 우린 가난해.",
+          "nextNodeId": "node_020"
+        },
+        {
+          "id": "node_020",
+          "type": "dialogue",
+          "speaker": "Detective",
+          "text": "(여기 무슨 탐정사무소야...)",
+          "nextNodeId": "node_021"
+        },
+        {
+          "id": "node_021",
+          "type": "celebration",
+          "text": "파트너십 형성!",
+          "data": {
+            "points": 10,
+            "message": "Kastor와 파트너가 되었습니다!"
+          },
+          "nextNodeId": "scene_0_2"
+        }
+      ]
+    },
+    {
+      "id": "scene_0_2",
+      "title": "첫 의뢰",
+      "nodes": [
+        {
+          "id": "node_022",
+          "type": "narration",
+          "text": "[이메일 알림음 - 딩!]",
+          "nextNodeId": "node_023"
+        },
+        {
+          "id": "node_023",
+          "type": "dialogue",
+          "speaker": "Kastor",
+          "text": "오! 메일이다!",
+          "nextNodeId": "node_024"
+        },
+        {
+          "id": "node_024",
+          "type": "dialogue",
+          "speaker": "Detective",
+          "text": "벌써요?",
+          "nextNodeId": "node_025"
+        },
+        {
+          "id": "node_025",
+          "type": "dialogue",
+          "speaker": "Kastor",
+          "text": "응! 운이 좋네! 사건 없으면 지루하거든.",
+          "nextNodeId": "node_026"
+        },
+        {
+          "id": "node_026",
+          "type": "dialogue",
+          "speaker": "Detective",
+          "text": "그게... 좋은 운인가요?",
+          "nextNodeId": "node_027"
+        },
+        {
+          "id": "node_027",
+          "type": "dialogue",
+          "speaker": "Kastor",
+          "text": "당연하지! 자, 클릭해봐!",
+          "nextNodeId": "node_028"
+        },
+        {
+          "id": "node_028",
+          "type": "email",
+          "data": {
+            "from": "Maya Zhang",
+            "subject": "긴급! 도움이 필요합니다!",
+            "body": "안녕하세요 탐정님!\n\n저는 Legend Arena의 디렉터 Maya입니다.\n\n큰 문제가 생겼어요! 😰\n\nShadow 캐릭터의 승률이 하루 만에 50%에서 85%로 뛰었어요!\n\n저희는 그를 패치하지 않았어요! 왜 이런 일이 일어났는지 모르겠어요!\n\n플레이어들이 화났어요! 커뮤니티가 폭발하고 있어요!\n\n플레이어 신뢰를 잃으면... 게임이 끝장나요!\n\n제발 도와주세요!"
+          },
+          "nextNodeId": "node_029"
+        },
+        {
+          "id": "node_029",
+          "type": "dialogue",
+          "speaker": "Kastor",
+          "text": "오오! 게임 사건! 재밌겠는데!",
+          "nextNodeId": "node_030"
+        },
+        {
+          "id": "node_030",
+          "type": "dialogue",
+          "speaker": "Detective",
+          "text": "Shadow가 하룻밤 사이에 엄청 강해졌네요...",
+          "nextNodeId": "node_031"
+        },
+        {
+          "id": "node_031",
+          "type": "dialogue",
+          "speaker": "Kastor",
+          "text": "35% 급등! 말도 안 돼!",
+          "nextNodeId": "node_032"
+        },
+        {
+          "id": "node_032",
+          "type": "dialogue",
+          "speaker": "Detective",
+          "text": "그게 많이 오른 건가요?",
+          "nextNodeId": "node_033"
+        },
+        {
+          "id": "node_033",
+          "type": "dialogue",
+          "speaker": "Kastor",
+          "text": "치킨 반 마리 먹다가 갑자기 세 마리 먹는 거야.",
+          "nextNodeId": "node_034"
+        },
+        {
+          "id": "node_034",
+          "type": "dialogue",
+          "speaker": "Detective",
+          "text": "...무슨 비유가 그래요?",
+          "nextNodeId": "node_035"
+        },
+        {
+          "id": "node_035",
+          "type": "dialogue",
+          "speaker": "Kastor",
+          "text": "안 통했어? 그럼 상상해봐—",
+          "nextNodeId": "node_036"
+        },
+        {
+          "id": "node_036",
+          "type": "dialogue",
+          "speaker": "Detective",
+          "text": "아니요! 알겠어요! 많이 오른 거네요!",
+          "nextNodeId": "node_037"
+        },
+        {
+          "id": "node_037",
+          "type": "dialogue",
+          "speaker": "Kastor",
+          "text": "(웃으며) 봐! 음식 비유가 통하잖아!",
+          "nextNodeId": "node_038"
+        },
+        {
+          "id": "node_038",
+          "type": "dialogue",
+          "speaker": "Detective",
+          "text": "(왜 음식...)",
+          "nextNodeId": "node_039"
+        },
+        {
+          "id": "node_039",
+          "type": "dialogue",
+          "speaker": "Kastor",
+          "text": "자! 세 가지 가능성이 있어! 하나 골라봐!",
+          "nextNodeId": "node_040"
+        },
+        {
+          "id": "node_040",
+          "type": "choice",
+          "text": "첫 번째 가설을 선택하세요",
+          "choices": [
+            {
+              "id": "choice_a",
+              "text": "A) 공식 패치",
+              "nextNodeId": "node_041a",
+              "isCorrect": false
+            },
+            {
+              "id": "choice_b",
+              "text": "B) 희귀한 버그",
+              "nextNodeId": "node_041b",
+              "isCorrect": false
+            },
+            {
+              "id": "choice_c",
+              "text": "C) 비밀 데이터 조작",
+              "nextNodeId": "node_041c",
+              "isCorrect": true,
+              "pointsReward": 10
+            }
+          ]
+        },
+        {
+          "id": "node_041c",
+          "type": "dialogue",
+          "speaker": "Kastor",
+          "text": "오! 범죄 냄새! 좋은데!",
+          "nextNodeId": "node_042"
+        },
+        {
+          "id": "node_042",
+          "type": "dialogue",
+          "speaker": "Detective",
+          "text": "그냥... 느낌이요.",
+          "nextNodeId": "node_043"
+        },
+        {
+          "id": "node_043",
+          "type": "dialogue",
+          "speaker": "Kastor",
+          "text": "탐정은 느낌으로 일할 수 없어~",
+          "nextNodeId": "node_044"
+        },
+        {
+          "id": "node_044",
+          "type": "dialogue",
+          "speaker": "Detective",
+          "text": "그럼 뭘로요?",
+          "nextNodeId": "node_045"
+        },
+        {
+          "id": "node_045",
+          "type": "dialogue",
+          "speaker": "Kastor",
+          "text": "데이터! 숫자는 거짓말하지 않아!",
+          "nextNodeId": "node_046"
+        },
+        {
+          "id": "node_046",
+          "type": "dialogue",
+          "speaker": "Detective",
+          "text": "사람은 하나요?",
+          "nextNodeId": "node_047"
+        },
+        {
+          "id": "node_047",
+          "type": "dialogue",
+          "speaker": "Kastor",
+          "text": "항상! 자, 확인하러 가자!",
+          "nextNodeId": "node_048"
+        },
+        {
+          "id": "node_048",
+          "type": "celebration",
+          "text": "사건 수락!",
+          "data": {
+            "points": 10,
+            "message": "첫 사건을 수락했습니다!"
+          },
+          "nextNodeId": "scene_0_3"
+        }
+      ]
+    },
+    {
+      "id": "scene_0_3",
+      "title": "Maya에게 전화",
+      "nodes": [
+        {
+          "id": "node_049",
+          "type": "phoneCall",
+          "speaker": "Maya",
+          "text": "여보세요? 탐정님이신가요?",
+          "nextNodeId": "node_050"
+        },
+        {
+          "id": "node_050",
+          "type": "dialogue",
+          "speaker": "Detective",
+          "text": "네, 이메일 받았습니다. 모든 걸 말씀해주세요.",
+          "nextNodeId": "node_051"
+        },
+        {
+          "id": "node_051",
+          "type": "dialogue",
+          "speaker": "Maya",
+          "text": "Shadow의 승률이 28일에 급등했어요. 저희는 그를 패치하지 않았어요. 커뮤니티가 난리예요.",
+          "nextNodeId": "node_052"
+        },
+        {
+          "id": "node_052",
+          "type": "dialogue",
+          "speaker": "Kastor",
+          "text": "데이터 보내줄 수 있어요? 패치 노트, 서버 로그요.",
+          "nextNodeId": "node_053"
+        },
+        {
+          "id": "node_053",
+          "type": "dialogue",
+          "speaker": "Maya",
+          "text": "지금 바로 보내드릴게요! 제발 서둘러주세요!",
+          "nextNodeId": "scene_1_1"
+        }
+      ]
+    }
+  ]
+}
