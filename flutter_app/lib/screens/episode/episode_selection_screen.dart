@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'episode_gameplay_screen.dart';
+import '../../providers/game_state_provider.dart';
 
 class EpisodeSelectionScreen extends ConsumerWidget {
   const EpisodeSelectionScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final episodes = _getEpisodes();
+    final gameState = ref.watch(gameStateProvider);
+    final episodes = _getEpisodes(gameState.completedEpisodes);
 
     return Scaffold(
       body: Container(
@@ -83,7 +85,15 @@ class EpisodeSelectionScreen extends ConsumerWidget {
     );
   }
 
-  List<_Episode> _getEpisodes() {
+  List<_Episode> _getEpisodes(List<String> completedEpisodes) {
+    // Episode unlock logic:
+    // - Episode 1: Always unlocked
+    // - Episode 2: Unlocked after completing Episode 1
+    // - Episode 3: Unlocked after completing Episode 2
+
+    final isEpisode1Completed = completedEpisodes.contains('episode1');
+    final isEpisode2Completed = completedEpisodes.contains('episode2');
+
     return [
       _Episode(
         number: 1,
@@ -92,7 +102,8 @@ class EpisodeSelectionScreen extends ConsumerWidget {
             'Shadow\'s win rate jumped from 50% to 85% overnight! Help Maya Zhang investigate this mysterious balance shift.',
         difficulty: 'Beginner',
         duration: '30-40 min',
-        isLocked: false,
+        isLocked: false, // Always unlocked
+        isCompleted: isEpisode1Completed,
         tags: ['Game Balance', 'Data Analysis'],
         characters: ['Maya Zhang', 'Ryan Nakamura', 'Marcus Chen'],
       ),
@@ -103,7 +114,8 @@ class EpisodeSelectionScreen extends ConsumerWidget {
             'A mysterious ghost user is climbing the leaderboards impossibly fast. Uncover the truth behind this ranking anomaly.',
         difficulty: 'Intermediate',
         duration: '45-60 min',
-        isLocked: false,
+        isLocked: !isEpisode1Completed, // Unlocked after Episode 1
+        isCompleted: isEpisode2Completed,
         tags: ['Security', 'Ranking System'],
         characters: ['Elena Petrova', 'Marcus Chen', 'Maya Zhang'],
       ),
@@ -114,7 +126,8 @@ class EpisodeSelectionScreen extends ConsumerWidget {
             'Match-fixing at the highest level? Investigate suspicious patterns in professional tournament matches.',
         difficulty: 'Advanced',
         duration: '50-70 min',
-        isLocked: false,
+        isLocked: !isEpisode2Completed, // Unlocked after Episode 2
+        isCompleted: completedEpisodes.contains('episode3'),
         tags: ['Match-Fixing', 'Forensics'],
         characters: ['Nina Volkov', 'Alex Turner', 'Marcus Chen'],
       ),
@@ -166,7 +179,9 @@ class _EpisodeCard extends StatelessWidget {
           ),
           child: InkWell(
             onTap: episode.isLocked
-                ? null
+                ? () {
+                    _showLockedMessage(context, episode);
+                  }
                 : () {
                     _startEpisode(context, episode);
                   },
@@ -192,18 +207,28 @@ class _EpisodeCard extends StatelessWidget {
                                     Colors.grey.shade800,
                                   ],
                                 )
-                              : const LinearGradient(
-                                  colors: [
-                                    Color(0xFF6366F1),
-                                    Color(0xFF8B5CF6),
-                                  ],
-                                ),
+                              : episode.isCompleted
+                                  ? const LinearGradient(
+                                      colors: [
+                                        Color(0xFF10B981),
+                                        Color(0xFF059669),
+                                      ],
+                                    )
+                                  : const LinearGradient(
+                                      colors: [
+                                        Color(0xFF6366F1),
+                                        Color(0xFF8B5CF6),
+                                      ],
+                                    ),
                           boxShadow: episode.isLocked
                               ? null
                               : [
                                   BoxShadow(
-                                    color: const Color(0xFF6366F1)
-                                        .withOpacity(0.5),
+                                    color: episode.isCompleted
+                                        ? const Color(0xFF10B981)
+                                            .withOpacity(0.5)
+                                        : const Color(0xFF6366F1)
+                                            .withOpacity(0.5),
                                     blurRadius: 16,
                                     spreadRadius: 2,
                                   ),
@@ -213,14 +238,17 @@ class _EpisodeCard extends StatelessWidget {
                           child: episode.isLocked
                               ? const Icon(Icons.lock,
                                   color: Colors.white54, size: 28)
-                              : Text(
-                                  '${episode.number}',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                              : episode.isCompleted
+                                  ? const Icon(Icons.check,
+                                      color: Colors.white, size: 32)
+                                  : Text(
+                                      '${episode.number}',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                         ),
                       ),
                       const SizedBox(width: 16),
@@ -377,6 +405,31 @@ class _EpisodeCard extends StatelessWidget {
     }
   }
 
+  void _showLockedMessage(BuildContext context, _Episode episode) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.lock, color: Colors.white),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Complete Episode ${episode.number - 1} first to unlock this case',
+                style: const TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: const Color(0xFF6366F1),
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 3),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+    );
+  }
+
   void _startEpisode(BuildContext context, _Episode episode) {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -395,6 +448,7 @@ class _Episode {
   final String difficulty;
   final String duration;
   final bool isLocked;
+  final bool isCompleted;
   final List<String> tags;
   final List<String> characters;
 
@@ -405,6 +459,7 @@ class _Episode {
     required this.difficulty,
     required this.duration,
     required this.isLocked,
+    required this.isCompleted,
     required this.tags,
     required this.characters,
   });
