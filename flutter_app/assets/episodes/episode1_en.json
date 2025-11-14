@@ -1,0 +1,2405 @@
+{
+  "episodeId": "episode1",
+  "title": "The Missing Balance Patch",
+  "description": "Episode 1 - Missing Balance Patch (English version)",
+  "language": "en",
+  "scenes": [
+    {
+      "id": "scene_0",
+      "title": "Morning Alarm",
+      "nodes": [
+        {
+          "id": "node_001",
+          "type": "narration",
+          "text": "Alarm sound - BEEP BEEP BEEP!",
+          "nextNodeId": "node_002"
+        },
+        {
+          "id": "node_002",
+          "type": "narration",
+          "text": "Alarm notification on screen",
+          "nextNodeId": "node_003"
+        },
+        {
+          "id": "node_003",
+          "type": "narration",
+          "text": "OK] [Snooze",
+          "nextNodeId": "node_004"
+        },
+        {
+          "id": "node_004",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "*picks up phone* \"...An alarm?",
+          "nextNodeId": "node_005"
+        },
+        {
+          "id": "node_005",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Ding-ding~ Good morning, boss!",
+          "nextNodeId": "node_006"
+        },
+        {
+          "id": "node_006",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "...Who's this?",
+          "nextNodeId": "node_007"
+        },
+        {
+          "id": "node_007",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Me? Kastor! Your partner!",
+          "nextNodeId": "node_008"
+        },
+        {
+          "id": "node_008",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Partner? I thought I'd be working alone?",
+          "nextNodeId": "node_009"
+        },
+        {
+          "id": "node_009",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Alone? It's the two of us now!",
+          "nextNodeId": "node_010"
+        },
+        {
+          "id": "node_010",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "...Are you an AI?",
+          "nextNodeId": "node_011"
+        },
+        {
+          "id": "node_011",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Oh~ Sharp! Correct! Latest-model detective assistant AI!",
+          "nextNodeId": "node_012"
+        },
+        {
+          "id": "node_012",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "So... I'm actually working alone as a detective...",
+          "nextNodeId": "node_013"
+        },
+        {
+          "id": "node_013",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "What, disappointed? I'm super smart though!",
+          "nextNodeId": "node_014"
+        },
+        {
+          "id": "node_014",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "No, just... surprised.",
+          "nextNodeId": "node_015"
+        },
+        {
+          "id": "node_015",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Right? Pretty cool, huh? Anyway! What's your name?",
+          "nextNodeId": "node_016"
+        },
+        {
+          "id": "node_016",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "My name?",
+          "nextNodeId": "node_017"
+        },
+        {
+          "id": "node_017",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Yeah! Gotta save it. Otherwise I'll have to keep calling you 'hey'...",
+          "nextNodeId": "node_018"
+        },
+        {
+          "id": "node_018",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "...That's not great.",
+          "nextNodeId": "node_019"
+        },
+        {
+          "id": "node_019",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Right? So, type it in!",
+          "nextNodeId": "node_020"
+        },
+        {
+          "id": "node_020",
+          "type": "narration",
+          "text": "INPUT: Name",
+          "nextNodeId": "node_021"
+        },
+        {
+          "id": "node_021",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "[Name]",
+          "nextNodeId": "node_022"
+        },
+        {
+          "id": "node_022",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Oh, [Name]! Nice! But is that spelled right?",
+          "nextNodeId": "node_023"
+        },
+        {
+          "id": "node_023",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Yeah, it's right.",
+          "nextNodeId": "node_024"
+        },
+        {
+          "id": "node_024",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Perfect! Saved~ Now you're Detective [Name]!",
+          "nextNodeId": "node_025"
+        },
+        {
+          "id": "node_025",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Detective is a bit...",
+          "nextNodeId": "node_026"
+        },
+        {
+          "id": "node_026",
+          "type": "narration",
+          "text": "Email notification — DING!",
+          "nextNodeId": "node_027"
+        },
+        {
+          "id": "node_027",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Huh? Already got mail!",
+          "nextNodeId": "node_028"
+        },
+        {
+          "id": "node_028",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "On my first day?",
+          "nextNodeId": "node_029"
+        },
+        {
+          "id": "node_029",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Whoa! Lucky! No cases means boredom city all day. Open it, open it!",
+          "nextNodeId": "node_030"
+        },
+        {
+          "id": "node_030",
+          "type": "email",
+          "speaker": "system",
+          "text": "📧 New Email",
+          "data": {
+            "body": "Detective!\n\nOur character Shadow's win rate **jumped from 50% to 85% in ONE DAY**!\n\nWe didn't patch him and I have NO idea how this happened! 😰\n\nThe community is going crazy. If we lose player trust, the game is over!\n\nPLEASE HELP US!\n"
+          },
+          "nextNodeId": "node_031"
+        },
+        {
+          "id": "node_031",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Oh! Gaming case! My favorite kind!",
+          "nextNodeId": "node_032"
+        },
+        {
+          "id": "node_032",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Shadow suddenly got way stronger...",
+          "nextNodeId": "node_033"
+        },
+        {
+          "id": "node_033",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "35% jump! That's insane!",
+          "nextNodeId": "node_034"
+        },
+        {
+          "id": "node_034",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Is that a lot?",
+          "nextNodeId": "node_035"
+        },
+        {
+          "id": "node_035",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "A lot? Food analogy time...",
+          "nextNodeId": "node_036"
+        },
+        {
+          "id": "node_036",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "It's like eating a regular burger, then suddenly downing three triple cheeseburgers!",
+          "nextNodeId": "node_037"
+        },
+        {
+          "id": "node_037",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "...What kind of analogy is that?",
+          "nextNodeId": "node_038"
+        },
+        {
+          "id": "node_038",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Didn't land? Okay, pizza then—",
+          "nextNodeId": "node_039"
+        },
+        {
+          "id": "node_039",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "No! I get it! It's a lot!",
+          "nextNodeId": "node_040"
+        },
+        {
+          "id": "node_040",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "*laughs* \"See? Food analogies work~",
+          "nextNodeId": "node_041"
+        },
+        {
+          "id": "node_041",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Why food though...",
+          "nextNodeId": "node_042"
+        },
+        {
+          "id": "node_042",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "I'm hungry! Oh wait, I'm an AI. Can't eat. Sad.",
+          "nextNodeId": "node_043"
+        },
+        {
+          "id": "node_043",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "*(This AI...)*",
+          "nextNodeId": "node_044"
+        }
+      ]
+    },
+    {
+      "id": "scene_1",
+      "title": "Gathering Data",
+      "nodes": [
+        {
+          "id": "node_044",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Alright! First mission! Form a hypothesis!",
+          "nextNodeId": "node_045"
+        },
+        {
+          "id": "node_045",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Hypothesis?",
+          "nextNodeId": "node_046"
+        },
+        {
+          "id": "node_046",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Yep! Detectives can't just rush in blind. We need a **starting point**.",
+          "nextNodeId": "node_047"
+        },
+        {
+          "id": "node_047",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Like a direction?",
+          "nextNodeId": "node_048"
+        },
+        {
+          "id": "node_048",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Exactly! Like picking which path to take first in a maze game!",
+          "nextNodeId": "node_049"
+        },
+        {
+          "id": "node_049",
+          "type": "choice",
+          "text": "Choose your approach:",
+          "choices": [
+            {
+              "id": "choice_a",
+              "text": "Official Patch (undocumented) - Theory: Maybe the team DID patch Shadow but forgot to write it down?",
+              "nextSceneId": "choice_result_a"
+            },
+            {
+              "id": "choice_b",
+              "text": "Rare Bug - Theory: Could a random bug have made Shadow stronger?",
+              "nextSceneId": "choice_result_b"
+            },
+            {
+              "id": "choice_c",
+              "text": "Unauthorized Modification - Theory: Did someone secretly change Shadow's stats?",
+              "nextSceneId": "choice_result_c"
+            }
+          ]
+        },
+        {
+          "id": "node_050",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Official patch? Hmm~ Probability... 15%?",
+          "nextNodeId": "node_051"
+        },
+        {
+          "id": "node_051",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "That low?",
+          "nextNodeId": "node_052"
+        },
+        {
+          "id": "node_052",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Yeah! Busy companies can forget documentation, but...",
+          "nextNodeId": "node_053"
+        },
+        {
+          "id": "node_053",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "A 35% win rate spike by 'accident'? That's a stretch...",
+          "nextNodeId": "node_054"
+        },
+        {
+          "id": "node_054",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Ah, I see.",
+          "nextNodeId": "node_055"
+        },
+        {
+          "id": "node_055",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "It's okay! First time and all. Pick again!",
+          "nextNodeId": "node_056"
+        },
+        {
+          "id": "node_056",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Bug? Oh~ Programmer mindset!",
+          "nextNodeId": "node_057"
+        },
+        {
+          "id": "node_057",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Yeah?",
+          "nextNodeId": "node_058"
+        },
+        {
+          "id": "node_058",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Yep! But would a bug make Shadow 35% stronger for 'just one day'?",
+          "nextNodeId": "node_059"
+        },
+        {
+          "id": "node_059",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "And then go back to normal the next?",
+          "nextNodeId": "node_060"
+        },
+        {
+          "id": "node_060",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "...That is weird.",
+          "nextNodeId": "node_061"
+        },
+        {
+          "id": "node_061",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Right? Something's fishy~ Pick again!",
+          "nextNodeId": "node_062"
+        },
+        {
+          "id": "node_062",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Oh! Crime vibes! Detective instincts kicking in?",
+          "nextNodeId": "node_063"
+        },
+        {
+          "id": "node_063",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Just... a feeling?",
+          "nextNodeId": "node_064"
+        },
+        {
+          "id": "node_064",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Nice, nice! That feeling matters!",
+          "nextNodeId": "node_065"
+        },
+        {
+          "id": "node_065",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "But feelings alone aren't enough~ We need **data**!",
+          "nextNodeId": "node_066"
+        },
+        {
+          "id": "node_066",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Data?",
+          "nextNodeId": "node_067"
+        },
+        {
+          "id": "node_067",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Yep! Numbers don't lie!",
+          "nextNodeId": "node_068"
+        },
+        {
+          "id": "node_068",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "But people do?",
+          "nextNodeId": "node_069"
+        },
+        {
+          "id": "node_069",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "All the time! That's why we find evidence first!",
+          "nextNodeId": "node_070"
+        },
+        {
+          "id": "node_070",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Alright, let's call Maya and get that data!",
+          "nextNodeId": "node_071"
+        },
+        {
+          "id": "node_071",
+          "type": "narration",
+          "text": "Phone dialing sound",
+          "nextNodeId": "node_072"
+        },
+        {
+          "id": "node_072",
+          "type": "dialogue",
+          "speaker": "maya",
+          "text": "Hello? Detective?",
+          "nextNodeId": "node_073"
+        },
+        {
+          "id": "node_073",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Yes, we got your email. Can you tell us everything?",
+          "nextNodeId": "node_074"
+        },
+        {
+          "id": "node_074",
+          "type": "dialogue",
+          "speaker": "maya",
+          "text": "Shadow's win rate spiked on **Day 25**. We definitely didn't patch him but the community thinks we're lying!",
+          "nextNodeId": "node_075"
+        },
+        {
+          "id": "node_075",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "(on screen) \"Hi there~ I'm Kastor, the AI assistant!",
+          "nextNodeId": "node_076"
+        },
+        {
+          "id": "node_076",
+          "type": "dialogue",
+          "speaker": "maya",
+          "text": "Oh, an AI? That's cool! Hello!",
+          "nextNodeId": "node_077"
+        },
+        {
+          "id": "node_077",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Haha! Can you send us the game data? Patch notes, server logs, player stats!",
+          "nextNodeId": "node_078"
+        },
+        {
+          "id": "node_078",
+          "type": "dialogue",
+          "speaker": "maya",
+          "text": "Sending right now!",
+          "nextNodeId": "node_079"
+        },
+        {
+          "id": "node_079",
+          "type": "dialogue",
+          "speaker": "maya",
+          "text": "Please hurry — every hour we wait, we lose more players!",
+          "nextNodeId": "node_080"
+        },
+        {
+          "id": "node_080",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "We'll figure this out.",
+          "nextNodeId": "node_081"
+        },
+        {
+          "id": "node_081",
+          "type": "dialogue",
+          "speaker": "maya",
+          "text": "Thank you, detective!",
+          "nextNodeId": "node_082"
+        },
+        {
+          "id": "node_082",
+          "type": "narration",
+          "text": "Call ends",
+          "nextNodeId": "node_083"
+        },
+        {
+          "id": "node_083",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Alright, data received!",
+          "nextNodeId": "node_084"
+        },
+        {
+          "id": "node_084",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "That was fast?",
+          "nextNodeId": "node_085"
+        },
+        {
+          "id": "node_085",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "AI speed! Super quick!",
+          "nextNodeId": "node_086"
+        },
+        {
+          "id": "node_086",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Okay okay okay! Let's open the **win rate graph**!",
+          "nextNodeId": "node_087"
+        },
+        {
+          "id": "node_087",
+          "type": "narration",
+          "text": "Interactive line graph — Three colored lines for Shadow, Phoenix, and Viper",
+          "nextNodeId": "node_088"
+        },
+        {
+          "id": "node_088",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Whoa... the red line shoots straight up on Day 25.",
+          "nextNodeId": "node_089"
+        },
+        {
+          "id": "node_089",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Like a rocket to the moon! Whoosh!",
+          "nextNodeId": "node_090"
+        },
+        {
+          "id": "node_090",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Phoenix (blue line) also goes up a bit...",
+          "nextNodeId": "node_091"
+        },
+        {
+          "id": "node_091",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "But that's like climbing stairs, nice and steady. Shadow? That's an express elevator!",
+          "nextNodeId": "node_092"
+        },
+        {
+          "id": "node_092",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Definitely a big difference.",
+          "nextNodeId": "node_093"
+        },
+        {
+          "id": "node_093",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Right? Now the real game begins!",
+          "nextNodeId": "node_094"
+        },
+        {
+          "id": "node_094",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Drumroll please! First data game!",
+          "nextNodeId": "node_095"
+        },
+        {
+          "id": "node_095",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Game?",
+          "nextNodeId": "node_096"
+        },
+        {
+          "id": "node_096",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "'Find the Spike Championship'!",
+          "nextNodeId": "node_097"
+        },
+        {
+          "id": "node_097",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "...Why are you so hyped?",
+          "nextNodeId": "node_098"
+        },
+        {
+          "id": "node_098",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Data games are my FAVORITE! So exciting!",
+          "nextNodeId": "node_099"
+        },
+        {
+          "id": "node_099",
+          "type": "dialogue",
+          "speaker": "🎯 your mission",
+          "text": "Click on the day where Shadow's win rate shows the most suspicious spike.",
+          "nextNodeId": "node_100"
+        },
+        {
+          "id": "node_100",
+          "type": "narration",
+          "text": "Interactive Graph — 30 Days",
+          "nextNodeId": "node_101"
+        },
+        {
+          "id": "node_101",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Hints! Look for three things:",
+          "nextNodeId": "node_102"
+        },
+        {
+          "id": "node_102",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Oh~ So close!",
+          "nextNodeId": "node_103"
+        },
+        {
+          "id": "node_103",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Wrong?",
+          "nextNodeId": "node_104"
+        },
+        {
+          "id": "node_104",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Yep! Day 26 is 'after' the jump already happened.",
+          "nextNodeId": "node_105"
+        },
+        {
+          "id": "node_105",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "We're looking for the exact 'explosion moment'!",
+          "nextNodeId": "node_106"
+        },
+        {
+          "id": "node_106",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Ah...",
+          "nextNodeId": "node_107"
+        },
+        {
+          "id": "node_107",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "It's okay~ You almost got it!",
+          "nextNodeId": "node_108"
+        },
+        {
+          "id": "node_108",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Almost...?",
+          "nextNodeId": "node_109"
+        },
+        {
+          "id": "node_109",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Yeah! Direction was right. Try again!",
+          "nextNodeId": "node_110"
+        },
+        {
+          "id": "node_110",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "**YES! Correct!**",
+          "nextNodeId": "node_111"
+        },
+        {
+          "id": "node_111",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Got it?",
+          "nextNodeId": "node_112"
+        },
+        {
+          "id": "node_112",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Perfect! And super fast too!",
+          "nextNodeId": "node_113"
+        },
+        {
+          "id": "node_113",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "How fast?",
+          "nextNodeId": "node_114"
+        },
+        {
+          "id": "node_114",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "7-second clear! Beginners usually take 30 seconds!",
+          "nextNodeId": "node_115"
+        },
+        {
+          "id": "node_115",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Really?",
+          "nextNodeId": "node_116"
+        },
+        {
+          "id": "node_116",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Yeah! You've got talent!",
+          "nextNodeId": "node_117"
+        },
+        {
+          "id": "node_117",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Day 25 is exactly when Shadow's win rate exploded!",
+          "nextNodeId": "node_118"
+        },
+        {
+          "id": "node_118",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "From 50% to 85% in one day...",
+          "nextNodeId": "node_119"
+        },
+        {
+          "id": "node_119",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "That's called **anomaly detection**! Finding the weird thing in data.",
+          "nextNodeId": "node_120"
+        },
+        {
+          "id": "node_120",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Natural changes are like?",
+          "nextNodeId": "node_121"
+        },
+        {
+          "id": "node_121",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Stairs?",
+          "nextNodeId": "node_122"
+        },
+        {
+          "id": "node_122",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Correct! Sudden changes are like?",
+          "nextNodeId": "node_123"
+        },
+        {
+          "id": "node_123",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Rockets!",
+          "nextNodeId": "node_124"
+        },
+        {
+          "id": "node_124",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Right again! And rockets mean?",
+          "nextNodeId": "node_125"
+        },
+        {
+          "id": "node_125",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Something external happened?",
+          "nextNodeId": "node_126"
+        },
+        {
+          "id": "node_126",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Perfect! You learn so fast!",
+          "nextNodeId": "node_127"
+        },
+        {
+          "id": "node_127",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "So Shadow changed the most, fastest, on Day 25.",
+          "nextNodeId": "node_128"
+        },
+        {
+          "id": "node_128",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Bingo! Next step!",
+          "nextNodeId": "node_129"
+        },
+        {
+          "id": "node_129",
+          "type": "choice",
+          "text": "Choose your approach:",
+          "choices": [
+            {
+              "id": "choice_a",
+              "text": "Check official patch notes",
+              "nextSceneId": "choice_result_a"
+            },
+            {
+              "id": "choice_b",
+              "text": "Interview players",
+              "nextSceneId": "choice_result_b"
+            },
+            {
+              "id": "choice_c",
+              "text": "Check server logs",
+              "nextSceneId": "choice_result_c"
+            }
+          ]
+        },
+        {
+          "id": "node_130",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Yep! Always check **official records** first.",
+          "nextNodeId": "node_131"
+        },
+        {
+          "id": "node_131",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Like reading the manual before taking apart a machine!",
+          "nextNodeId": "node_132"
+        },
+        {
+          "id": "node_132",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Got it.",
+          "nextNodeId": "node_133"
+        },
+        {
+          "id": "node_133",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "See? You're smart!",
+          "nextNodeId": "node_134"
+        },
+        {
+          "id": "node_134",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Player interviews? Oh~ Eyewitnesses!",
+          "nextNodeId": "node_135"
+        },
+        {
+          "id": "node_135",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Yeah!",
+          "nextNodeId": "node_136"
+        },
+        {
+          "id": "node_136",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Good thinking, but... you're missing something.",
+          "nextNodeId": "node_137"
+        },
+        {
+          "id": "node_137",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "What?",
+          "nextNodeId": "node_138"
+        },
+        {
+          "id": "node_138",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Players know 'what' happened. But not 'why'.",
+          "nextNodeId": "node_139"
+        },
+        {
+          "id": "node_139",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Check official records first, then we'll know what questions to ask!",
+          "nextNodeId": "node_140"
+        },
+        {
+          "id": "node_140",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Ah, I see.",
+          "nextNodeId": "node_141"
+        },
+        {
+          "id": "node_141",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Yep! Order matters!",
+          "nextNodeId": "node_142"
+        },
+        {
+          "id": "node_142",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Oh~ Server logs! Technical approach!",
+          "nextNodeId": "node_143"
+        },
+        {
+          "id": "node_143",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Gotta check the data first!",
+          "nextNodeId": "node_144"
+        },
+        {
+          "id": "node_144",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "I like it! But...",
+          "nextNodeId": "node_145"
+        },
+        {
+          "id": "node_145",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "But?",
+          "nextNodeId": "node_146"
+        },
+        {
+          "id": "node_146",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "There are 10,000 log lines. Without knowing what to look for, you'll get lost.",
+          "nextNodeId": "node_147"
+        },
+        {
+          "id": "node_147",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Find clues in patch notes first, then logs! More efficient!",
+          "nextNodeId": "node_148"
+        },
+        {
+          "id": "node_148",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Makes sense...",
+          "nextNodeId": "node_149"
+        },
+        {
+          "id": "node_149",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Yep! Data has an order too!",
+          "nextNodeId": "node_150"
+        },
+        {
+          "id": "node_150",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Alright, let's check the official patch notes!",
+          "nextNodeId": "node_151"
+        },
+        {
+          "id": "node_151",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "'Shadow: No changes'...",
+          "nextNodeId": "node_152"
+        },
+        {
+          "id": "node_152",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "But what did the graph say?",
+          "nextNodeId": "node_153"
+        },
+        {
+          "id": "node_153",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "...35% spike.",
+          "nextNodeId": "node_154"
+        },
+        {
+          "id": "node_154",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Right? Someone's lying.",
+          "nextNodeId": "node_155"
+        },
+        {
+          "id": "node_155",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "The notes? Or the data?",
+          "nextNodeId": "node_156"
+        },
+        {
+          "id": "node_156",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "One of them! Let's match the timeline to find out!",
+          "nextNodeId": "node_157"
+        },
+        {
+          "id": "node_157",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Alright! Second game! 'Timeline Puzzle'!",
+          "nextNodeId": "node_158"
+        },
+        {
+          "id": "node_158",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Another game?",
+          "nextNodeId": "node_159"
+        },
+        {
+          "id": "node_159",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Of course! Games are the most fun!",
+          "nextNodeId": "node_160"
+        },
+        {
+          "id": "node_160",
+          "type": "dialogue",
+          "speaker": "🎯 your mission",
+          "text": "Match each event to the correct day on the timeline.",
+          "nextNodeId": "node_161"
+        },
+        {
+          "id": "node_161",
+          "type": "narration",
+          "text": "Left Side: Timeline with marked spikes",
+          "nextNodeId": "node_162"
+        },
+        {
+          "id": "node_162",
+          "type": "narration",
+          "text": "Right Side: Event Cards - Drag and Drop",
+          "nextNodeId": "node_163"
+        },
+        {
+          "id": "node_163",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Drag each event to the right day!",
+          "nextNodeId": "node_164"
+        },
+        {
+          "id": "node_164",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Hmm~ Not quite!",
+          "nextNodeId": "node_165"
+        },
+        {
+          "id": "node_165",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Wrong?",
+          "nextNodeId": "node_166"
+        },
+        {
+          "id": "node_166",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Yeah! Bug fixes usually don't cause huge spikes.",
+          "nextNodeId": "node_167"
+        },
+        {
+          "id": "node_167",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Actually, fixing bugs often makes things go 'down' a bit?",
+          "nextNodeId": "node_168"
+        },
+        {
+          "id": "node_168",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Oh, right.",
+          "nextNodeId": "node_169"
+        },
+        {
+          "id": "node_169",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Yep! Try another spot!",
+          "nextNodeId": "node_170"
+        },
+        {
+          "id": "node_170",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "**Awesome! Perfect!**",
+          "nextNodeId": "node_171"
+        },
+        {
+          "id": "node_171",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Got it?",
+          "nextNodeId": "node_172"
+        },
+        {
+          "id": "node_172",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Yeah! Look at Day 25!",
+          "nextNodeId": "node_173"
+        },
+        {
+          "id": "node_173",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "No official event, but Shadow still spiked...",
+          "nextNodeId": "node_174"
+        },
+        {
+          "id": "node_174",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Exactly! The timeline shows us what the patch notes don't!",
+          "nextNodeId": "node_175"
+        },
+        {
+          "id": "node_175",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "When official records don't match the data?",
+          "nextNodeId": "node_176"
+        },
+        {
+          "id": "node_176",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Someone did something secretly?",
+          "nextNodeId": "node_177"
+        },
+        {
+          "id": "node_177",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Bingo! Something **off the books**!",
+          "nextNodeId": "node_178"
+        },
+        {
+          "id": "node_178",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "So someone changed Shadow secretly on Day 25?",
+          "nextNodeId": "node_179"
+        },
+        {
+          "id": "node_179",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "That's our theory! Now let's prove it with server logs!",
+          "nextNodeId": "node_180"
+        },
+        {
+          "id": "node_180",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Time to dig into server logs!",
+          "nextNodeId": "node_181"
+        },
+        {
+          "id": "node_181",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "What are those?",
+          "nextNodeId": "node_182"
+        },
+        {
+          "id": "node_182",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Computer's... security camera footage! Or like... pizza delivery records?",
+          "nextNodeId": "node_183"
+        },
+        {
+          "id": "node_183",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Pizza again?",
+          "nextNodeId": "node_184"
+        },
+        {
+          "id": "node_184",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Yeah! Delivery app shows 'who, when, where, what' they ordered, right?",
+          "nextNodeId": "node_185"
+        },
+        {
+          "id": "node_185",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Ah, true.",
+          "nextNodeId": "node_186"
+        },
+        {
+          "id": "node_186",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Server logs are exactly the same!",
+          "nextNodeId": "node_187"
+        },
+        {
+          "id": "node_187",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Server logs record four things:",
+          "nextNodeId": "node_188"
+        },
+        {
+          "id": "node_188",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "So we can see who changed Shadow?",
+          "nextNodeId": "node_189"
+        },
+        {
+          "id": "node_189",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Yep! But... there are 10,000 logs.",
+          "nextNodeId": "node_190"
+        },
+        {
+          "id": "node_190",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Oof.",
+          "nextNodeId": "node_191"
+        },
+        {
+          "id": "node_191",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Haha! Surprised? Don't worry! We can use filters!",
+          "nextNodeId": "node_192"
+        },
+        {
+          "id": "node_192",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Alright! Final game! 'Log Hunter Championship'!",
+          "nextNodeId": "node_193"
+        },
+        {
+          "id": "node_193",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "There are a lot of championships...",
+          "nextNodeId": "node_194"
+        },
+        {
+          "id": "node_194",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "More championships, more fun! Focus up!",
+          "nextNodeId": "node_195"
+        },
+        {
+          "id": "node_195",
+          "type": "dialogue",
+          "speaker": "🎯 your mission",
+          "text": "Use filters to find the ONE log entry that proves unauthorized modification.",
+          "nextNodeId": "node_196"
+        },
+        {
+          "id": "node_196",
+          "type": "narration",
+          "text": "Log Screen - 10,000 scrolling lines",
+          "nextNodeId": "node_197"
+        },
+        {
+          "id": "node_197",
+          "type": "narration",
+          "text": "9,996 more lines",
+          "nextNodeId": "node_198"
+        },
+        {
+          "id": "node_198",
+          "type": "narration",
+          "text": "Filter Panel - Interactive Checkboxes",
+          "nextNodeId": "node_199"
+        },
+        {
+          "id": "node_199",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Hint! Pick **exactly 3 filters**!",
+          "nextNodeId": "node_200"
+        },
+        {
+          "id": "node_200",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Why 3?",
+          "nextNodeId": "node_201"
+        },
+        {
+          "id": "node_201",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Too many filters = 0 results. Too few = still thousands!",
+          "nextNodeId": "node_202"
+        },
+        {
+          "id": "node_202",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Just right?",
+          "nextNodeId": "node_203"
+        },
+        {
+          "id": "node_203",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Exactly right!",
+          "nextNodeId": "node_204"
+        },
+        {
+          "id": "node_204",
+          "type": "dialogue",
+          "speaker": "attempt 1",
+          "text": "Date (Day 24-26) + User (Kaito)",
+          "nextNodeId": "node_205"
+        },
+        {
+          "id": "node_205",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Hmm~ Getting closer but still too many!",
+          "nextNodeId": "node_206"
+        },
+        {
+          "id": "node_206",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Need more filtering?",
+          "nextNodeId": "node_207"
+        },
+        {
+          "id": "node_207",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Yep! Add one more filter!",
+          "nextNodeId": "node_208"
+        },
+        {
+          "id": "node_208",
+          "type": "dialogue",
+          "speaker": "attempt 2",
+          "text": "Date (Day 24-26) + User (Kaito) + Action (Modify)",
+          "nextNodeId": "node_209"
+        },
+        {
+          "id": "node_209",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "**Found it! This is it!**",
+          "nextNodeId": "node_210"
+        },
+        {
+          "id": "node_210",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Kaito modified Shadow at 11:47 PM...",
+          "nextNodeId": "node_211"
+        },
+        {
+          "id": "node_211",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "From home!",
+          "nextNodeId": "node_212"
+        },
+        {
+          "id": "node_212",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "He changed Shadow!",
+          "nextNodeId": "node_213"
+        },
+        {
+          "id": "node_213",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "And look! Debug token!",
+          "nextNodeId": "node_214"
+        },
+        {
+          "id": "node_214",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "What's that?",
+          "nextNodeId": "node_215"
+        },
+        {
+          "id": "node_215",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Emergency access code! Like a fire escape door?",
+          "nextNodeId": "node_216"
+        },
+        {
+          "id": "node_216",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "...Another analogy?",
+          "nextNodeId": "node_217"
+        },
+        {
+          "id": "node_217",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Yep! Easy to understand, right!",
+          "nextNodeId": "node_218"
+        },
+        {
+          "id": "node_218",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Debug tokens are only for fixing critical bugs...",
+          "nextNodeId": "node_219"
+        },
+        {
+          "id": "node_219",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "But he used it for a balance change! That's rule-breaking!",
+          "nextNodeId": "node_220"
+        },
+        {
+          "id": "node_220",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Evidence secured!",
+          "nextNodeId": "node_221"
+        },
+        {
+          "id": "node_221",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "You just did something amazing!",
+          "nextNodeId": "node_222"
+        },
+        {
+          "id": "node_222",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Really?",
+          "nextNodeId": "node_223"
+        },
+        {
+          "id": "node_223",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Yeah! Data analysts take years to learn this!",
+          "nextNodeId": "node_224"
+        },
+        {
+          "id": "node_224",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Years?",
+          "nextNodeId": "node_225"
+        },
+        {
+          "id": "node_225",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Yep! Finding one piece of evidence in massive data!",
+          "nextNodeId": "node_226"
+        },
+        {
+          "id": "node_226",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "...That feels good?",
+          "nextNodeId": "node_227"
+        },
+        {
+          "id": "node_227",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "It should! But we're not done yet!",
+          "nextNodeId": "node_228"
+        },
+        {
+          "id": "node_228",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "What else?",
+          "nextNodeId": "node_229"
+        },
+        {
+          "id": "node_229",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Gotta see what Kaito did right after the modification!",
+          "nextNodeId": "node_230"
+        }
+      ]
+    },
+    {
+      "id": "scene_6",
+      "title": "Player Profile Analysis",
+      "nodes": [
+        {
+          "id": "node_230",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Kaito modified Shadow... then 3 minutes later!",
+          "nextNodeId": "node_231"
+        },
+        {
+          "id": "node_231",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Someone started playing Shadow?",
+          "nextNodeId": "node_232"
+        },
+        {
+          "id": "node_232",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "A player named 'Noctis'!",
+          "nextNodeId": "node_233"
+        },
+        {
+          "id": "node_233",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Timing is exactly 3 minutes apart...",
+          "nextNodeId": "node_234"
+        },
+        {
+          "id": "node_234",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Suspicious, right? Let's check Noctis's profile!",
+          "nextNodeId": "node_235"
+        },
+        {
+          "id": "node_235",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Wait... that IP address...",
+          "nextNodeId": "node_236"
+        },
+        {
+          "id": "node_236",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Same as Kaito's home IP, right?",
+          "nextNodeId": "node_237"
+        },
+        {
+          "id": "node_237",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "And the device fingerprint...",
+          "nextNodeId": "node_238"
+        },
+        {
+          "id": "node_238",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Kaito's phone!",
+          "nextNodeId": "node_239"
+        },
+        {
+          "id": "node_239",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "So...",
+          "nextNodeId": "node_240"
+        },
+        {
+          "id": "node_240",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Yep! Kaito modified Shadow from home...",
+          "nextNodeId": "node_241"
+        },
+        {
+          "id": "node_241",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Then immediately logged in as Noctis to test it!",
+          "nextNodeId": "node_242"
+        },
+        {
+          "id": "node_242",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "That's solid proof!",
+          "nextNodeId": "node_243"
+        },
+        {
+          "id": "node_243",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Wait! Gotta explain something!",
+          "nextNodeId": "node_244"
+        },
+        {
+          "id": "node_244",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "So the same phone was used to modify and play?",
+          "nextNodeId": "node_245"
+        },
+        {
+          "id": "node_245",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Exactly! Like finding the same fingerprints at the crime scene and on the suspect!",
+          "nextNodeId": "node_246"
+        },
+        {
+          "id": "node_246",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Alright, let's put all the pieces together!",
+          "nextNodeId": "node_247"
+        },
+        {
+          "id": "node_247",
+          "type": "narration",
+          "text": "OFFICE HOURS",
+          "nextNodeId": "node_248"
+        },
+        {
+          "id": "node_248",
+          "type": "narration",
+          "text": "EVENING — 4 hour gap",
+          "nextNodeId": "node_249"
+        },
+        {
+          "id": "node_249",
+          "type": "narration",
+          "text": "LATE NIGHT",
+          "nextNodeId": "node_250"
+        },
+        {
+          "id": "node_250",
+          "type": "narration",
+          "text": "NEXT MORNING",
+          "nextNodeId": "node_251"
+        },
+        {
+          "id": "node_251",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Perfect timeline.",
+          "nextNodeId": "node_252"
+        },
+        {
+          "id": "node_252",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Yep! But let's check with his manager first.",
+          "nextNodeId": "node_253"
+        },
+        {
+          "id": "node_253",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Why?",
+          "nextNodeId": "node_254"
+        },
+        {
+          "id": "node_254",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Maybe he got approval?",
+          "nextNodeId": "node_255"
+        },
+        {
+          "id": "node_255",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Think so?",
+          "nextNodeId": "node_256"
+        },
+        {
+          "id": "node_256",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Umm... 99% no!",
+          "nextNodeId": "node_257"
+        },
+        {
+          "id": "node_257",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Why?",
+          "nextNodeId": "node_258"
+        },
+        {
+          "id": "node_258",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "He did it at home at night in secret! Haha!",
+          "nextNodeId": "node_259"
+        },
+        {
+          "id": "node_259",
+          "type": "dialogue",
+          "speaker": "lukas",
+          "text": "Kaito? He's hardworking. Passionate about balance design.",
+          "nextNodeId": "node_260"
+        },
+        {
+          "id": "node_260",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Did he request approval to modify Shadow on Day 25?",
+          "nextNodeId": "node_261"
+        },
+        {
+          "id": "node_261",
+          "type": "dialogue",
+          "speaker": "lukas",
+          "text": "No. I checked Shadow's data myself at 10:30 PM that night. Everything was normal.",
+          "nextNodeId": "node_262"
+        },
+        {
+          "id": "node_262",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "(on screen) \"What if he logged in from home at 11:47 PM and changed Shadow?",
+          "nextNodeId": "node_263"
+        },
+        {
+          "id": "node_263",
+          "type": "dialogue",
+          "speaker": "lukas",
+          "text": "...From home? That doesn't make sense. Production changes require my approval...",
+          "nextNodeId": "node_264"
+        },
+        {
+          "id": "node_264",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "The logs don't lie.",
+          "nextNodeId": "node_265"
+        },
+        {
+          "id": "node_265",
+          "type": "dialogue",
+          "speaker": "lukas",
+          "text": "I... really disappointed. I trusted him...",
+          "nextNodeId": "node_266"
+        },
+        {
+          "id": "node_266",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "We need to talk to Kaito!",
+          "nextNodeId": "node_267"
+        },
+        {
+          "id": "node_267",
+          "type": "narration",
+          "text": "Video call",
+          "nextNodeId": "node_268"
+        },
+        {
+          "id": "node_268",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Kaito. We need to talk about Day 25.",
+          "nextNodeId": "node_269"
+        },
+        {
+          "id": "node_269",
+          "type": "dialogue",
+          "speaker": "kaito",
+          "text": "Day 25? I worked on Phoenix that day.",
+          "nextNodeId": "node_270"
+        },
+        {
+          "id": "node_270",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "You also logged in from home at 11:47 PM.",
+          "nextNodeId": "node_271"
+        },
+        {
+          "id": "node_271",
+          "type": "dialogue",
+          "speaker": "kaito",
+          "text": "I... sometimes work from home...",
+          "nextNodeId": "node_272"
+        },
+        {
+          "id": "node_272",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "(appearing on screen) \"And modified Shadow without approval.",
+          "nextNodeId": "node_273"
+        },
+        {
+          "id": "node_273",
+          "type": "dialogue",
+          "speaker": "kaito",
+          "text": "That's... I didn't...",
+          "nextNodeId": "node_274"
+        },
+        {
+          "id": "node_274",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Then you logged in as 'Noctis' three minutes later. Same device. Same IP.",
+          "nextNodeId": "node_275"
+        },
+        {
+          "id": "node_275",
+          "type": "dialogue",
+          "speaker": "kaito",
+          "text": "*silence*",
+          "nextNodeId": "node_276"
+        },
+        {
+          "id": "node_276",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Your win rate went from 48% to 90%. Won 18 out of 20 with the buffed Shadow.",
+          "nextNodeId": "node_277"
+        },
+        {
+          "id": "node_277",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Timeline matches. Device matches. Player data matches.",
+          "nextNodeId": "node_278"
+        },
+        {
+          "id": "node_278",
+          "type": "dialogue",
+          "speaker": "kaito",
+          "text": "*long pause* \"I... didn't mean for it to go this far...",
+          "nextNodeId": "node_279"
+        },
+        {
+          "id": "node_279",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "(quietly) \"...Really serious gamer.",
+          "nextNodeId": "node_280"
+        },
+        {
+          "id": "node_280",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "(looking at Kastor) \"Now?",
+          "nextNodeId": "node_281"
+        },
+        {
+          "id": "node_281",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Sorry! But it's true though.",
+          "nextNodeId": "node_282"
+        },
+        {
+          "id": "node_282",
+          "type": "dialogue",
+          "speaker": "kaito",
+          "text": "I main Shadow. For three years. I watch every tournament, read every forum...",
+          "nextNodeId": "node_283"
+        },
+        {
+          "id": "node_283",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "And?",
+          "nextNodeId": "node_284"
+        },
+        {
+          "id": "node_284",
+          "type": "dialogue",
+          "speaker": "kaito",
+          "text": "Everyone said Shadow is weak. Needs buffs. I agreed.",
+          "nextNodeId": "node_285"
+        },
+        {
+          "id": "node_285",
+          "type": "dialogue",
+          "speaker": "kaito",
+          "text": "So I kept proposing changes to Lukas. But...",
+          "nextNodeId": "node_286"
+        },
+        {
+          "id": "node_286",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "He kept rejecting them?",
+          "nextNodeId": "node_287"
+        },
+        {
+          "id": "node_287",
+          "type": "dialogue",
+          "speaker": "kaito",
+          "text": "He said the data didn't support it. That Shadow was 'balanced'. But I KNEW he wasn't!",
+          "nextNodeId": "node_288"
+        },
+        {
+          "id": "node_288",
+          "type": "dialogue",
+          "speaker": "kaito",
+          "text": "I could FEEL it when I played!",
+          "nextNodeId": "node_289"
+        },
+        {
+          "id": "node_289",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "So you took matters into your own hands?",
+          "nextNodeId": "node_290"
+        },
+        {
+          "id": "node_290",
+          "type": "dialogue",
+          "speaker": "kaito",
+          "text": "I just... wanted to prove I was right.",
+          "nextNodeId": "node_291"
+        },
+        {
+          "id": "node_291",
+          "type": "dialogue",
+          "speaker": "kaito",
+          "text": "If Shadow performed better, Lukas would see my proposal was correct all along...",
+          "nextNodeId": "node_292"
+        },
+        {
+          "id": "node_292",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "But what about other players? The company's reputation?",
+          "nextNodeId": "node_293"
+        },
+        {
+          "id": "node_293",
+          "type": "dialogue",
+          "speaker": "kaito",
+          "text": "...I didn't think about that. I'm sorry.",
+          "nextNodeId": "node_294"
+        },
+        {
+          "id": "node_294",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "(quietly) \"I'm hungry.",
+          "nextNodeId": "node_295"
+        },
+        {
+          "id": "node_295",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Now?!",
+          "nextNodeId": "node_296"
+        },
+        {
+          "id": "node_296",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Yeah! I get hungry when I'm nervous! ...Oh right, I'm an AI. Can't eat.",
+          "nextNodeId": "node_297"
+        },
+        {
+          "id": "node_297",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "*(This AI really...)*",
+          "nextNodeId": "node_298"
+        },
+        {
+          "id": "node_298",
+          "type": "dialogue",
+          "speaker": "primary",
+          "text": "Prove his balance proposals were correct",
+          "nextNodeId": "node_299"
+        },
+        {
+          "id": "node_299",
+          "type": "dialogue",
+          "speaker": "secondary",
+          "text": "Win more games as his main character",
+          "nextNodeId": "node_300"
+        },
+        {
+          "id": "node_300",
+          "type": "dialogue",
+          "speaker": "method",
+          "text": "Unauthorized use of developer access",
+          "nextNodeId": "node_301"
+        },
+        {
+          "id": "node_301",
+          "type": "dialogue",
+          "speaker": "mistake",
+          "text": "Underestimated data detective capabilities",
+          "nextNodeId": "node_302"
+        },
+        {
+          "id": "node_302",
+          "type": "dialogue",
+          "speaker": "maya",
+          "text": "So... what should we do?",
+          "nextNodeId": "node_303"
+        },
+        {
+          "id": "node_303",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "(on screen) \"That's your call, but here are three options!",
+          "nextNodeId": "node_304"
+        },
+        {
+          "id": "node_304",
+          "type": "dialogue",
+          "speaker": "maya",
+          "text": "I think... we should improve our process but keep it internal.",
+          "nextNodeId": "node_305"
+        },
+        {
+          "id": "node_305",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Safe choice. Protects company and employee privacy.",
+          "nextNodeId": "node_306"
+        },
+        {
+          "id": "node_306",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "But the community might still have doubts.",
+          "nextNodeId": "node_307"
+        },
+        {
+          "id": "node_307",
+          "type": "dialogue",
+          "speaker": "maya",
+          "text": "We'll address that with the announcement. Thank you, detective.",
+          "nextNodeId": "node_308"
+        },
+        {
+          "id": "node_308",
+          "type": "dialogue",
+          "speaker": "maya",
+          "text": "I think... we need to be honest with our players.",
+          "nextNodeId": "node_309"
+        },
+        {
+          "id": "node_309",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Brave choice! Transparency builds trust.",
+          "nextNodeId": "node_310"
+        },
+        {
+          "id": "node_310",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "It's the right thing to do.",
+          "nextNodeId": "node_311"
+        },
+        {
+          "id": "node_311",
+          "type": "dialogue",
+          "speaker": "maya",
+          "text": "I hope they'll understand. Thank you, detective.",
+          "nextNodeId": "node_312"
+        },
+        {
+          "id": "node_312",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "But I'm hungry...",
+          "nextNodeId": "node_313"
+        },
+        {
+          "id": "node_313",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "You're an AI!",
+          "nextNodeId": "node_314"
+        },
+        {
+          "id": "node_314",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "I know! But I'm still hungry!",
+          "nextNodeId": "node_315"
+        },
+        {
+          "id": "node_315",
+          "type": "dialogue",
+          "speaker": "maya",
+          "text": "Maybe... we should handle it quietly?",
+          "nextNodeId": "node_316"
+        },
+        {
+          "id": "node_316",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Hmm~ Quick and clean, but...",
+          "nextNodeId": "node_317"
+        },
+        {
+          "id": "node_317",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Players are smart. They'll keep asking questions.",
+          "nextNodeId": "node_318"
+        },
+        {
+          "id": "node_318",
+          "type": "dialogue",
+          "speaker": "maya",
+          "text": "You're right... Let me reconsider.",
+          "nextNodeId": "node_319"
+        },
+        {
+          "id": "node_319",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Good call!",
+          "nextNodeId": "node_320"
+        },
+        {
+          "id": "node_320",
+          "type": "narration",
+          "text": "Returns to choice screen",
+          "nextNodeId": "node_321"
+        },
+        {
+          "id": "node_321",
+          "type": "dialogue",
+          "speaker": "maya",
+          "text": "That was hard to write... but the community response has been mostly positive. They appreciate the honesty.",
+          "nextNodeId": "node_322"
+        },
+        {
+          "id": "node_322",
+          "type": "dialogue",
+          "speaker": "lukas",
+          "text": "I feel betrayed... but I should have listened to Kaito's proposals more seriously.",
+          "nextNodeId": "node_323"
+        },
+        {
+          "id": "node_323",
+          "type": "dialogue",
+          "speaker": "kaito",
+          "text": "I'm banned from balance design for six months. But I deserved it. I learned that data and process exist for a reason.",
+          "nextNodeId": "node_324"
+        },
+        {
+          "id": "node_324",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "First case and you nailed it!",
+          "nextNodeId": "node_325"
+        },
+        {
+          "id": "node_325",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "We actually solved it! And I learned so much!",
+          "nextNodeId": "node_326"
+        },
+        {
+          "id": "node_326",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "That's the power of interactive learning! You didn't just READ about data analysis...",
+          "nextNodeId": "node_327"
+        },
+        {
+          "id": "node_327",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "You DID data analysis!",
+          "nextNodeId": "node_328"
+        },
+        {
+          "id": "node_328",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "The mini-games made it easier to understand.",
+          "nextNodeId": "node_329"
+        },
+        {
+          "id": "node_329",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Right? Now you can spot anomalies, filter logs, and match timelines like a pro!",
+          "nextNodeId": "node_330"
+        },
+        {
+          "id": "node_330",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "Ready for Episode 2?",
+          "nextNodeId": "node_331"
+        },
+        {
+          "id": "node_331",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "Bring it on!",
+          "nextNodeId": "node_332"
+        },
+        {
+          "id": "node_332",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "After lunch though!",
+          "nextNodeId": "node_333"
+        },
+        {
+          "id": "node_333",
+          "type": "dialogue",
+          "speaker": "detective",
+          "text": "You're an AI!",
+          "nextNodeId": "node_334"
+        },
+        {
+          "id": "node_334",
+          "type": "dialogue",
+          "speaker": "kastor",
+          "text": "I know! Still hungry though!",
+          "nextNodeId": "node_335"
+        },
+        {
+          "id": "node_335",
+          "type": "dialogue",
+          "speaker": "total length",
+          "text": "~9,000 words (all choices included)",
+          "nextNodeId": "node_336"
+        },
+        {
+          "id": "node_336",
+          "type": "dialogue",
+          "speaker": "estimated play time",
+          "text": "40-45 minutes (including 15 min mini-games)",
+          "nextNodeId": "node_337"
+        },
+        {
+          "id": "node_337",
+          "type": "dialogue",
+          "speaker": "interactivity",
+          "text": "3 mini-games + 3 choice points (all branches included)",
+          "nextNodeId": "node_338"
+        },
+        {
+          "id": "node_338",
+          "type": "dialogue",
+          "speaker": "learning mode",
+          "text": "35% reading, 40% playing, 25% thinking",
+          "nextNodeId": "node_339"
+        }
+      ]
+    }
+  ]
+}
