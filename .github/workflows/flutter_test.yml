@@ -3,6 +3,10 @@ name: Flutter Tests
 
 on:
   push:
+    branches:
+      - main
+      - 'claude/**'
+  pull_request:
     branches: [ main ]
   workflow_dispatch:
 
@@ -59,6 +63,50 @@ jobs:
         with:
           name: widget-test-results
           path: flutter_app/test-results
+
+      - name: Install Chrome for web testing
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
+
+      - name: Install ChromeDriver
+        run: |
+          CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d '.' -f 1)
+          echo "Chrome version: $CHROME_VERSION"
+
+          # Download and install matching ChromeDriver
+          CHROMEDRIVER_VERSION=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_$CHROME_VERSION")
+          echo "ChromeDriver version: $CHROMEDRIVER_VERSION"
+
+          curl -Lo /tmp/chromedriver-linux64.zip "https://storage.googleapis.com/chrome-for-testing-public/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip"
+          unzip -q /tmp/chromedriver-linux64.zip -d /tmp
+          sudo mv /tmp/chromedriver-linux64/chromedriver /usr/local/bin/
+          sudo chmod +x /usr/local/bin/chromedriver
+          chromedriver --version
+
+      - name: Run integration tests on web
+        working-directory: flutter_app
+        run: |
+          mkdir -p ../web-integration-test-results
+
+          # Start ChromeDriver in background
+          chromedriver --port=4444 &
+          CHROMEDRIVER_PID=$!
+
+          # Wait for ChromeDriver to start
+          sleep 3
+
+          # Run integration tests on web
+          flutter test integration_test/app_test.dart -d web-server --machine > ../web-integration-test-results/web_integration_test_machine.json || true
+
+          # Kill ChromeDriver
+          kill $CHROMEDRIVER_PID || true
+
+      - name: Upload web integration test results (artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-integration-test-results
+          path: web-integration-test-results
 
       - name: Run integration tests on Android emulator
         uses: reactivecircus/android-emulator-runner@v2
