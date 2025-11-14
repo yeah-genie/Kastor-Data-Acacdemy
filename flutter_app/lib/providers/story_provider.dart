@@ -24,6 +24,8 @@ class StoryMessage {
     this.emailData,
     this.reaction,
   });
+
+  bool get isNarration => speaker == 'narrator' || speaker == 'system';
 }
 
 // Story choice for interactive decisions
@@ -101,11 +103,6 @@ class StoryNotifier extends Notifier<StoryState> {
     return StoryState(messages: [], currentSceneId: 'scene_0_start');
   }
 
-  @override
-  void dispose() {
-    _cancelAllTimers();
-    super.dispose();
-  }
 
   void _cancelAllTimers() {
     for (final timer in _timers) {
@@ -129,12 +126,10 @@ class StoryNotifier extends Notifier<StoryState> {
 
     Timer? timer;
     timer = Timer(delay, () {
-      if (mounted) {
-        callback();
-        _timers.remove(timer);
-        _messageQueue--;
-        state = state.copyWith(pendingMessages: _messageQueue);
-      }
+      callback();
+      _timers.remove(timer);
+      _messageQueue--;
+      state = state.copyWith(pendingMessages: _messageQueue);
     });
     _timers.add(timer);
   }
@@ -359,52 +354,52 @@ PLEASE HELP US!''',
     );
 
     Future.delayed(const Duration(milliseconds: 1600), () {
-      if (!mounted) return;
+      
       _addMessage('kastor', 'Ooh! Gaming case! Fun stuff!');
     });
 
     Future.delayed(const Duration(milliseconds: 2400), () {
-      if (!mounted) return;
+      
       _addMessage('detective', 'Shadow suddenly got way stronger...');
     });
 
     Future.delayed(const Duration(milliseconds: 3200), () {
-      if (!mounted) return;
+      
       _addMessage('kastor', '35% jump! That\'s insane!');
     });
 
     Future.delayed(const Duration(milliseconds: 4000), () {
-      if (!mounted) return;
+      
       _addMessage('detective', 'Is that a lot?');
     });
 
     Future.delayed(const Duration(milliseconds: 4800), () {
-      if (!mounted) return;
+      
       _addMessage('kastor', 'Imagine... eating half a chicken, then suddenly eating THREE whole chickens.');
     });
 
     Future.delayed(const Duration(milliseconds: 5600), () {
-      if (!mounted) return;
+      
       _addMessage('detective', '...What kind of analogy is that?');
     });
 
     Future.delayed(const Duration(milliseconds: 6400), () {
-      if (!mounted) return;
+      
       _addMessage('kastor', 'Didn\'t work? Okay, pizza then—');
     });
 
     Future.delayed(const Duration(milliseconds: 7200), () {
-      if (!mounted) return;
+      
       _addMessage('detective', 'NO! I get it! It\'s a lot!');
     });
 
     Future.delayed(const Duration(milliseconds: 8000), () {
-      if (!mounted) return;
+      
       _addMessage('kastor', '(laughs) See? Food analogies work!');
     });
 
     Future.delayed(const Duration(milliseconds: 9000), () {
-      if (!mounted) return;
+      
       _showHypothesisChoices();
     });
   }
@@ -413,27 +408,27 @@ PLEASE HELP US!''',
     _addMessage('kastor', 'Alright! First quest! Form a hypothesis!');
 
     Future.delayed(const Duration(milliseconds: 800), () {
-      if (!mounted) return;
+      
       _addMessage('detective', 'A hypothesis?');
     });
 
     Future.delayed(const Duration(milliseconds: 1600), () {
-      if (!mounted) return;
+      
       _addMessage('kastor', 'Yep. Detectives can\'t just guess randomly. We need a starting theory to guide our search.');
     });
 
     Future.delayed(const Duration(milliseconds: 2400), () {
-      if (!mounted) return;
+      
       _addMessage('detective', 'Like a direction?');
     });
 
     Future.delayed(const Duration(milliseconds: 3200), () {
-      if (!mounted) return;
+      
       _addMessage('kastor', 'Exactly! Think of it like... choosing which door to open first in a mystery game.');
     });
 
     Future.delayed(const Duration(milliseconds: 4000), () {
-      if (!mounted) return;
+      
       _addMessage('kastor', 'So! Three possibilities. Pick one based on Maya\'s email!');
 
       // Show choices
@@ -486,42 +481,42 @@ PLEASE HELP US!''',
 
   void _handleChoiceC() {
     Future.delayed(const Duration(milliseconds: 800), () {
-      if (!mounted) return;
+      
       _addMessage('kastor', 'Ooh! Crime vibes! I like your thinking!');
     });
 
     Future.delayed(const Duration(milliseconds: 1600), () {
-      if (!mounted) return;
+      
       _addMessage('detective', 'Just... a feeling.');
     });
 
     Future.delayed(const Duration(milliseconds: 2400), () {
-      if (!mounted) return;
+      
       _addMessage('kastor', 'Detectives can\'t work on feelings alone~');
     });
 
     Future.delayed(const Duration(milliseconds: 3200), () {
-      if (!mounted) return;
+      
       _addMessage('detective', 'Then what?');
     });
 
     Future.delayed(const Duration(milliseconds: 4000), () {
-      if (!mounted) return;
+      
       _addMessage('kastor', 'DATA! Numbers don\'t lie!');
     });
 
     Future.delayed(const Duration(milliseconds: 4800), () {
-      if (!mounted) return;
+      
       _addMessage('detective', 'But people do?');
     });
 
     Future.delayed(const Duration(milliseconds: 5600), () {
-      if (!mounted) return;
+      
       _addMessage('kastor', 'All the time! That\'s why we check the evidence first. Let\'s call Maya!');
     });
 
     Future.delayed(const Duration(milliseconds: 6400), () {
-      if (!mounted) return;
+      
       _addMessage('system', '🎵 MINI CELEBRATION — Case accepted! +10 points');
 
       // Start Scene 2
@@ -531,17 +526,17 @@ PLEASE HELP US!''',
 
   void _handleChoiceA() {
     Future.delayed(const Duration(milliseconds: 800), () {
-      if (!mounted) return;
+      
       _addMessage('kastor', 'Smart choice! Always check the official records first.');
     });
 
     Future.delayed(const Duration(milliseconds: 1600), () {
-      if (!mounted) return;
+      
       _addMessage('kastor', 'It\'s like reading the instruction manual before taking apart a machine.');
     });
 
     Future.delayed(const Duration(milliseconds: 2400), () {
-      if (!mounted) return;
+      
       _addMessage('system', '🎵 MINI CELEBRATION — +5 Investigation Points');
 
       // Start Scene 2
@@ -551,17 +546,17 @@ PLEASE HELP US!''',
 
   void _handleChoiceB() {
     Future.delayed(const Duration(milliseconds: 800), () {
-      if (!mounted) return;
+      
       _addMessage('kastor', 'Bugs are always possible!');
     });
 
     Future.delayed(const Duration(milliseconds: 1600), () {
-      if (!mounted) return;
+      
       _addMessage('kastor', 'But a 35% win rate increase is too specific for a random bug.');
     });
 
     Future.delayed(const Duration(milliseconds: 2400), () {
-      if (!mounted) return;
+      
       _addMessage('kastor', 'Something feels intentional. Let\'s investigate deeper!');
 
       // Start Scene 2
@@ -571,42 +566,42 @@ PLEASE HELP US!''',
 
   void _startScene2() {
     Future.delayed(const Duration(milliseconds: 1000), () {
-      if (!mounted) return;
+      
       _addMessage('narrator', '[Phone dialing sound]');
     });
 
     Future.delayed(const Duration(milliseconds: 2000), () {
-      if (!mounted) return;
+      
       _addMessage('maya', 'Hello? Detectives?');
     });
 
     Future.delayed(const Duration(milliseconds: 2800), () {
-      if (!mounted) return;
+      
       _addMessage('detective', 'Yes. We got your email. Can you tell us everything?');
     });
 
     Future.delayed(const Duration(milliseconds: 3600), () {
-      if (!mounted) return;
+      
       _addMessage('maya', 'Shadow\'s win rate spiked on Day 28. We definitely didn\'t patch him. The community thinks we\'re lying!');
     });
 
     Future.delayed(const Duration(milliseconds: 4400), () {
-      if (!mounted) return;
+      
       _addMessage('kastor', 'Can you send us the game data? Patch notes, server logs, player statistics?');
     });
 
     Future.delayed(const Duration(milliseconds: 5200), () {
-      if (!mounted) return;
+      
       _addMessage('maya', 'Sending now! Please hurry — every hour we wait, we lose more players!');
     });
 
     Future.delayed(const Duration(milliseconds: 6000), () {
-      if (!mounted) return;
+      
       _addMessage('detective', 'We\'ll figure this out.');
     });
 
     Future.delayed(const Duration(milliseconds: 6800), () {
-      if (!mounted) return;
+      
       _addMessage('system', '📊 Data Received!\n\nCheck the Files tab for:\n• Win rate graph\n• Patch notes\n• Server logs');
 
       state = state.copyWith(currentSceneId: 'scene_3_graph_analysis');
