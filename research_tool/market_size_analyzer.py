@@ -63,9 +63,9 @@ class MarketSizeAnalyzer:
                 'freeCodeCamp',
                 'Khan Academy'
             ],
-            'total_users_millions': [129, 64, 42, 15, 12, 50, 40, 120],
+            'total_users_millions': [129, 64, 42, 23.29, 12, 50, 40, 120],
             'active_monthly_millions': [25, 12, 8, 3.5, 2.5, 10, 8, 24],
-            'data_science_learners_millions': [8.5, 12, 6, 15, 12, 5, 4, 2],
+            'data_science_learners_millions': [8.5, 12, 6, 23.29, 12, 5, 4, 2],
             'year_reported': [2023, 2023, 2023, 2024, 2023, 2023, 2024, 2023],
             'growth_rate_yoy': [23, 18, 15, 30, 25, 20, 35, 12]
         }
@@ -86,98 +86,120 @@ class MarketSizeAnalyzer:
     def analyze_korean_market(self):
         """
         SAM (Serviceable Available Market) - 한국 시장
-        출처: 통계청, 한국교육개발원, 대학알리미
+        출처: 인프런 공식 발표(140만), 메타코드(6만), 공공 빅데이터 청년인재(1,224명/년)
+        ⚠️ 간접 추정 (직접 통계 없음)
         """
         print(f"\n{'='*60}")
-        print(f"🇰🇷 SAM: 한국 온라인 교육 시장")
+        print(f"🇰🇷 SAM: 한국 온라인 교육 시장 (간접 추정)")
         print(f"{'='*60}\n")
 
-        # 한국 시장 데이터 (공개 통계)
+        # 한국 시장 데이터 (간접 추정)
         korean_market = {
             'segment': [
-                '대학생 (전체)',
-                '대학생 (이공계)',
-                '대학생 (비전공 데이터 관심)',
-                '취업 준비생',
-                '직장인 (커리어 전환)',
-                '고등학생 (진로 탐색)',
-                '부트캠프 참여자',
-                '온라인 강의 수강자'
+                '인프런 데이터 관심자 (10%)',
+                '인프런 데이터 관심자 (20%)',
+                '대학 DS/빅데이터/AI 전공 (연간)',
+                '부트캠프 연간 수강생',
+                '공공 프로그램 참여자'
             ],
-            'population_thousands': [3200, 1100, 350, 800, 1200, 450, 25, 1500],
-            'data_science_interest_rate': [0.10, 0.30, 1.00, 0.25, 0.40, 0.15, 1.00, 0.45],
-            'potential_users_thousands': [320, 330, 350, 200, 480, 68, 25, 675]
+            'population_thousands': [1400, 1400, 4, 7.5, 1.224],
+            'data_science_interest_rate': [0.10, 0.20, 1.00, 1.00, 1.00],
+            'potential_users_thousands': [140, 280, 4, 7.5, 1.224],
+            'estimation_type': ['보수적', '낙관적', '추정', '추정', '정확']
         }
 
         df = pd.DataFrame(korean_market)
-        df['potential_users_thousands'] = (df['population_thousands'] * df['data_science_interest_rate']).round(0)
         self.korean_market_df = df
 
-        print("📊 한국 시장 세그먼트별 잠재 사용자")
+        print("📊 한국 시장 세그먼트별 데이터 학습자 (간접 추정)")
         print(df.to_string(index=False))
 
-        # 중복 제거 추정 (겹치는 세그먼트 조정)
-        total_potential = df['potential_users_thousands'].sum()
-        adjusted_total = total_potential * 0.65  # 중복 제거 계수
+        # 보수적 추정 (인프런 10% + 대학 + 부트캠프)
+        conservative_estimate = 140 + 4 + 7.5
+        # 낙관적 추정 (인프런 20% + 대학 + 부트캠프)
+        optimistic_estimate = 280 + 4 + 7.5
+        # 중간값
+        mid_estimate = (conservative_estimate + optimistic_estimate) / 2
 
-        print(f"\n💡 한국 데이터 사이언스 학습 잠재 시장:")
-        print(f"  - 총 잠재 사용자 (중복 제거 전): {total_potential:,.0f}K명")
-        print(f"  - 조정 후 (중복 제거): {adjusted_total:,.0f}K명")
-        print(f"  - SAM (연간): ~{adjusted_total:,.0f}K명")
+        print(f"\n💡 한국 데이터 사이언스 학습자 추정:")
+        print(f"  - 보수적 추정: {conservative_estimate:,.1f}K명 (~{conservative_estimate/10:.0f}만 명)")
+        print(f"  - 낙관적 추정: {optimistic_estimate:,.1f}K명 (~{optimistic_estimate/10:.0f}만 명)")
+        print(f"  - 중간값 (SAM): {mid_estimate:,.1f}K명 (~{mid_estimate/10:.0f}만 명)")
+        print(f"\n  ⚠️ 한계: 중복 계산 가능성, 실제 활동 학습자는 이보다 적을 수 있음")
 
         return df
 
     def calculate_tam_sam_som(self):
         """
         TAM / SAM / SOM 최종 계산
+        ⚠️ SAM/SOM은 간접 추정 (보수적 수치 사용)
         """
         print(f"\n{'='*60}")
-        print(f"🎯 TAM / SAM / SOM 계산")
+        print(f"🎯 TAM / SAM / SOM 계산 (간접 추정)")
         print(f"{'='*60}\n")
 
         # TAM: 글로벌 데이터 사이언스 e-러닝 시장
         tam_market_size_b = 33  # 2024년 $33B
-        tam_learners_m = 76.5  # 플랫폼 합산 (중복 조정)
+        tam_learners_m = 84.79  # 플랫폼 합산 업데이트 (Kaggle 23.29M 반영)
 
-        # SAM: 한국 시장
-        sam_population_k = 1500  # 조정 후 1,500K명
-        sam_market_size_m = 450  # 4.5억 원 ARPU 가정
+        # SAM: 한국 시장 (간접 추정, kaggle_analysis_report.md 참조)
+        # 보수적: 151.5K, 낙관적: 291.5K, 중간값: 215.75K
+        sam_population_k_conservative = 151.5  # 15만 명 (보수적)
+        sam_population_k_optimistic = 291.5  # 29만 명 (낙관적)
+        sam_population_k = 215.75  # 중간값 사용
+
+        sam_market_size_m = sam_population_k * 0.120  # 연 평균 12만원 ARPU
 
         # SOM: Kastor 목표 시장 (초보자 이탈 방지)
-        # 전체 SAM 중 초보자 비율 (70%) × 이탈 경험자 (85%) × Kastor 도달 가능 (10%)
-        som_population_k = sam_population_k * 0.70 * 0.85 * 0.10
+        # 전체 SAM 중 초보자 비율 (70%) × 이탈 경험자 (85%) × Kastor 도달 가능 (1-5%, 보수적)
+        # 기존 10%는 비현실적, 1-5%로 하향 조정
+        som_reach_rate_conservative = 0.01  # 1% (매우 보수적)
+        som_reach_rate_optimistic = 0.05  # 5% (낙관적)
+
+        som_population_k_conservative = sam_population_k_conservative * 0.70 * 0.85 * som_reach_rate_conservative
+        som_population_k_optimistic = sam_population_k_optimistic * 0.70 * 0.85 * som_reach_rate_optimistic
+        som_population_k = sam_population_k * 0.70 * 0.85 * 0.03  # 3% 중간값
+
         som_market_size_m = som_population_k * 0.120  # 연 평균 12만원 ARPU
 
         tam_sam_som = {
-            'market': ['TAM', 'SAM', 'SOM'],
+            'market': ['TAM', 'SAM (보수적)', 'SAM (중간)', 'SAM (낙관적)', 'SOM (보수적)', 'SOM (중간)', 'SOM (낙관적)'],
             'description': [
-                '글로벌 데이터 사이언스 e-러닝',
-                '한국 데이터 사이언스 학습자',
-                'Kastor 타겟 (초보자 이탈 방지)'
+                '글로벌 DS e-러닝',
+                '한국 DS 학습자 (15만)',
+                '한국 DS 학습자 (22만)',
+                '한국 DS 학습자 (29만)',
+                'Kastor 타겟 (1% 도달)',
+                'Kastor 타겟 (3% 도달)',
+                'Kastor 타겟 (5% 도달)'
             ],
-            'users_thousands': [tam_learners_m * 1000, sam_population_k, som_population_k],
-            'market_size_million_krw': [
-                tam_market_size_b * 1300 * 1000,  # $33B → 원화
-                sam_market_size_m,
-                som_market_size_m
+            'users_thousands': [
+                tam_learners_m * 1000,
+                sam_population_k_conservative,
+                sam_population_k,
+                sam_population_k_optimistic,
+                som_population_k_conservative,
+                som_population_k,
+                som_population_k_optimistic
             ]
         }
 
         df = pd.DataFrame(tam_sam_som)
         self.tam_sam_som_df = df
 
-        print("📊 TAM / SAM / SOM")
+        print("📊 TAM / SAM / SOM (간접 추정)")
         print(df.to_string(index=False))
 
         print(f"\n💡 핵심 숫자:")
         print(f"  TAM (글로벌): {tam_learners_m:.1f}M 학습자, ${tam_market_size_b}B 시장")
-        print(f"  SAM (한국): {sam_population_k:,.0f}K 학습자, ₩{sam_market_size_m:,.0f}M 시장")
-        print(f"  SOM (Kastor 목표): {som_population_k:,.0f}K 학습자, ₩{som_market_size_m:,.0f}M 시장")
+        print(f"  SAM (한국, 중간값): {sam_population_k:,.1f}K 학습자 (~{sam_population_k/10:.0f}만 명)")
+        print(f"  SOM (Kastor 목표, 중간): {som_population_k:,.1f}K 학습자 (~{som_population_k/10:.1f}만 명)")
+        print(f"  SOM 범위: {som_population_k_conservative:,.1f}K ~ {som_population_k_optimistic:,.1f}K")
 
-        print(f"\n🎯 Kastor 목표:")
-        print(f"  - Year 1: SOM의 1% 침투 = {som_population_k*0.01:,.0f}K 사용자")
-        print(f"  - Year 3: SOM의 10% 침투 = {som_population_k*0.10:,.0f}K 사용자")
-        print(f"  - Year 5: SOM의 30% 침투 = {som_population_k*0.30:,.0f}K 사용자")
+        print(f"\n🎯 Kastor 목표 (SOM 중간값 기준):")
+        print(f"  - Year 1: SOM의 0.5-1% = {som_population_k*0.005:,.1f}~{som_population_k*0.01:,.1f}K 사용자 ({som_population_k*0.005/10:.0f}~{som_population_k*0.01/10:.0f}백 명)")
+        print(f"  - Year 3: SOM의 5-10% = {som_population_k*0.05:,.1f}~{som_population_k*0.10:,.1f}K 사용자 ({som_population_k*0.05/10:.1f}~{som_population_k*0.10/10:.1f}천 명)")
+        print(f"  - Year 5: SOM의 20-30% = {som_population_k*0.20:,.1f}~{som_population_k*0.30:,.1f}K 사용자 ({som_population_k*0.20/10:.1f}~{som_population_k*0.30/10:.1f}천 명)")
 
         return df
 
