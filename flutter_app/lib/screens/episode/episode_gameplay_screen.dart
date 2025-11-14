@@ -565,6 +565,7 @@ class _EpisodeGameplayScreenState
 
   List<SceneData> _getEpisode1Scenes() {
     return [
+      // Scene 0.1: Office Introduction
       SceneData(
         speaker: 'NARRATOR',
         dialogue:
@@ -576,30 +577,149 @@ class _EpisodeGameplayScreenState
         speakerAvatar: 'kastor',
       ),
       SceneData(
+        speaker: 'NARRATOR',
+        dialogue: '[Door opens — Detective enters]',
+      ),
+      SceneData(
         speaker: 'DETECTIVE',
         dialogue: '...Is this the right place?',
       ),
       SceneData(
         speaker: 'KASTOR',
-        dialogue: 'Hm? Oh! New person?',
+        dialogue: 'Hm? (stretches) Oh! New person?',
         speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'DETECTIVE',
+        dialogue: 'I\'m the new detective.',
       ),
       SceneData(
         speaker: 'KASTOR',
-        dialogue: 'I\'m Kastor. Your partner!',
+        dialogue: 'Detective? You don\'t look like one.',
         speakerAvatar: 'kastor',
       ),
       SceneData(
-        speaker: 'NARRATOR',
-        dialogue: 'Email notification - DING!',
+        speaker: 'DETECTIVE',
+        dialogue: 'It\'s my first day!',
       ),
       SceneData(
-        speaker: 'Email',
+        speaker: 'KASTOR',
+        dialogue: 'I can tell. It\'s written all over your face.',
+        speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'DETECTIVE',
+        dialogue: '(This guy...)',
+      ),
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue: 'I\'m Kastor. Your partner! (grins)',
+        speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'DETECTIVE',
+        dialogue: 'Nice to meet you, I guess?',
+      ),
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue: 'Cool! No refunds on name tags though.',
+        speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'DETECTIVE',
+        dialogue: 'What?',
+      ),
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue: 'Kidding~ But seriously, we\'re broke.',
+        speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'DETECTIVE',
+        dialogue: '(What kind of agency is this...)',
+      ),
+      SceneData(
+        speaker: 'NARRATOR',
+        dialogue: '🎵 Partnership formed! +10 points',
+      ),
+
+      // Scene 0.2: First Case Arrives
+      SceneData(
+        speaker: 'NARRATOR',
+        dialogue: '[Email notification sound — DING!]',
+      ),
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue: 'Ooh! Mail!',
+        speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'DETECTIVE',
+        dialogue: 'Already?',
+      ),
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue: 'Yep! You\'re lucky! No cases = boring.',
+        speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'DETECTIVE',
+        dialogue: 'Is that... good luck?',
+      ),
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue: 'Obviously! Now click it!',
+        speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'EMAIL',
         dialogue:
             'FROM: Maya Zhang\nSUBJECT: URGENT! Need Help!\n\n"Hello detectives!\n\nI\'m Maya, director of Legend Arena.\n\nWe have a HUGE problem! 😰\n\nOur character Shadow\'s win rate jumped from 50% to 85% in ONE DAY!\n\nWe didn\'t patch him! I have no idea why this happened!\n\nPlayers are furious! The community is exploding!\n\nIf we lose player trust... the game is finished!\n\nPLEASE HELP US!"',
         documentContent:
-            'FROM: Maya Zhang\nSUBJECT: URGENT! Need Help!\n\nHello detectives!\n\nI\'m Maya, director of Legend Arena.\n\nWe have a HUGE problem! Our character Shadow\'s win rate jumped from 50% to 85% in ONE DAY!\n\nWe didn\'t patch him! I have no idea why this happened!\n\nPlayers are furious! The community is exploding!\n\nIf we lose player trust... the game is finished!\n\nPLEASE HELP US!',
+            'FROM: Maya Zhang <maya.zhang@legendarena.com>\nTO: Kastor Detective Agency\nSUBJECT: URGENT! Need Help!\nDATE: Day 29, 09:15\n\nHello detectives!\n\nI\'m Maya, director of Legend Arena.\n\nWe have a HUGE problem! 😰\n\nOur character Shadow\'s win rate jumped from 50% to 85% in ONE DAY!\n\nWe didn\'t patch him! I have no idea why this happened!\n\nPlayers are furious! The community is exploding!\n\nIf we lose player trust... the game is finished!\n\nPLEASE HELP US!\n\n- Maya Zhang\nGame Director, Legend Arena',
         documentTitle: 'Email from Maya Zhang',
+      ),
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue: 'Ooh! Game case! Fun!',
+        speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'DETECTIVE',
+        dialogue: 'Shadow got way stronger overnight...',
+      ),
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue: '35% jump! That\'s insane!',
+        speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'DETECTIVE',
+        dialogue: 'Is that a lot?',
+      ),
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue:
+            'It\'s like... eating half a chicken, then suddenly eating THREE chickens.',
+        speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'DETECTIVE',
+        dialogue: '...What kind of analogy is that?',
+      ),
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue: 'Didn\'t work? Okay, imagine—',
+        speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'DETECTIVE',
+        dialogue: 'NO! I get it! It\'s a lot!',
+      ),
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue: '(laughs) See? Food analogies work!',
+        speakerAvatar: 'kastor',
       ),
       SceneData(
         speaker: 'KASTOR',
@@ -609,12 +729,12 @@ class _EpisodeGameplayScreenState
           ChoiceOption(
             id: 'official_patch',
             text: 'A) Official patch',
-            feedback: 'Interesting choice, but let\'s investigate further...',
+            feedback: 'Let\'s check the patch notes...',
           ),
           ChoiceOption(
             id: 'rare_bug',
             text: 'B) Rare bug',
-            feedback: 'Possible, but we need more evidence.',
+            feedback: 'Possible, but seems unlikely for such a big jump.',
           ),
           ChoiceOption(
             id: 'data_modification',
@@ -625,24 +745,292 @@ class _EpisodeGameplayScreenState
       ),
       SceneData(
         speaker: 'KASTOR',
+        dialogue: 'Detectives can\'t work on feelings~ We need DATA! Numbers don\'t lie!',
+        speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'DETECTIVE',
+        dialogue: 'People do?',
+      ),
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue: 'All the time! Let\'s go check!',
+        speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'NARRATOR',
+        dialogue: '🎵 Case accepted! +10 points',
+      ),
+
+      // Scene 0.3: Call Maya
+      SceneData(
+        speaker: 'NARRATOR',
+        dialogue: '[Phone dialing...]',
+      ),
+      SceneData(
+        speaker: 'MAYA',
+        dialogue: 'Hello? Is this the detective?',
+      ),
+      SceneData(
+        speaker: 'DETECTIVE',
+        dialogue: 'Yes, we got your email. Tell us everything.',
+      ),
+      SceneData(
+        speaker: 'MAYA',
         dialogue:
-            'Data received. Open the graph! The red line (Shadow) rockets up at Day 28...',
+            'Shadow\'s win rate spiked on Day 28. We didn\'t patch him. Community\'s on fire.',
+      ),
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue: 'Can you send data? Patch notes, server logs.',
+        speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'MAYA',
+        dialogue: 'I\'ll send them now! Please hurry!',
+      ),
+
+      // Scene 1.1: Graph Analysis
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue: 'Data received. Open the graph!',
         speakerAvatar: 'kastor',
       ),
       SceneData(
         speaker: 'NARRATOR',
         dialogue:
-            'After investigating server logs, you discover admin01 (Kaito Nakamura) modified Shadow\'s data at 23:47 and played as player "Noctis" shortly after.',
+            '[Interactive line graph showing Shadow, Phoenix, Viper win rates over 40 days]',
       ),
       SceneData(
-        speaker: 'KAITO',
+        speaker: 'DETECTIVE',
+        dialogue: 'The red line (Shadow) rockets up at Day 28...',
+      ),
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue: 'Exactly. Rollercoaster to space.',
+        speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'DETECTIVE',
+        dialogue: 'Phoenix also rises slightly.',
+      ),
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue: 'Gentle hill vs rocket. Which is more suspicious?',
+        speakerAvatar: 'kastor',
+        choices: [
+          ChoiceOption(
+            id: 'shadow_suspicious',
+            text: 'Shadow - the rocket spike',
+            feedback: '✓ Correct! That spike is definitely our main suspect.',
+          ),
+          ChoiceOption(
+            id: 'phoenix_suspicious',
+            text: 'Phoenix - the gradual rise',
+            feedback:
+                'That\'s normal balancing. The spike is what we should focus on.',
+          ),
+        ],
+      ),
+      SceneData(
+        speaker: 'NARRATOR',
+        dialogue: '🎵 Key observation! +15 points',
+      ),
+
+      // Scene 1.2: Document Check
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue: 'Let\'s check the official patch notes.',
+        speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'DOCUMENT',
+        dialogue: 'Official Patch Notes - Day 28',
+        documentContent:
+            '=== LEGEND ARENA PATCH NOTES ===\nVersion 2.8.1 - Day 28\n\n【BALANCE CHANGES】\nPhoenix:\n- Cooldown reduced: 12s → 10s\n- Damage: No change\n\nViper:\n- No changes\n\nShadow:\n- No changes\n\n【BUG FIXES】\n- Fixed visual glitch with Viper\'s ultimate\n- Improved matchmaking algorithm\n\n【NOTES】\nNext balance patch scheduled for Day 35.\n\n- Balance Team',
+        documentTitle: 'Official Patch Notes',
+      ),
+      SceneData(
+        speaker: 'DETECTIVE',
+        dialogue: 'Shadow has NO CHANGES in the official notes!',
+      ),
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue: 'But his win rate jumped anyway. Let\'s check server logs.',
+        speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'DOCUMENT',
+        dialogue: 'Server Logs - Day 28',
+        documentContent:
+            '=== SERVER ACCESS LOG - DAY 28 ===\n\n19:15 admin01 — Office login\n19:20 admin01 — Viewed Shadow data\n19:45 admin01 — Office logout\n\n22:30 admin02 — Security check\n22:35 admin02 — Logout\n\n23:35 admin01 — Home login (IP: 192.168.45.178)\n23:47 admin01 — Modified Shadow base stats\n23:47 admin01 — Updated win rate calculation\n23:52 admin01 — Attempted to clear logs (FAILED)\n23:55 admin01 — Logout\n\n=== PLAYER ACTIVITY LOG ===\n23:50 Player "Noctis" — Login (IP: 192.168.45.178)\n23:52 Noctis — Started ranked match (Shadow)\n00:15 Noctis — Victory (Shadow)\n00:20 Noctis — Started ranked match (Shadow)\n...',
+        documentTitle: 'Server Access Logs',
+      ),
+      SceneData(
+        speaker: 'DETECTIVE',
+        dialogue: 'There! 23:47 - admin01 modified Shadow!',
+      ),
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue: 'Not in the official notes. Someone went rogue.',
+        speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'DETECTIVE',
+        dialogue: 'And tried to delete the logs at 23:52!',
+      ),
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue: 'But failed. Lucky for us. Who is admin01?',
+        speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'NARRATOR',
+        dialogue: '[Calling Maya...]',
+      ),
+      SceneData(
+        speaker: 'MAYA',
+        dialogue: 'admin01? That\'s Ryan Nakamura, our junior balance designer.',
+      ),
+      SceneData(
+        speaker: 'MAYA',
+        dialogue: 'He wasn\'t scheduled for overtime that day...',
+      ),
+      SceneData(
+        speaker: 'NARRATOR',
+        dialogue: '🎵 Suspect identified! +20 points',
+      ),
+
+      // Scene 2: Timeline Analysis
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue: 'Look at the timeline carefully.',
+        speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'DETECTIVE',
         dialogue:
-            'That\'s... I just... I\'m sorry... I just wanted to win.',
+            '19:15 - Office login, viewed Shadow data, logout at 19:45. Normal work hours.',
+      ),
+      SceneData(
+        speaker: 'DETECTIVE',
+        dialogue:
+            'Then... 23:35 - Home login! 23:47 - Shadow modified. 23:50 - Player "Noctis" logs in from the SAME IP!',
+      ),
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue:
+            'Same IP address (192.168.45.178). Ryan modified the game, then immediately played.',
+        speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'DETECTIVE',
+        dialogue: 'To test his changes? Or...',
+      ),
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue: 'To WIN. Let\'s check Noctis\'s match history.',
+        speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'DOCUMENT',
+        dialogue: 'Player Profile: Noctis',
+        documentContent:
+            '=== PLAYER PROFILE ===\nUsername: Noctis\nAccount Age: 8 months\nMain Character: Shadow (95% pick rate)\n\n【WIN RATE HISTORY】\nDays 1-27: 48% (Normal)\nDay 28-29: 88% (Anomalous)\n\n【MATCH HISTORY - DAY 28】\n23:50 - Ranked Match #1: Victory (Shadow)\n00:20 - Ranked Match #2: Victory (Shadow)\n00:45 - Ranked Match #3: Victory (Shadow)\n01:10 - Ranked Match #4: Victory (Shadow)\n01:30 - Session end\n\nTotal: 4 matches, 4 wins, 88% overall win rate spike\n\n【BEHAVIORAL NOTES】\nPlays late night (11 PM - 2 AM)\nShadow main player\nConsistent mechanical skill',
+        documentTitle: 'Noctis Player Profile',
+      ),
+      SceneData(
+        speaker: 'DETECTIVE',
+        dialogue:
+            'Win rate jumped from 48% to 88% on Day 28. Right after the modification!',
+      ),
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue: 'Too convenient. Ryan is Noctis.',
+        speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'NARRATOR',
+        dialogue: '🎵 Connection found! +25 points',
+      ),
+
+      // Scene 4: Confrontation
+      SceneData(
+        speaker: 'NARRATOR',
+        dialogue: '[Confronting Ryan Nakamura...]',
+      ),
+      SceneData(
+        speaker: 'DETECTIVE',
+        dialogue:
+            '23:35 home login. 23:47 Shadow mod. 23:50 Noctis log-in. Same IP. Same person.',
+      ),
+      SceneData(
+        speaker: 'RYAN',
+        dialogue: 'Me? That\'s ridiculous.',
+      ),
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue: 'IP matches. Timeline matches. Logs match.',
+        speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'RYAN',
+        dialogue: 'That\'s... I just...',
+      ),
+      SceneData(
+        speaker: 'DETECTIVE',
+        dialogue: 'You modified Shadow, then played as Noctis to win matches.',
+      ),
+      SceneData(
+        speaker: 'RYAN',
+        dialogue: '...I\'m sorry.',
+      ),
+      SceneData(
+        speaker: 'RYAN',
+        dialogue: 'I just wanted to win. I kept losing. I thought...',
+      ),
+      SceneData(
+        speaker: 'RYAN',
+        dialogue:
+            'I thought if I could just boost Shadow a little, prove I could win...',
+      ),
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue: 'But you affected thousands of players.',
+        speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'RYAN',
+        dialogue: 'I know. I messed up. I\'m so sorry.',
+      ),
+
+      // Scene 5: Case Closed
+      SceneData(
+        speaker: 'NARRATOR',
+        dialogue: '📋 CASE SUMMARY',
       ),
       SceneData(
         speaker: 'NARRATOR',
         dialogue:
-            'Case Summary: Kaito modified Shadow using dev access, then played as Noctis.\n\nMotivation: Prove himself after repeated losses.\n\n🎉 CASE CLOSED!',
+            '【CULPRIT】Ryan Nakamura (admin01, player "Noctis")\n\n【METHOD】Modified Shadow\'s base stats using dev access\n\n【MOTIVE】Personal desire to win after repeated losses\n\n【EVIDENCE】\n✓ Server logs showing unauthorized modification\n✓ IP address matching (192.168.45.178)\n✓ Timeline correlation\n✓ Win rate spike matching modification time\n\n【OUTCOME】Ryan confessed to all charges.',
+      ),
+      SceneData(
+        speaker: 'MAYA',
+        dialogue: 'I\'m disappointed, but... I understand the pressure he felt.',
+      ),
+      SceneData(
+        speaker: 'MAYA',
+        dialogue: 'We\'ll rollback the changes and make a public announcement.',
+      ),
+      SceneData(
+        speaker: 'KASTOR',
+        dialogue: 'Justice served. Good work, partner!',
+        speakerAvatar: 'kastor',
+      ),
+      SceneData(
+        speaker: 'NARRATOR',
+        dialogue:
+            '🎉 CASE CLOSED!\n\n【ACHIEVEMENTS UNLOCKED】\n✓ First Case Solved\n✓ Data Detective\n✓ Timeline Master\n\nTotal Points: 100',
       ),
     ];
   }
