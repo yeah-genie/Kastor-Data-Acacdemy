@@ -1,0 +1,103 @@
+name: Build Flutter APK
+
+on:
+  push:
+    branches:
+      - main
+      - 'claude/**'
+    paths:
+      - 'flutter_app/**'
+      - '.github/workflows/build-flutter-apk.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'flutter_app/**'
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  build:
+    name: Build APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.38.0'
+          channel: 'stable'
+          cache: true
+
+      - name: Get dependencies
+        working-directory: flutter_app
+        run: flutter pub get
+
+      - name: Analyze code
+        working-directory: flutter_app
+        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+        continue-on-error: true
+
+      - name: Run tests
+        working-directory: flutter_app
+        run: flutter test
+        continue-on-error: true
+
+      - name: Build APK
+        working-directory: flutter_app
+        run: flutter build apk --release
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kastor-data-academy-${{ github.sha }}
+          path: flutter_app/build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
+
+      - name: Create Release Info
+        run: |
+          echo "## 📱 Kastor Data Academy - APK Build" > release-info.md
+          echo "" >> release-info.md
+          echo "**Build Date:** $(date '+%Y-%m-%d %H:%M:%S')" >> release-info.md
+          echo "**Commit:** ${{ github.sha }}" >> release-info.md
+          echo "**Branch:** ${{ github.ref_name }}" >> release-info.md
+          echo "" >> release-info.md
+          echo "### 📥 Download" >> release-info.md
+          echo "APK 파일은 Artifacts에서 다운로드할 수 있습니다." >> release-info.md
+          echo "" >> release-info.md
+          echo "### 📝 변경사항" >> release-info.md
+          echo "최근 커밋 메시지:" >> release-info.md
+          echo "\`\`\`" >> release-info.md
+          git log -1 --pretty=format:"%s%n%n%b" >> release-info.md
+          echo "\`\`\`" >> release-info.md
+
+      - name: Upload Release Info
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-info
+          path: release-info.md
+          retention-days: 30
+
+      - name: Comment PR with download link
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const releaseInfo = fs.readFileSync('release-info.md', 'utf8');
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: releaseInfo
+            });
