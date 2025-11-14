@@ -84,60 +84,70 @@ class StoryNotifier extends StateNotifier<StoryState> {
 
   void _initializeStory() {
     // Scene 0: Partnership - Start with initial messages
-    _addMessage('kastor', '(코를 골며) Zzzzz...');
+    _addMessage('kastor', '(snoring) Zzzzz...');
 
     Future.delayed(const Duration(milliseconds: 800), () {
       if (!mounted) return;
-      _addMessage('narrator', '[문이 열리며 탐정이 들어온다]');
+      _addMessage('narrator', '[Door opens — Detective enters]');
     });
 
     Future.delayed(const Duration(milliseconds: 1600), () {
       if (!mounted) return;
-      _addMessage('detective', '...여기가 맞나?');
+      _addMessage('detective', '...Is this the right place?');
     });
 
     Future.delayed(const Duration(milliseconds: 2400), () {
       if (!mounted) return;
-      _addMessage('kastor', '음? (기지개를 켜며) 오! 새 사람?');
+      _addMessage('kastor', 'Hm? (stretches) Oh! New recruit?');
     });
 
     Future.delayed(const Duration(milliseconds: 3200), () {
       if (!mounted) return;
-      _addMessage('detective', '신입 탐정입니다.');
+      _addMessage('detective', 'Starting as a detective today.');
     });
 
     Future.delayed(const Duration(milliseconds: 4000), () {
       if (!mounted) return;
-      _addMessage('kastor', '탐정? 그렇게 안 보이는데~');
+      _addMessage('kastor', 'Detective? You don\'t look like one.');
     });
 
     Future.delayed(const Duration(milliseconds: 4800), () {
       if (!mounted) return;
-      _addMessage('detective', '첫 출근이에요!');
+      _addMessage('detective', 'It\'s my first day!');
     });
 
     Future.delayed(const Duration(milliseconds: 5600), () {
       if (!mounted) return;
-      _addMessage('kastor', '알겠어. 얼굴에 다 써있어. (웃으며)');
+      _addMessage('kastor', 'Shows. It\'s written all over your face. (grins)');
     });
 
     Future.delayed(const Duration(milliseconds: 6400), () {
       if (!mounted) return;
-      _addMessage('detective', '(이 사람...)');
+      _addMessage('detective', '(This guy...)');
     });
 
     Future.delayed(const Duration(milliseconds: 7200), () {
       if (!mounted) return;
-      _addMessage('kastor', '난 Kastor! 네 파트너야!');
+      _addMessage('kastor', 'I\'m Kastor! Your partner!');
     });
 
     Future.delayed(const Duration(milliseconds: 8000), () {
       if (!mounted) return;
-      _addMessage('kastor', '이름이 뭐야?');
+      _addMessage('kastor', 'Nice to meet you... wait, what\'s your name again?');
+    });
+
+    Future.delayed(const Duration(milliseconds: 8800), () {
+      if (!mounted) return;
+      _addMessage('detective', 'No, MY name.');
+    });
+
+    Future.delayed(const Duration(milliseconds: 9600), () {
+      if (!mounted) return;
+      _addMessage('kastor', 'Oh~ YOUR name! What is it?');
       // Set waiting for name input
       state = state.copyWith(
         waitingForInput: true,
-        inputPrompt: '당신의 이름을 입력하세요',
+        inputPrompt: '[INPUT: Name]',
       );
     });
   }
@@ -172,42 +182,42 @@ class StoryNotifier extends StateNotifier<StoryState> {
 
     Future.delayed(const Duration(milliseconds: 800), () {
       if (!mounted) return;
-      _addMessage('kastor', '멋진 이름이네! 철자 맞게 썼어?');
+      _addMessage('kastor', 'Cool name! Spelled right?');
     });
 
     Future.delayed(const Duration(milliseconds: 1600), () {
       if (!mounted) return;
-      _addMessage('detective', '제가 직접 입력했는데요.');
+      _addMessage('detective', 'I just typed it myself.');
     });
 
     Future.delayed(const Duration(milliseconds: 2400), () {
       if (!mounted) return;
-      _addMessage('kastor', '좋아! 명찰은 환불 안 돼.');
+      _addMessage('kastor', 'Perfect! Name tags are non-refundable.');
     });
 
     Future.delayed(const Duration(milliseconds: 3200), () {
       if (!mounted) return;
-      _addMessage('detective', '네?');
+      _addMessage('detective', 'What...?');
     });
 
     Future.delayed(const Duration(milliseconds: 4000), () {
       if (!mounted) return;
-      _addMessage('narrator', '[이메일 알림음 - 딩!]');
+      _addMessage('narrator', '[Email notification — DING!]');
     });
 
     Future.delayed(const Duration(milliseconds: 4800), () {
       if (!mounted) return;
-      _addMessage('kastor', '오! 메일이다!');
+      _addMessage('kastor', 'Ooh! Mail!');
     });
 
     Future.delayed(const Duration(milliseconds: 5600), () {
       if (!mounted) return;
-      _addMessage('detective', '벌써요?');
+      _addMessage('detective', 'Already?');
     });
 
     Future.delayed(const Duration(milliseconds: 6400), () {
       if (!mounted) return;
-      _addMessage('kastor', '운이 좋네! 사건 없으면 지루하거든. 클릭해봐!');
+      _addMessage('kastor', 'Lucky you! No cases = boredom central. Click it!');
     });
 
     Future.delayed(const Duration(milliseconds: 7200), () {
@@ -234,54 +244,54 @@ PLEASE HELP US!''',
 
     _addMessage(
       'system',
-      '📧 새 이메일이 도착했습니다',
+      '📧 New Email Arrived',
       email: emailData['body'],
       emailData: emailData,
     );
 
     Future.delayed(const Duration(milliseconds: 1600), () {
       if (!mounted) return;
-      _addMessage('kastor', '오! 게임 케이스다! 재밌겠는걸!');
+      _addMessage('kastor', 'Ooh! Gaming case! Fun stuff!');
     });
 
     Future.delayed(const Duration(milliseconds: 2400), () {
       if (!mounted) return;
-      _addMessage('detective', 'Shadow가 갑자기 엄청 강해졌다는 건가요...?');
+      _addMessage('detective', 'Shadow suddenly got way stronger...');
     });
 
     Future.delayed(const Duration(milliseconds: 3200), () {
       if (!mounted) return;
-      _addMessage('kastor', '35% 상승! 엄청난 거지!');
+      _addMessage('kastor', '35% jump! That\'s insane!');
     });
 
     Future.delayed(const Duration(milliseconds: 4000), () {
       if (!mounted) return;
-      _addMessage('detective', '그게 많은 건가요?');
+      _addMessage('detective', 'Is that a lot?');
     });
 
     Future.delayed(const Duration(milliseconds: 4800), () {
       if (!mounted) return;
-      _addMessage('kastor', '상상해봐... 치킨 반 마리 먹다가 갑자기 세 마리 먹는 거야.');
+      _addMessage('kastor', 'Imagine... eating half a chicken, then suddenly eating THREE whole chickens.');
     });
 
     Future.delayed(const Duration(milliseconds: 5600), () {
       if (!mounted) return;
-      _addMessage('detective', '...무슨 비유가 그래요?');
+      _addMessage('detective', '...What kind of analogy is that?');
     });
 
     Future.delayed(const Duration(milliseconds: 6400), () {
       if (!mounted) return;
-      _addMessage('kastor', '안 통해? 그럼 피자로—');
+      _addMessage('kastor', 'Didn\'t work? Okay, pizza then—');
     });
 
     Future.delayed(const Duration(milliseconds: 7200), () {
       if (!mounted) return;
-      _addMessage('detective', '아니요! 알겠어요! 엄청 많은 거죠!');
+      _addMessage('detective', 'NO! I get it! It\'s a lot!');
     });
 
     Future.delayed(const Duration(milliseconds: 8000), () {
       if (!mounted) return;
-      _addMessage('kastor', '(웃으며) 봐! 음식 비유가 통하잖아!');
+      _addMessage('kastor', '(laughs) See? Food analogies work!');
     });
 
     Future.delayed(const Duration(milliseconds: 9000), () {
@@ -291,43 +301,48 @@ PLEASE HELP US!''',
   }
 
   void _showHypothesisChoices() {
-    _addMessage('kastor', '좋아! 첫 번째 미션! 가설을 세워보자!');
+    _addMessage('kastor', 'Alright! First quest! Form a hypothesis!');
 
     Future.delayed(const Duration(milliseconds: 800), () {
       if (!mounted) return;
-      _addMessage('kastor', '탐정은 아무렇게나 추측하면 안 돼. 시작 이론이 필요해.');
+      _addMessage('detective', 'A hypothesis?');
     });
 
     Future.delayed(const Duration(milliseconds: 1600), () {
       if (!mounted) return;
-      _addMessage('detective', '방향 같은 건가요?');
+      _addMessage('kastor', 'Yep. Detectives can\'t just guess randomly. We need a starting theory to guide our search.');
     });
 
     Future.delayed(const Duration(milliseconds: 2400), () {
       if (!mounted) return;
-      _addMessage('kastor', '정확해! 미스터리 게임에서 어느 문을 먼저 열지 정하는 것 같은 거야.');
+      _addMessage('detective', 'Like a direction?');
     });
 
     Future.delayed(const Duration(milliseconds: 3200), () {
       if (!mounted) return;
-      _addMessage('kastor', '자! 세 가지 가능성이 있어. Maya의 이메일을 보고 하나 골라봐!');
+      _addMessage('kastor', 'Exactly! Think of it like... choosing which door to open first in a mystery game.');
+    });
+
+    Future.delayed(const Duration(milliseconds: 4000), () {
+      if (!mounted) return;
+      _addMessage('kastor', 'So! Three possibilities. Pick one based on Maya\'s email!');
 
       // Show choices
       state = state.copyWith(
         currentChoices: [
           StoryChoice(
             id: 'choice_A',
-            text: 'A) 공식 패치 (문서화 안 됨)\n이론: 팀이 Shadow를 패치했는데 기록하는 걸 깜빡했을까?',
+            text: 'A) Official Patch (but undocumented)\nTheory: Maybe the team DID patch Shadow but forgot to write it down?',
             nextSceneId: 'scene_1_choice_A',
           ),
           StoryChoice(
             id: 'choice_B',
-            text: 'B) 희귀한 버그\n이론: Shadow를 실수로 강하게 만든 랜덤 글리치?',
+            text: 'B) Rare Bug\nTheory: Could be a random glitch that accidentally made Shadow stronger?',
             nextSceneId: 'scene_1_choice_B',
           ),
           StoryChoice(
             id: 'choice_C',
-            text: 'C) 무단 수정\n이론: 누군가 일부러 몰래 Shadow의 스탯을 바꿨을까?',
+            text: 'C) Unauthorized Modification\nTheory: Someone secretly changed Shadow\'s stats on purpose?',
             nextSceneId: 'scene_1_choice_C',
             points: 10,
           ),
@@ -363,42 +378,42 @@ PLEASE HELP US!''',
   void _handleChoiceC() {
     Future.delayed(const Duration(milliseconds: 800), () {
       if (!mounted) return;
-      _addMessage('kastor', '오! 범죄 느낌! 네 생각이 마음에 드는데!');
+      _addMessage('kastor', 'Ooh! Crime vibes! I like your thinking!');
     });
 
     Future.delayed(const Duration(milliseconds: 1600), () {
       if (!mounted) return;
-      _addMessage('detective', '그냥... 느낌이었어요.');
+      _addMessage('detective', 'Just... a feeling.');
     });
 
     Future.delayed(const Duration(milliseconds: 2400), () {
       if (!mounted) return;
-      _addMessage('kastor', '탐정은 느낌만으로 일할 수 없어~');
+      _addMessage('kastor', 'Detectives can\'t work on feelings alone~');
     });
 
     Future.delayed(const Duration(milliseconds: 3200), () {
       if (!mounted) return;
-      _addMessage('detective', '그럼 뭘로요?');
+      _addMessage('detective', 'Then what?');
     });
 
     Future.delayed(const Duration(milliseconds: 4000), () {
       if (!mounted) return;
-      _addMessage('kastor', '데이터! 숫자는 거짓말하지 않아!');
+      _addMessage('kastor', 'DATA! Numbers don\'t lie!');
     });
 
     Future.delayed(const Duration(milliseconds: 4800), () {
       if (!mounted) return;
-      _addMessage('detective', '하지만 사람은 거짓말하죠?');
+      _addMessage('detective', 'But people do?');
     });
 
     Future.delayed(const Duration(milliseconds: 5600), () {
       if (!mounted) return;
-      _addMessage('kastor', '항상! 그래서 먼저 증거를 확인하는 거야. Maya한테 전화해보자!');
+      _addMessage('kastor', 'All the time! That\'s why we check the evidence first. Let\'s call Maya!');
     });
 
     Future.delayed(const Duration(milliseconds: 6400), () {
       if (!mounted) return;
-      _addMessage('system', '🎵 미니 축하! +10 포인트\n좋은 가설을 세웠습니다!');
+      _addMessage('system', '🎵 MINI CELEBRATION — Case accepted! +10 points');
 
       // Start Scene 2
       _startScene2();
@@ -408,19 +423,19 @@ PLEASE HELP US!''',
   void _handleChoiceA() {
     Future.delayed(const Duration(milliseconds: 800), () {
       if (!mounted) return;
-      _addMessage('kastor', '공식 기록부터 확인하는 건 좋은 접근이야!');
+      _addMessage('kastor', 'Smart choice! Always check the official records first.');
     });
 
     Future.delayed(const Duration(milliseconds: 1600), () {
       if (!mounted) return;
-      _addMessage('kastor', '하지만 Maya가 "패치하지 않았다"고 확신하고 있어.');
+      _addMessage('kastor', 'It\'s like reading the instruction manual before taking apart a machine.');
     });
 
     Future.delayed(const Duration(milliseconds: 2400), () {
       if (!mounted) return;
-      _addMessage('kastor', '다른 가능성도 생각해봐야 할 것 같아.');
+      _addMessage('system', '🎵 MINI CELEBRATION — +5 Investigation Points');
 
-      // Start Scene 2 anyway
+      // Start Scene 2
       _startScene2();
     });
   }
@@ -428,17 +443,17 @@ PLEASE HELP US!''',
   void _handleChoiceB() {
     Future.delayed(const Duration(milliseconds: 800), () {
       if (!mounted) return;
-      _addMessage('kastor', '버그는 항상 가능성이 있지!');
+      _addMessage('kastor', 'Bugs are always possible!');
     });
 
     Future.delayed(const Duration(milliseconds: 1600), () {
       if (!mounted) return;
-      _addMessage('kastor', '하지만 35% 승률 증가는 랜덤 버그치곤 너무 구체적이야.');
+      _addMessage('kastor', 'But a 35% win rate increase is too specific for a random bug.');
     });
 
     Future.delayed(const Duration(milliseconds: 2400), () {
       if (!mounted) return;
-      _addMessage('kastor', '뭔가 의도적인 것 같아. 자세히 조사해보자!');
+      _addMessage('kastor', 'Something feels intentional. Let\'s investigate deeper!');
 
       // Start Scene 2
       _startScene2();
@@ -448,42 +463,42 @@ PLEASE HELP US!''',
   void _startScene2() {
     Future.delayed(const Duration(milliseconds: 1000), () {
       if (!mounted) return;
-      _addMessage('narrator', '[전화 거는 소리...]');
+      _addMessage('narrator', '[Phone dialing sound]');
     });
 
     Future.delayed(const Duration(milliseconds: 2000), () {
       if (!mounted) return;
-      _addMessage('maya', '여보세요? 탐정님들?');
+      _addMessage('maya', 'Hello? Detectives?');
     });
 
     Future.delayed(const Duration(milliseconds: 2800), () {
       if (!mounted) return;
-      _addMessage('detective', '네. 이메일 받았어요. 모든 걸 말씀해주시겠어요?');
+      _addMessage('detective', 'Yes. We got your email. Can you tell us everything?');
     });
 
     Future.delayed(const Duration(milliseconds: 3600), () {
       if (!mounted) return;
-      _addMessage('maya', 'Shadow의 승률이 28일째에 급증했어요. 우리는 확실히 패치하지 않았습니다. 커뮤니티는 우리가 거짓말한다고 생각해요!');
+      _addMessage('maya', 'Shadow\'s win rate spiked on Day 28. We definitely didn\'t patch him. The community thinks we\'re lying!');
     });
 
     Future.delayed(const Duration(milliseconds: 4400), () {
       if (!mounted) return;
-      _addMessage('kastor', '게임 데이터를 보내주실 수 있나요? 패치 노트, 서버 로그, 플레이어 통계요?');
+      _addMessage('kastor', 'Can you send us the game data? Patch notes, server logs, player statistics?');
     });
 
     Future.delayed(const Duration(milliseconds: 5200), () {
       if (!mounted) return;
-      _addMessage('maya', '지금 보내드릴게요! 서둘러주세요 — 시간이 지날수록 플레이어를 더 잃고 있어요!');
+      _addMessage('maya', 'Sending now! Please hurry — every hour we wait, we lose more players!');
     });
 
     Future.delayed(const Duration(milliseconds: 6000), () {
       if (!mounted) return;
-      _addMessage('detective', '알아낼게요.');
+      _addMessage('detective', 'We\'ll figure this out.');
     });
 
     Future.delayed(const Duration(milliseconds: 6800), () {
       if (!mounted) return;
-      _addMessage('system', '📊 데이터 수신 완료!\n\nFiles 탭에서 다음을 확인하세요:\n• 승률 그래프\n• 패치 노트\n• 서버 로그');
+      _addMessage('system', '📊 Data Received!\n\nCheck the Files tab for:\n• Win rate graph\n• Patch notes\n• Server logs');
 
       state = state.copyWith(currentSceneId: 'scene_3_graph_analysis');
     });

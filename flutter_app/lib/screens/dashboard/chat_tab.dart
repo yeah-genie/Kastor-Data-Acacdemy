@@ -189,7 +189,7 @@ class _ChatTabState extends ConsumerState<ChatTab> {
                 const Icon(Icons.email, color: Color(0xFF6366F1), size: 20),
                 const SizedBox(width: 8),
                 const Text(
-                  '새 이메일',
+                  'New Email',
                   style: TextStyle(
                     color: Color(0xFF6366F1),
                     fontSize: 14,
@@ -284,7 +284,7 @@ class _ChatTabState extends ConsumerState<ChatTab> {
       case 'lukas':
         return 'LUKAS';
       case 'detective':
-        return '탐정';
+        return 'DETECTIVE';
       default:
         return speaker.toUpperCase();
     }
@@ -306,7 +306,7 @@ class _ChatTabState extends ConsumerState<ChatTab> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const Text(
-            '선택하세요:',
+            'Choose:',
             style: TextStyle(
               color: Colors.white70,
               fontSize: 14,
@@ -379,7 +379,7 @@ class _ChatTabState extends ConsumerState<ChatTab> {
                     controller: _messageController,
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
-                      hintText: '이름을 입력하세요...',
+                      hintText: 'Enter your name...',
                       hintStyle:
                           TextStyle(color: Colors.white.withOpacity(0.5)),
                       filled: true,
@@ -443,7 +443,7 @@ class _ChatTabState extends ConsumerState<ChatTab> {
                 controller: _messageController,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
-                  hintText: '메시지를 입력하세요...',
+                  hintText: 'Type a message...',
                   hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
                   filled: true,
                   fillColor: Colors.white.withOpacity(0.1),
