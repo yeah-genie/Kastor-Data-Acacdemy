@@ -9,6 +9,11 @@ __pycache__/
 *.pyc
 *.pyo
 
+# Data output
+research_tool/output/
+*.xlsx
+*.csv
+
 # Playwright
 test-results/
 playwright-report/
