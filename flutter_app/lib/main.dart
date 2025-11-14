@@ -196,15 +196,6 @@ class _HomePageState extends ConsumerState<HomePage> {
       ),
     );
   }
-
-  void _showSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
 }
 
 class _MenuButton extends StatelessWidget {
