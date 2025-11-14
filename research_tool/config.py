@@ -2,52 +2,23 @@
 Configuration for Kastor Data Academy Research Tool
 """
 
-# Target Subreddits
+# Target Subreddits (Focused on Minjun Persona)
 SUBREDDITS = {
-    'teenagers': {
-        'keywords': [
-            'career advice',
-            'future job',
-            'college major',
-            'learning coding',
-            'data science',
-            'programming hard',
-            'give up learning',
-            'career path',
-            'what should I study',
-            'coding difficult',
-            'learn to code',
-            'career choice'
-        ],
-        'description': '청소년 진로 고민 및 학습 니즈'
-    },
-    'Parenting': {
-        'keywords': [
-            'online learning',
-            'educational games',
-            'stem education',
-            'coding for kids',
-            'career guidance',
-            'learning motivation',
-            'educational app',
-            'screen time learning',
-            'teenager career',
-            'data science kids',
-            'teach programming'
-        ],
-        'description': '부모의 자녀 교육 니즈'
-    },
     'learnprogramming': {
         'keywords': [
             'too hard',
             'give up',
+            'quit programming',
             'motivation',
             'beginner struggle',
             'learning curve',
             'where to start',
             'overwhelmed',
             'self taught',
-            'bootcamp vs degree'
+            'bootcamp vs degree',
+            'python frustrating',
+            'cant understand',
+            'losing motivation'
         ],
         'description': '프로그래밍 학습자 어려움'
     },
@@ -59,9 +30,31 @@ SUBREDDITS = {
             'resources',
             'career change',
             'self study',
-            'online course'
+            'online course',
+            'python data science',
+            'coursera worth it',
+            'udemy vs coursera',
+            'too expensive',
+            'free resources'
         ],
         'description': '데이터 사이언스 진입 장벽'
+    },
+    'learnpython': {
+        'keywords': [
+            'beginner',
+            'struggling',
+            'give up',
+            'too hard',
+            'where to start',
+            'overwhelmed',
+            'learning resources',
+            'motivation',
+            'quit python',
+            'frustrated',
+            'not getting it',
+            'slow progress'
+        ],
+        'description': 'Python 초보자 좌절 경험'
     }
 }
 
