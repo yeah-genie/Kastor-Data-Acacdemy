@@ -150,6 +150,16 @@ class _ChatTabState extends ConsumerState<ChatTab> {
                       fontSize: 14,
                     ),
                   ),
+                  // Show reaction if present
+                  if (message.reaction != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      message.reaction!,
+                      style: const TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),

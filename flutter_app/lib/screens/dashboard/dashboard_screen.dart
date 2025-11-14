@@ -5,6 +5,7 @@ import 'data_tab.dart';
 import 'files_tab.dart';
 import 'team_tab.dart';
 import 'progress_tab.dart';
+import '../settings/settings_screen.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -62,7 +63,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
-              // Settings
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SettingsScreen(),
+                ),
+              );
             },
           ),
           IconButton(
@@ -70,7 +76,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             onPressed: () {
               // Save game
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('게임이 저장되었습니다')),
+                const SnackBar(content: Text('Game saved successfully')),
               );
             },
           ),

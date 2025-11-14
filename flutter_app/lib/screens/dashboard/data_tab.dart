@@ -1,30 +1,83 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/story_provider.dart';
 
 class DataTab extends ConsumerWidget {
   const DataTab({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final storyState = ref.watch(storyProvider);
+    final hasData = storyState.currentSceneId.contains('scene_3') ||
+                    storyState.currentSceneId.contains('scene_2');
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionTitle('데이터 분석'),
+          _buildSectionTitle('Data Analysis'),
           const SizedBox(height: 16),
 
-          // Quick stats
-          _buildQuickStats(),
-          const SizedBox(height: 24),
+          // Show placeholder if no data yet
+          if (!hasData) ...[
+            _buildNoDataPlaceholder(),
+          ] else ...[
+            // Quick stats
+            _buildQuickStats(storyState),
+            const SizedBox(height: 24),
 
-          // Log viewer
-          _buildLogViewer(),
-          const SizedBox(height: 24),
+            // Log viewer
+            _buildLogViewer(storyState),
+            const SizedBox(height: 24),
 
-          // Data visualization
-          _buildDataVisualization(),
+            // Data visualization
+            _buildDataVisualization(storyState),
+          ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildNoDataPlaceholder() {
+    return Container(
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.1),
+          width: 1,
+        ),
+      ),
+      child: Center(
+        child: Column(
+          children: [
+            Icon(
+              Icons.analytics_outlined,
+              size: 64,
+              color: Colors.white.withOpacity(0.3),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'No data available yet',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.5),
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Data will appear here as you progress through the story',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.3),
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -40,12 +93,12 @@ class DataTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildQuickStats() {
+  Widget _buildQuickStats(StoryState storyState) {
     return Row(
       children: [
         Expanded(
           child: _StatCard(
-            title: '총 로그',
+            title: 'Total Logs',
             value: '1,247',
             icon: Icons.description,
             color: const Color(0xFF6366F1),
@@ -54,7 +107,7 @@ class DataTab extends ConsumerWidget {
         const SizedBox(width: 12),
         Expanded(
           child: _StatCard(
-            title: '의심 항목',
+            title: 'Suspicious',
             value: '23',
             icon: Icons.warning,
             color: const Color(0xFFF59E0B),
@@ -63,7 +116,7 @@ class DataTab extends ConsumerWidget {
         const SizedBox(width: 12),
         Expanded(
           child: _StatCard(
-            title: '분석 완료',
+            title: 'Analyzed',
             value: '87%',
             icon: Icons.check_circle,
             color: const Color(0xFF10B981),
@@ -73,7 +126,7 @@ class DataTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildLogViewer() {
+  Widget _buildLogViewer(StoryState storyState) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -91,7 +144,7 @@ class DataTab extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                '서버 로그',
+                'Server Logs',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,
@@ -101,7 +154,7 @@ class DataTab extends ConsumerWidget {
               TextButton.icon(
                 onPressed: () {},
                 icon: const Icon(Icons.filter_list, size: 16),
-                label: const Text('필터'),
+                label: const Text('Filter'),
                 style: TextButton.styleFrom(
                   foregroundColor: const Color(0xFF6366F1),
                 ),
@@ -208,7 +261,7 @@ class DataTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildDataVisualization() {
+  Widget _buildDataVisualization(StoryState storyState) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -223,7 +276,7 @@ class DataTab extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            '활동 패턴',
+            'Activity Pattern',
             style: TextStyle(
               color: Colors.white,
               fontSize: 18,
@@ -234,13 +287,34 @@ class DataTab extends ConsumerWidget {
           SizedBox(
             height: 200,
             child: Center(
-              child: Text(
-                '차트 영역\n(실제 앱에서는 Recharts 대신 fl_chart 등 사용)',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.5),
-                  fontSize: 14,
-                ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.bar_chart,
+                    size: 64,
+                    color: Colors.white.withOpacity(0.3),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Win Rate Spike on Day 28',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.7),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Shadow: 50% → 85%',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: const Color(0xFFF59E0B),
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

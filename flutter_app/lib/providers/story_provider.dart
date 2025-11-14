@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../utils/text_utils.dart';
+import './settings_provider.dart';
 
 // Story message for chat display
 class StoryMessage {
@@ -9,6 +11,7 @@ class StoryMessage {
   final DateTime timestamp;
   final String? email; // Email content if this is an email message
   final Map<String, dynamic>? emailData; // Full email data
+  final String? reaction; // Emoji reaction from other characters
 
   StoryMessage({
     required this.id,
@@ -17,6 +20,7 @@ class StoryMessage {
     required this.timestamp,
     this.email,
     this.emailData,
+    this.reaction,
   });
 }
 
@@ -77,96 +81,111 @@ class StoryState {
 }
 
 // Story provider to manage Episode 1 story progression
-class StoryNotifier extends StateNotifier<StoryState> {
-  StoryNotifier() : super(StoryState(messages: [], currentSceneId: 'scene_0_start')) {
+class StoryNotifier extends Notifier<StoryState> {
+  @override
+  StoryState build() {
     _initializeStory();
+    return StoryState(messages: [], currentSceneId: 'scene_0_start');
   }
+
+  Duration _getDelay(int multiplier) {
+    final settings = ref.read(settingsProvider);
+    return calculateTextDelay(settings.textSpeed, baseDelayMs: 1500 * multiplier);
+  }
+
+  bool get _isAutoMode => ref.read(settingsProvider).autoTextMode;
 
   void _initializeStory() {
     // Scene 0: Partnership - Start with initial messages
     _addMessage('kastor', '(snoring) Zzzzz...');
 
-    Future.delayed(const Duration(milliseconds: 800), () {
-      if (!mounted) return;
-      _addMessage('narrator', '[Door opens — Detective enters]');
-    });
+    if (_isAutoMode) {
+      Future.delayed(_getDelay(1), () {
+        _addMessage('narrator', '[Door opens — Detective enters]');
+      });
 
-    Future.delayed(const Duration(milliseconds: 1600), () {
-      if (!mounted) return;
-      _addMessage('detective', '...Is this the right place?');
-    });
+      Future.delayed(_getDelay(2), () {
+        _addMessage('detective', '...Is this the right place?');
+      });
 
-    Future.delayed(const Duration(milliseconds: 2400), () {
-      if (!mounted) return;
-      _addMessage('kastor', 'Hm? (stretches) Oh! New recruit?');
-    });
+      Future.delayed(_getDelay(3), () {
+        _addMessage('kastor', 'Hm? (stretches) Oh! New recruit?');
+      });
 
-    Future.delayed(const Duration(milliseconds: 3200), () {
-      if (!mounted) return;
-      _addMessage('detective', 'Starting as a detective today.');
-    });
+      Future.delayed(_getDelay(4), () {
+        _addMessage('detective', 'Starting as a detective today.');
+      });
 
-    Future.delayed(const Duration(milliseconds: 4000), () {
-      if (!mounted) return;
-      _addMessage('kastor', 'Detective? You don\'t look like one.');
-    });
+      Future.delayed(_getDelay(5), () {
+        _addMessage('kastor', 'Detective? You don\'t look like one.');
+      });
 
-    Future.delayed(const Duration(milliseconds: 4800), () {
-      if (!mounted) return;
-      _addMessage('detective', 'It\'s my first day!');
-    });
+      Future.delayed(_getDelay(6), () {
+        _addMessage('detective', 'It\'s my first day!');
+      });
 
-    Future.delayed(const Duration(milliseconds: 5600), () {
-      if (!mounted) return;
-      _addMessage('kastor', 'Shows. It\'s written all over your face. (grins)');
-    });
+      Future.delayed(_getDelay(7), () {
+        _addMessage('kastor', 'Shows. It\'s written all over your face. (grins)');
+      });
 
-    Future.delayed(const Duration(milliseconds: 6400), () {
-      if (!mounted) return;
-      _addMessage('detective', '(This guy...)');
-    });
+      Future.delayed(_getDelay(8), () {
+        _addMessage('detective', '(This guy...)');
+      });
 
-    Future.delayed(const Duration(milliseconds: 7200), () {
-      if (!mounted) return;
-      _addMessage('kastor', 'I\'m Kastor! Your partner!');
-    });
+      Future.delayed(_getDelay(9), () {
+        _addMessage('kastor', 'I\'m Kastor! Your partner!');
+      });
 
-    Future.delayed(const Duration(milliseconds: 8000), () {
-      if (!mounted) return;
-      _addMessage('kastor', 'Nice to meet you... wait, what\'s your name again?');
-    });
+      Future.delayed(_getDelay(10), () {
+        _addMessage('kastor', 'Nice to meet you... wait, what\'s your name again?');
+      });
 
-    Future.delayed(const Duration(milliseconds: 8800), () {
-      if (!mounted) return;
-      _addMessage('detective', 'No, MY name.');
-    });
+      Future.delayed(_getDelay(11), () {
+        _addMessage('detective', 'No, MY name.');
+      });
 
-    Future.delayed(const Duration(milliseconds: 9600), () {
-      if (!mounted) return;
-      _addMessage('kastor', 'Oh~ YOUR name! What is it?');
-      // Set waiting for name input
-      state = state.copyWith(
-        waitingForInput: true,
-        inputPrompt: '[INPUT: Name]',
-      );
-    });
+      Future.delayed(_getDelay(12), () {
+        _addMessage('kastor', 'Oh~ YOUR name! What is it?');
+        // Set waiting for name input
+        state = state.copyWith(
+          waitingForInput: true,
+          inputPrompt: '[INPUT: Name]',
+        );
+      });
+    }
   }
 
   void _addMessage(String speaker, String text, {String? email, Map<String, dynamic>? emailData}) {
-    if (!mounted) return;
+    // Convert text expressions to emojis
+    final convertedText = convertTextToEmoji(text);
+
+    // Add random reaction
+    final reaction = getRandomReaction(speaker);
 
     final message = StoryMessage(
       id: 'msg_${DateTime.now().millisecondsSinceEpoch}',
       speaker: speaker,
-      text: text,
+      text: convertedText,
       timestamp: DateTime.now(),
       email: email,
       emailData: emailData,
+      reaction: reaction,
     );
 
     state = state.copyWith(
       messages: [...state.messages, message],
     );
+  }
+
+  // Manual mode: advance to next message
+  void continueStory() {
+    if (_isAutoMode) return; // Only works in manual mode
+
+    // Trigger next message based on current scene
+    // This would need more sophisticated state management in production
+    if (state.messages.isEmpty) {
+      _initializeStory();
+    }
   }
 
   void submitDetectiveName(String name) {
@@ -180,51 +199,44 @@ class StoryNotifier extends StateNotifier<StoryState> {
 
     _addMessage('detective', name);
 
-    Future.delayed(const Duration(milliseconds: 800), () {
-      if (!mounted) return;
-      _addMessage('kastor', 'Cool name! Spelled right?');
-    });
+    if (_isAutoMode) {
+      Future.delayed(_getDelay(1), () {
+        _addMessage('kastor', 'Cool name! Spelled right?');
+      });
 
-    Future.delayed(const Duration(milliseconds: 1600), () {
-      if (!mounted) return;
-      _addMessage('detective', 'I just typed it myself.');
-    });
+      Future.delayed(_getDelay(2), () {
+        _addMessage('detective', 'I just typed it myself.');
+      });
 
-    Future.delayed(const Duration(milliseconds: 2400), () {
-      if (!mounted) return;
-      _addMessage('kastor', 'Perfect! Name tags are non-refundable.');
-    });
+      Future.delayed(_getDelay(3), () {
+        _addMessage('kastor', 'Perfect! Name tags are non-refundable.');
+      });
 
-    Future.delayed(const Duration(milliseconds: 3200), () {
-      if (!mounted) return;
-      _addMessage('detective', 'What...?');
-    });
+      Future.delayed(_getDelay(4), () {
+        _addMessage('detective', 'What...?');
+      });
 
-    Future.delayed(const Duration(milliseconds: 4000), () {
-      if (!mounted) return;
-      _addMessage('narrator', '[Email notification — DING!]');
-    });
+      Future.delayed(_getDelay(5), () {
+        _addMessage('narrator', '[Email notification — DING!]');
+      });
 
-    Future.delayed(const Duration(milliseconds: 4800), () {
-      if (!mounted) return;
-      _addMessage('kastor', 'Ooh! Mail!');
-    });
+      Future.delayed(_getDelay(6), () {
+        _addMessage('kastor', 'Ooh! Mail!');
+      });
 
-    Future.delayed(const Duration(milliseconds: 5600), () {
-      if (!mounted) return;
-      _addMessage('detective', 'Already?');
-    });
+      Future.delayed(_getDelay(7), () {
+        _addMessage('detective', 'Already?');
+      });
 
-    Future.delayed(const Duration(milliseconds: 6400), () {
-      if (!mounted) return;
-      _addMessage('kastor', 'Lucky you! No cases = boredom central. Click it!');
-    });
+      Future.delayed(_getDelay(8), () {
+        _addMessage('kastor', 'Lucky you! No cases = boredom central. Click it!');
+      });
 
-    Future.delayed(const Duration(milliseconds: 7200), () {
-      if (!mounted) return;
-      // Show email
-      _showMayaEmail();
-    });
+      Future.delayed(_getDelay(9), () {
+        // Show email
+        _showMayaEmail();
+      });
+    }
   }
 
   void _showMayaEmail() {
@@ -509,6 +521,6 @@ PLEASE HELP US!''',
   }
 }
 
-final storyProvider = StateNotifierProvider<StoryNotifier, StoryState>((ref) {
+final storyProvider = NotifierProvider<StoryNotifier, StoryState>(() {
   return StoryNotifier();
 });

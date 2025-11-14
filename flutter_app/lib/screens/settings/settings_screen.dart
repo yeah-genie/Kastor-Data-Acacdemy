@@ -156,6 +156,23 @@ class SettingsScreen extends ConsumerWidget {
                           activeColor: const Color(0xFF6366F1),
                         ),
                       ),
+                      const SizedBox(height: 16),
+                      _SettingCard(
+                        icon: Icons.touch_app,
+                        title: 'Text Display Mode',
+                        subtitle: settings.autoTextMode
+                            ? 'Auto (messages appear automatically)'
+                            : 'Manual (tap to continue)',
+                        trailing: Switch(
+                          value: settings.autoTextMode,
+                          onChanged: (_) {
+                            ref
+                                .read(settingsProvider.notifier)
+                                .toggleAutoTextMode();
+                          },
+                          activeColor: const Color(0xFF6366F1),
+                        ),
+                      ),
 
                       const SizedBox(height: 32),
 
