@@ -20,7 +20,7 @@ class Episode1DemoScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(
           settings.language == 'ko'
-              ? '카스터 데이터 아카데미'
+              ? '캐스터 데이터 아카데미'
               : 'Kastor Data Academy',
         ),
         actions: [
@@ -57,7 +57,7 @@ class Episode1DemoScreen extends ConsumerWidget {
                     const SizedBox(height: 12),
                     Text(
                       settings.language == 'ko'
-                          ? '셰도우 캐릭터의 승률이 하루 만에 50%에서 85%로 급등했습니다! 카스터와 함께 이 미스터리를 풀어보세요.'
+                          ? '셰도우 캐릭터의 승률이 하루 만에 50%에서 85%로 급등했습니다! 캐스터와 함께 이 미스터리를 풀어보세요.'
                           : 'Shadow\'s win rate jumped from 50% to 85% in just one day! Solve this mystery with Kastor.',
                       style: const TextStyle(
                         fontSize: 16,
@@ -255,7 +255,7 @@ class Episode1DemoScreen extends ConsumerWidget {
                           ? '캐릭터 아바타'
                           : 'Character Avatars',
                       description: settings.language == 'ko'
-                          ? '카스터, 탐정, 마야의 귀여운 아바타'
+                          ? '캐스터, 탐정, 마야의 귀여운 아바타'
                           : 'Cute avatars for Kastor, Detective, and Maya',
                     ),
                     const Divider(height: 24),
@@ -342,7 +342,7 @@ class Episode1DemoScreen extends ConsumerWidget {
         ),
         content: Text(
           language == 'ko'
-              ? '이것은 카스터 데이터 아카데미 에피소드 1의 개선된 버전입니다.\n\n'
+              ? '이것은 캐스터 데이터 아카데미 에피소드 1의 개선된 버전입니다.\n\n'
                   '• 한국어/영어 지원\n'
                   '• 캐릭터 아바타\n'
                   '• 채팅 인터페이스\n'

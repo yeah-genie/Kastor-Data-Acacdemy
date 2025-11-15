@@ -70,7 +70,7 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
 
   String _getSpeakerDisplayName(String speaker, String language) {
     final names = {
-      'kastor': {'en': 'Kastor', 'ko': '카스터'},
+      'kastor': {'en': 'Kastor', 'ko': '캐스터'},
       'detective': {'en': 'Detective', 'ko': '탐정'},
       'maya': {'en': 'Maya', 'ko': '마야'},
       'narrator': {'en': 'Narrator', 'ko': '나레이터'},

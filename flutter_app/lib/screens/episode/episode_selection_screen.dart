@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'episode_gameplay_screen.dart';
 import '../../providers/game_state_provider.dart';
+import '../demo/episode1_demo_screen.dart';
 
 class EpisodeSelectionScreen extends ConsumerWidget {
   const EpisodeSelectionScreen({super.key});
@@ -431,13 +432,22 @@ class _EpisodeCard extends StatelessWidget {
   }
 
   void _startEpisode(BuildContext context, _Episode episode) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => EpisodeGameplayScreen(
-          episodeNumber: episode.number,
+    // Episode 1은 새로운 Episode1DemoScreen으로 이동
+    if (episode.number == 1) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => const Episode1DemoScreen(),
         ),
-      ),
-    );
+      );
+    } else {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => EpisodeGameplayScreen(
+            episodeNumber: episode.number,
+          ),
+        ),
+      );
+    }
   }
 }
 

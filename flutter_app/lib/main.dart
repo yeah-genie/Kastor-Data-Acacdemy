@@ -123,7 +123,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                     ref.read(gameStateProvider.notifier).resetGame();
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => const DashboardScreen(),
+                        builder: (context) => const Episode1DemoScreen(),
                       ),
                     );
                   },
