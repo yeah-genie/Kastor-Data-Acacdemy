@@ -305,94 +305,94 @@ class _HomePageState extends ConsumerState<HomePage> {
                   const SizedBox(height: 16),
                   _MenuButton(
                     text: settings.language == 'ko' ? '📖 이어하기' : '📖 Continue',
-                  icon: Icons.trending_up,
-                  isLoading: _isNavigating,
-                  tooltip: gameState.currentEpisode == null
-                      ? (settings.language == 'ko'
-                          ? '저장된 진행 상황이 없습니다'
-                          : 'No saved progress')
-                      : null,
-                  onPressed: gameState.currentEpisode != null && !_isNavigating
-                      ? () {
-                          _navigateWithDebounce(() {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => const DashboardScreen(),
-                              ),
-                            );
-                          });
-                        }
-                      : null,
-                ),
+                    icon: Icons.trending_up,
+                    isLoading: _isNavigating,
+                    tooltip: gameState.currentEpisode == null
+                        ? (settings.language == 'ko'
+                            ? '저장된 진행 상황이 없습니다'
+                            : 'No saved progress')
+                        : null,
+                    onPressed: gameState.currentEpisode != null && !_isNavigating
+                        ? () {
+                            _navigateWithDebounce(() {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => const DashboardScreen(),
+                                ),
+                              );
+                            });
+                          }
+                        : null,
+                  ),
                   const SizedBox(height: 16),
                   _MenuButton(
                     text: settings.language == 'ko' ? '📚 에피소드 목록' : '📚 Episodes',
-                  icon: Icons.list,
-                  isLoading: _isNavigating,
-                  onPressed: () {
-                    _navigateWithDebounce(() {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const EpisodeSelectionScreen(),
-                        ),
-                      );
-                    });
-                  },
-                ),
+                    icon: Icons.list,
+                    isLoading: _isNavigating,
+                    onPressed: () {
+                      _navigateWithDebounce(() {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const EpisodeSelectionScreen(),
+                          ),
+                        );
+                      });
+                    },
+                  ),
                   const SizedBox(height: 16),
                   _MenuButton(
                     text: settings.language == 'ko' ? '📦 증거 보관함' : '📦 Evidence Vault',
-                  icon: Icons.inventory_2,
-                  isLoading: _isNavigating,
-                  onPressed: () {
-                    _navigateWithDebounce(() {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const InventoryScreen(),
-                        ),
-                      );
-                    });
-                  },
-                ),
+                    icon: Icons.inventory_2,
+                    isLoading: _isNavigating,
+                    onPressed: () {
+                      _navigateWithDebounce(() {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const InventoryScreen(),
+                          ),
+                        );
+                      });
+                    },
+                  ),
                   const SizedBox(height: 16),
                   _MenuButton(
                     text: settings.language == 'ko' ? '⚙️ 설정' : '⚙️ Settings',
-                  icon: Icons.settings,
-                  isLoading: _isNavigating,
-                  onPressed: () {
-                    _navigateWithDebounce(() {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const SettingsScreen(),
-                        ),
-                      );
-                    });
-                  },
+                    icon: Icons.settings,
+                    isLoading: _isNavigating,
+                    onPressed: () {
+                      _navigateWithDebounce(() {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const SettingsScreen(),
+                          ),
+                        );
+                      });
+                    },
                   ),
 
                   // Progress indicator
                   if (gameState.gameProgress > 0) ...[
-                  const SizedBox(height: 60),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 60),
-                    child: Column(
-                      children: [
-                        Text(
-                          '진행률: ${(gameState.gameProgress * 100).toStringAsFixed(0)}%',
-                          style: const TextStyle(color: Colors.white70),
-                        ),
-                        const SizedBox(height: 8),
-                        LinearProgressIndicator(
-                          value: gameState.gameProgress,
-                          backgroundColor: Colors.white24,
-                          valueColor: const AlwaysStoppedAnimation<Color>(
-                            Color(0xFF6366F1),
+                    const SizedBox(height: 60),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 60),
+                      child: Column(
+                        children: [
+                          Text(
+                            '진행률: ${(gameState.gameProgress * 100).toStringAsFixed(0)}%',
+                            style: const TextStyle(color: Colors.white70),
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 8),
+                          LinearProgressIndicator(
+                            value: gameState.gameProgress,
+                            backgroundColor: Colors.white24,
+                            valueColor: const AlwaysStoppedAnimation<Color>(
+                              Color(0xFF6366F1),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
               ],
             ),
           ),
