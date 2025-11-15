@@ -10,6 +10,7 @@ import 'screens/settings/settings_screen.dart';
 import 'screens/tutorial/tutorial_screen.dart';
 import 'screens/demo/episode1_demo_screen.dart';
 import 'screens/inventory/inventory_screen.dart';
+import 'theme/academy_theme.dart';
 
 void main() {
   runApp(
@@ -26,29 +27,7 @@ class KastorDataAcademyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
       title: 'Kastor Data Academy',
-      theme: ThemeData(
-        colorScheme: ColorScheme.dark(
-          primary: const Color(0xFF00D9FF), // Cyan
-          secondary: const Color(0xFF00F5FF), // Bright Cyan
-          background: const Color(0xFF1A1D2E), // Dark Navy
-          surface: const Color(0xFF252A3E), // Card Background
-          error: const Color(0xFFFF006E), // Neon Pink
-        ),
-        scaffoldBackgroundColor: const Color(0xFF1A1D2E),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF1A1D2E),
-          elevation: 0,
-        ),
-        cardTheme: CardTheme(
-          color: const Color(0xFF252A3E),
-          elevation: 4,
-          shadowColor: const Color(0xFF00D9FF).withOpacity(0.2),
-        ),
-        textTheme: GoogleFonts.interTextTheme(
-          ThemeData.dark().textTheme,
-        ),
-        useMaterial3: true,
-      ),
+      theme: AcademyTheme.theme,
       home: const HomePage(),
     );
   }
@@ -125,27 +104,51 @@ class _HomePageState extends ConsumerState<HomePage> {
       return Scaffold(
         body: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF1E1B4B),
-                Color(0xFF312E81),
-                Color(0xFF4C1D95),
-              ],
-            ),
+            gradient: AcademyColors.academicGradient,
           ),
-          child: const Center(
+          child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CircularProgressIndicator(
-                  color: Colors.white,
+                // Logo with hologram glow
+                Container(
+                  width: 150,
+                  height: 150,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: NeonGlow.hologram(),
+                  ),
+                  child: const Text(
+                    '🎓',
+                    style: TextStyle(fontSize: 100),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 40),
+                const CircularProgressIndicator(
+                  color: AcademyColors.neonCyan,
+                  strokeWidth: 3,
+                ),
+                const SizedBox(height: 24),
+                const Text(
+                  'KASTOR DATA ACADEMY',
+                  style: TextStyle(
+                    fontFamily: 'Playfair Display',
+                    fontSize: 24,
+                    fontWeight: FontWeight.w600,
+                    color: AcademyColors.creamPaper,
+                    letterSpacing: 2,
+                  ),
+                ),
+                const SizedBox(height: 8),
                 Text(
-                  'Loading...',
-                  style: TextStyle(color: Colors.white70, fontSize: 16),
+                  'Est. 2025',
+                  style: TextStyle(
+                    fontFamily: 'Cinzel',
+                    fontSize: 14,
+                    color: AcademyColors.slate.withOpacity(0.7),
+                    letterSpacing: 1,
+                  ),
                 ),
               ],
             ),
@@ -157,68 +160,131 @@ class _HomePageState extends ConsumerState<HomePage> {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF1E1B4B), // Dark indigo
-              Color(0xFF312E81), // Indigo
-              Color(0xFF4C1D95), // Purple
-            ],
-          ),
+          gradient: AcademyColors.academicGradient,
         ),
         child: SafeArea(
           child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Logo/Title
-                Text(
-                  'KASTOR',
-                  style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 8,
-                        color: Colors.white,
-                      ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Data Academy',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        letterSpacing: 4,
-                        color: Colors.white70,
-                      ),
-                ),
-                const SizedBox(height: 16),
-                // Welcome message for first-time users
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: Text(
-                    settings.language == 'ko'
-                        ? '🎮 데이터 과학을 스토리로 배우세요!'
-                        : '🎮 Learn Data Science Through Stories!',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Color(0xFFFBBF24),
-                      fontWeight: FontWeight.w500,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 40),
+                  
+                  // 🎓 Logo with Hologram Glow
+                  TweenAnimationBuilder<double>(
+                    tween: Tween(begin: 0.8, end: 1.0),
+                    duration: const Duration(seconds: 2),
+                    curve: Curves.easeInOut,
+                    builder: (context, value, child) {
+                      return Transform.scale(
+                        scale: value,
+                        child: Container(
+                          width: 150,
+                          height: 150,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            boxShadow: NeonGlow.hologram(),
+                          ),
+                          child: const Text(
+                            '🎓',
+                            style: TextStyle(fontSize: 100),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  
+                  const SizedBox(height: 32),
+                  
+                  // Academy Title (Serif)
+                  const Text(
+                    'KASTOR DATA',
+                    style: TextStyle(
+                      fontFamily: 'Playfair Display',
+                      fontSize: 42,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 6,
+                      color: AcademyColors.creamPaper,
                     ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                // Language toggle
-                TextButton.icon(
-                  onPressed: () {
-                    final newLang = settings.language == 'ko' ? 'en' : 'ko';
-                    ref.read(settingsProvider.notifier).setLanguage(newLang);
-                  },
-                  icon: const Icon(Icons.language, size: 18, color: Colors.white70),
-                  label: Text(
-                    settings.language == 'ko' ? 'English 🇺🇸' : '한국어 🇰🇷',
-                    style: const TextStyle(color: Colors.white70),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'ACADEMY',
+                    style: TextStyle(
+                      fontFamily: 'Cinzel',
+                      fontSize: 32,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 8,
+                      color: AcademyColors.creamPaper,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 32),
+                  
+                  const SizedBox(height: 8),
+                  
+                  // Established year (Vintage detail)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: AcademyColors.slate.withOpacity(0.5),
+                      ),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      'Est. 2025',
+                      style: TextStyle(
+                        fontFamily: 'Cinzel',
+                        fontSize: 12,
+                        letterSpacing: 2,
+                        color: AcademyColors.slate.withOpacity(0.8),
+                      ),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 24),
+                  
+                  // Motto (Academic Latin style)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                    child: Text(
+                      settings.language == 'ko'
+                          ? '데이터로 진실을 밝히다'
+                          : 'Veritas per Data',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Cinzel',
+                        fontSize: 14,
+                        fontStyle: FontStyle.italic,
+                        color: AcademyColors.neonCyan.withOpacity(0.8),
+                        letterSpacing: 1,
+                      ),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 16),
+                  
+                  // Language toggle (Cyber UI)
+                  TextButton.icon(
+                    onPressed: () {
+                      final newLang = settings.language == 'ko' ? 'en' : 'ko';
+                      ref.read(settingsProvider.notifier).setLanguage(newLang);
+                    },
+                    icon: Icon(
+                      Icons.language,
+                      size: 18,
+                      color: AcademyColors.neonCyan.withOpacity(0.7),
+                    ),
+                    label: Text(
+                      settings.language == 'ko' ? 'English 🇺🇸' : '한국어 🇰🇷',
+                      style: TextStyle(
+                        fontFamily: 'Space Grotesk',
+                        color: AcademyColors.neonCyan.withOpacity(0.7),
+                      ),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 40),
 
                 // Menu Options
                 _MenuButton(
@@ -370,59 +436,76 @@ class _MenuButtonState extends State<_MenuButton> {
   @override
   Widget build(BuildContext context) {
     final button = SizedBox(
-      width: 280,
+      width: 320,
       child: MouseRegion(
         onEnter: (_) => setState(() => _isHovered = true),
         onExit: (_) => setState(() => _isHovered = false),
-        child: ElevatedButton(
-          onPressed: widget.isLoading ? null : widget.onPressed,
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            backgroundColor: widget.onPressed != null && !widget.isLoading
-                ? (_isHovered
-                    ? const Color(0xFF00D9FF).withOpacity(0.2)
-                    : const Color(0xFF252A3E))
-                : const Color(0xFF252A3E).withOpacity(0.5),
-            foregroundColor:
-                widget.onPressed != null && !widget.isLoading ? Colors.white : Colors.white38,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(
-                color: widget.onPressed != null && !widget.isLoading
-                    ? (_isHovered
-                        ? const Color(0xFF00D9FF)
-                        : const Color(0xFF00D9FF).withOpacity(0.5))
-                    : Colors.white12,
-                width: _isHovered ? 2 : 1,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          decoration: BoxDecoration(
+            gradient: widget.onPressed != null && !widget.isLoading && _isHovered
+                ? AcademyColors.neonButtonGradient
+                : null,
+            color: widget.onPressed != null && !widget.isLoading && !_isHovered
+                ? Colors.white.withOpacity(0.05)
+                : (widget.onPressed == null ? AcademyColors.slate.withOpacity(0.1) : null),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: widget.onPressed != null && !widget.isLoading
+                  ? (_isHovered ? AcademyColors.neonCyan : AcademyColors.slate.withOpacity(0.5))
+                  : AcademyColors.slate.withOpacity(0.2),
+              width: _isHovered ? 2 : 1,
+            ),
+            boxShadow: _isHovered && widget.onPressed != null
+                ? NeonGlow.cyan(intensity: 0.5, blur: 15)
+                : null,
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: widget.isLoading ? null : widget.onPressed,
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
+                child: widget.isLoading
+                    ? const Center(
+                        child: SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation(AcademyColors.neonCyan),
+                          ),
+                        ),
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            widget.icon,
+                            size: 20,
+                            color: widget.onPressed != null
+                                ? (_isHovered ? AcademyColors.creamPaper : AcademyColors.neonCyan)
+                                : AcademyColors.slate,
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            widget.text,
+                            style: TextStyle(
+                              fontFamily: 'Space Grotesk',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.5,
+                              color: widget.onPressed != null
+                                  ? (_isHovered ? AcademyColors.creamPaper : AcademyColors.neonCyan)
+                                  : AcademyColors.slate,
+                            ),
+                          ),
+                        ],
+                      ),
               ),
             ),
-            elevation: _isHovered ? 8 : 0,
-            shadowColor: const Color(0xFF00D9FF).withOpacity(0.3),
           ),
-          child: widget.isLoading
-              ? const SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.white70,
-                  ),
-                )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(widget.icon, size: 20),
-                    const SizedBox(width: 12),
-                    Text(
-                      widget.text,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                  ],
-                ),
         ),
       ),
     );
@@ -430,6 +513,15 @@ class _MenuButtonState extends State<_MenuButton> {
     if (widget.tooltip != null) {
       return Tooltip(
         message: widget.tooltip!,
+        decoration: BoxDecoration(
+          color: AcademyColors.midnight,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AcademyColors.neonCyan.withOpacity(0.3)),
+        ),
+        textStyle: const TextStyle(
+          fontFamily: 'Inter',
+          color: AcademyColors.creamPaper,
+        ),
         child: button,
       );
     }
