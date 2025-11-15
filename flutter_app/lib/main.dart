@@ -286,25 +286,25 @@ class _HomePageState extends ConsumerState<HomePage> {
                   
                   const SizedBox(height: 40),
 
-                // Menu Options
-                _MenuButton(
-                  text: settings.language == 'ko' ? '🎮 시작하기' : '🎮 Start Game',
-                  icon: Icons.play_arrow,
-                  isLoading: _isNavigating,
-                  onPressed: () {
-                    _navigateWithDebounce(() {
-                      ref.read(gameStateProvider.notifier).resetGame();
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const Episode1DemoScreen(),
-                        ),
-                      );
-                    });
-                  },
-                ),
-                const SizedBox(height: 16),
-                _MenuButton(
-                  text: settings.language == 'ko' ? '📖 이어하기' : '📖 Continue',
+                  // Menu Options
+                  _MenuButton(
+                    text: settings.language == 'ko' ? '🎮 시작하기' : '🎮 Start Game',
+                    icon: Icons.play_arrow,
+                    isLoading: _isNavigating,
+                    onPressed: () {
+                      _navigateWithDebounce(() {
+                        ref.read(gameStateProvider.notifier).resetGame();
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const Episode1DemoScreen(),
+                          ),
+                        );
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  _MenuButton(
+                    text: settings.language == 'ko' ? '📖 이어하기' : '📖 Continue',
                   icon: Icons.trending_up,
                   isLoading: _isNavigating,
                   tooltip: gameState.currentEpisode == null
@@ -324,9 +324,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                         }
                       : null,
                 ),
-                const SizedBox(height: 16),
-                _MenuButton(
-                  text: settings.language == 'ko' ? '📚 에피소드 목록' : '📚 Episodes',
+                  const SizedBox(height: 16),
+                  _MenuButton(
+                    text: settings.language == 'ko' ? '📚 에피소드 목록' : '📚 Episodes',
                   icon: Icons.list,
                   isLoading: _isNavigating,
                   onPressed: () {
@@ -339,9 +339,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                     });
                   },
                 ),
-                const SizedBox(height: 16),
-                _MenuButton(
-                  text: settings.language == 'ko' ? '📦 증거 보관함' : '📦 Evidence Vault',
+                  const SizedBox(height: 16),
+                  _MenuButton(
+                    text: settings.language == 'ko' ? '📦 증거 보관함' : '📦 Evidence Vault',
                   icon: Icons.inventory_2,
                   isLoading: _isNavigating,
                   onPressed: () {
@@ -354,9 +354,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                     });
                   },
                 ),
-                const SizedBox(height: 16),
-                _MenuButton(
-                  text: settings.language == 'ko' ? '⚙️ 설정' : '⚙️ Settings',
+                  const SizedBox(height: 16),
+                  _MenuButton(
+                    text: settings.language == 'ko' ? '⚙️ 설정' : '⚙️ Settings',
                   icon: Icons.settings,
                   isLoading: _isNavigating,
                   onPressed: () {
@@ -368,10 +368,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                       );
                     });
                   },
-                ),
+                  ),
 
-                // Progress indicator
-                if (gameState.gameProgress > 0) ...[
+                  // Progress indicator
+                  if (gameState.gameProgress > 0) ...[
                   const SizedBox(height: 60),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 60),

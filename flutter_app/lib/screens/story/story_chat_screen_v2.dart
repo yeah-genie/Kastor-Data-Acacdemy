@@ -7,7 +7,6 @@ import '../../widgets/notification_overlay.dart';
 import '../../widgets/screen_effects.dart';
 import '../../widgets/email_fullscreen.dart';
 import '../../widgets/typing_text.dart';
-import '../../widgets/typing_indicator.dart';
 import '../../widgets/realistic_notification.dart';
 
 class StoryChatScreenV2 extends ConsumerStatefulWidget {
