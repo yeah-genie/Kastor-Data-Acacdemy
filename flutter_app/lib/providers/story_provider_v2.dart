@@ -5,6 +5,8 @@ import '../utils/text_utils.dart';
 import './settings_provider.dart';
 import '../services/audio_service.dart';
 import '../services/episode_loader_service.dart';
+import '../services/save_load_service.dart';
+import '../services/notification_service.dart';
 import '../widgets/notification_overlay.dart';
 import '../widgets/screen_effects.dart';
 import '../widgets/email_fullscreen.dart';
@@ -69,6 +71,10 @@ class StoryState {
   final int pendingMessages; // Number of messages queued for auto mode
   final Map<String, dynamic>? episodeData; // Loaded episode JSON data
   final bool isLoading;
+  final List<String> choicesMade; // 사용자가 선택한 결정들
+  final int totalScore; // 총 점수
+  final bool episodeCompleted; // 에피소드 완료 여부
+  final String currentEpisodeId; // 현재 에피소드 ID
 
   StoryState({
     required this.messages,
@@ -82,6 +88,10 @@ class StoryState {
     this.pendingMessages = 0,
     this.episodeData,
     this.isLoading = false,
+    this.choicesMade = const [],
+    this.totalScore = 0,
+    this.episodeCompleted = false,
+    this.currentEpisodeId = '',
   });
 
   StoryState copyWith({
@@ -96,6 +106,10 @@ class StoryState {
     int? pendingMessages,
     Map<String, dynamic>? episodeData,
     bool? isLoading,
+    List<String>? choicesMade,
+    int? totalScore,
+    bool? episodeCompleted,
+    String? currentEpisodeId,
   }) {
     return StoryState(
       messages: messages ?? this.messages,
@@ -109,6 +123,10 @@ class StoryState {
       pendingMessages: pendingMessages ?? this.pendingMessages,
       episodeData: episodeData ?? this.episodeData,
       isLoading: isLoading ?? this.isLoading,
+      choicesMade: choicesMade ?? this.choicesMade,
+      totalScore: totalScore ?? this.totalScore,
+      episodeCompleted: episodeCompleted ?? this.episodeCompleted,
+      currentEpisodeId: currentEpisodeId ?? this.currentEpisodeId,
     );
   }
 }
@@ -142,9 +160,27 @@ class StoryNotifierV2 extends Notifier<StoryState> {
     _timers.clear();
   }
 
-  Duration _getDelay(int multiplier) {
+  Duration _getDelay(int multiplier, {String? messageText}) {
     final settings = ref.read(settingsProvider);
-    return calculateTextDelay(settings.textSpeed, baseDelayMs: 1500 * multiplier);
+    
+    // 메시지 길이에 따라 딜레이 조정
+    int baseDelay = 1500 * multiplier;
+    
+    if (messageText != null) {
+      // 짧은 메시지 (20자 이하): 1초
+      // 중간 메시지 (20-50자): 2초
+      // 긴 메시지 (50자 이상): 3초
+      final length = messageText.length;
+      if (length <= 20) {
+        baseDelay = 1000;
+      } else if (length <= 50) {
+        baseDelay = 2000;
+      } else {
+        baseDelay = 3000;
+      }
+    }
+    
+    return calculateTextDelay(settings.textSpeed, baseDelayMs: baseDelay);
   }
 
   bool get _isAutoMode => ref.read(settingsProvider).autoTextMode;
@@ -180,6 +216,7 @@ class StoryNotifierV2 extends Notifier<StoryState> {
       state = state.copyWith(
         episodeData: episodeData,
         isLoading: false,
+        currentEpisodeId: 'episode1',
       );
 
       // Start with first scene
@@ -325,7 +362,7 @@ class StoryNotifierV2 extends Notifier<StoryState> {
     state = state.copyWith();
   }
 
-  void _addMessage(String speaker, String text, {String? email, Map<String, dynamic>? emailData}) {
+  void _addMessage(String speaker, String text, {String? email, Map<String, dynamic>? emailData, Map<String, dynamic>? dataLog}) {
     // Convert text expressions to emojis
     final convertedText = convertTextToEmoji(text);
 
@@ -339,12 +376,27 @@ class StoryNotifierV2 extends Notifier<StoryState> {
       timestamp: DateTime.now(),
       email: email,
       emailData: emailData,
+      dataLog: dataLog,
       reaction: reaction,
     );
 
     state = state.copyWith(
       messages: [...state.messages, message],
     );
+
+    // 증거보관함에 자동 저장 (이메일이나 데이터 로그)
+    if (emailData != null || dataLog != null) {
+      final evidenceId = message.id;
+      SaveLoadService.saveEvidence(evidenceId);
+      
+      // OS 알림 트리거 (중요 증거 발견)
+      if (emailData != null) {
+        NotificationService().showMessageNotification(
+          characterName: emailData['from'] ?? 'Unknown',
+          message: emailData['subject'] ?? '새 이메일이 도착했습니다',
+        );
+      }
+    }
 
     // Play notification sound if enabled
     _playMessageSound(speaker);
@@ -414,11 +466,18 @@ class StoryNotifierV2 extends Notifier<StoryState> {
       );
     }
 
-    // Clear choices
-    state = state.copyWith(currentChoices: null);
+    // 선택 기록 추가
+    final updatedChoices = List<String>.from(state.choicesMade)..add(choice.text);
+    state = state.copyWith(
+      choicesMade: updatedChoices,
+      currentChoices: null,
+    );
 
     // Add player choice as message
     _addMessage('detective', choice.text);
+
+    // 자동 저장
+    _autoSave();
 
     // Continue to next node
     if (_isAutoMode) {
@@ -494,6 +553,128 @@ class StoryNotifierV2 extends Notifier<StoryState> {
 
   void showEmailFullscreen(BuildContext context, EmailData email) {
     EmailFullScreen.show(context, email);
+  }
+
+  // 이모지 리액션 추가 (메시지 인덱스 기반)
+  void addReactionToMessage(int messageIndex, String emoji) {
+    if (messageIndex < 0 || messageIndex >= state.messages.length) return;
+
+    final updatedMessages = List<StoryMessage>.from(state.messages);
+    final originalMessage = updatedMessages[messageIndex];
+
+    // 새로운 메시지 객체 생성 (reaction 추가)
+    updatedMessages[messageIndex] = StoryMessage(
+      id: originalMessage.id,
+      speaker: originalMessage.speaker,
+      text: originalMessage.text,
+      timestamp: originalMessage.timestamp,
+      storyTime: originalMessage.storyTime,
+      email: originalMessage.email,
+      emailData: originalMessage.emailData,
+      dataLog: originalMessage.dataLog,
+      reaction: emoji,
+      typingUser: originalMessage.typingUser,
+    );
+
+    state = state.copyWith(messages: updatedMessages);
+  }
+
+  // 이모지 리액션 제거
+  void removeReactionFromMessage(int messageIndex) {
+    if (messageIndex < 0 || messageIndex >= state.messages.length) return;
+
+    final updatedMessages = List<StoryMessage>.from(state.messages);
+    final originalMessage = updatedMessages[messageIndex];
+
+    // 새로운 메시지 객체 생성 (reaction 제거)
+    updatedMessages[messageIndex] = StoryMessage(
+      id: originalMessage.id,
+      speaker: originalMessage.speaker,
+      text: originalMessage.text,
+      timestamp: originalMessage.timestamp,
+      storyTime: originalMessage.storyTime,
+      email: originalMessage.email,
+      emailData: originalMessage.emailData,
+      dataLog: originalMessage.dataLog,
+      reaction: null,
+      typingUser: originalMessage.typingUser,
+    );
+
+    state = state.copyWith(messages: updatedMessages);
+  }
+
+  // 자동 저장
+  Future<void> _autoSave() async {
+    if (state.episodeData == null) return;
+
+    await SaveLoadService.saveProgress(
+      episodeId: state.currentEpisodeId,
+      sceneId: state.currentSceneId,
+      nodeIndex: state.currentNodeIndex,
+      detectiveName: state.detectiveName,
+      investigationPoints: state.investigationPoints,
+      choicesMade: state.choicesMade,
+      totalScore: state.totalScore,
+      messages: state.messages.map((m) => {
+        'speaker': m.speaker,
+        'text': m.text,
+        'storyTime': m.storyTime,
+      }).toList(),
+    );
+  }
+
+  // 저장된 진행 상황 불러오기
+  Future<void> loadSavedProgress() async {
+    final savedProgress = await SaveLoadService.loadProgress();
+    if (savedProgress == null) return;
+
+    state = state.copyWith(isLoading: true);
+
+    // 에피소드 데이터 로드
+    final language = ref.read(settingsProvider).language;
+    final episodeData = await _episodeLoader.loadEpisode(savedProgress.episodeId, language);
+
+    if (episodeData == null) return;
+
+    state = state.copyWith(
+      currentEpisodeId: savedProgress.episodeId,
+      currentSceneId: savedProgress.sceneId,
+      currentNodeIndex: savedProgress.nodeIndex,
+      detectiveName: savedProgress.detectiveName,
+      investigationPoints: savedProgress.investigationPoints,
+      choicesMade: savedProgress.choicesMade,
+      totalScore: savedProgress.totalScore,
+      episodeData: episodeData,
+      isLoading: false,
+    );
+
+    _loadScene(savedProgress.sceneId);
+  }
+
+  // 에피소드 완료 처리
+  void completeEpisode() {
+    final finalScore = state.investigationPoints * 10 + state.choicesMade.length * 5;
+    
+    state = state.copyWith(
+      episodeCompleted: true,
+      totalScore: finalScore,
+    );
+  }
+
+  // 에피소드 재시작
+  Future<void> restartEpisode() async {
+    await SaveLoadService.clearProgress();
+    
+    _cancelAllTimers();
+    
+    state = StoryState(
+      messages: [],
+      currentSceneId: 'scene_0',
+      isLoading: true,
+      currentEpisodeId: 'episode1',
+    );
+
+    await _initializeStory();
   }
 }
 

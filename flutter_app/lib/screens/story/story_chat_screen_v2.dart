@@ -9,6 +9,8 @@ import '../../widgets/email_fullscreen.dart';
 import '../../widgets/typing_text.dart';
 import '../../widgets/typing_indicator.dart';
 import '../../widgets/realistic_notification.dart';
+import '../../widgets/emoji_reaction_picker.dart';
+import '../../widgets/hologram_loading.dart';
 
 class StoryChatScreenV2 extends ConsumerStatefulWidget {
   const StoryChatScreenV2({super.key});
@@ -20,6 +22,7 @@ class StoryChatScreenV2 extends ConsumerStatefulWidget {
 class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _inputController = TextEditingController();
+  int? _showingEmojiPickerForMessageIndex;
 
   @override
   void dispose() {
@@ -123,14 +126,42 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
           ),
         ),
         actions: [
-          // Language switcher
+          // Notifications
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined),
+            onPressed: () {
+              // TODO: 알림 목록 화면으로 이동
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    settings.language == 'ko' ? '알림이 없습니다' : 'No notifications',
+                  ),
+                  duration: const Duration(seconds: 1),
+                ),
+              );
+            },
+          ),
+          // Settings menu
           PopupMenuButton<String>(
-            icon: const Icon(Icons.language),
-            onSelected: (String lang) async {
-              ref.read(settingsProvider.notifier).setLanguage(lang);
-              await ref.read(storyProviderV2.notifier).reloadWithLanguage(lang);
+            icon: const Icon(Icons.more_vert),
+            onSelected: (String value) async {
+              if (value == 'en' || value == 'ko') {
+                ref.read(settingsProvider.notifier).setLanguage(value);
+                await ref.read(storyProviderV2.notifier).reloadWithLanguage(value);
+              }
             },
             itemBuilder: (BuildContext context) => [
+              PopupMenuItem(
+                value: 'header',
+                enabled: false,
+                child: Text(
+                  settings.language == 'ko' ? '언어 설정' : 'Language',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
               const PopupMenuItem(
                 value: 'en',
                 child: Row(
@@ -339,45 +370,109 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
                                           ),
                                         ),
                                       
-                                      // Bubble
+                                      // Bubble - 길게 누르기로 이모지 리액션
                                       Flexible(
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 14,
-                                            vertical: 10,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: isPlayerMessage
-                                                ? const Color(0xFF00D9FF) // Cyan neon
-                                                : const Color(0xFF2D3348), // Dark card
-                                            borderRadius: BorderRadius.only(
-                                              topLeft: const Radius.circular(18),
-                                              topRight: const Radius.circular(18),
-                                              bottomLeft: Radius.circular(isPlayerMessage ? 18 : 4),
-                                              bottomRight: Radius.circular(isPlayerMessage ? 4 : 18),
-                                            ),
-                                            boxShadow: isPlayerMessage
-                                                ? [
-                                                    BoxShadow(
-                                                      color: const Color(0xFF00D9FF).withOpacity(0.3),
-                                                      blurRadius: 10,
-                                                      spreadRadius: 1,
+                                        child: GestureDetector(
+                                          onLongPress: () {
+                                            // 이모지 피커 표시 (간단 버전 - BottomSheet)
+                                            showModalBottomSheet(
+                                              context: context,
+                                              backgroundColor: Colors.transparent,
+                                              builder: (context) => Container(
+                                                padding: const EdgeInsets.all(16),
+                                                decoration: BoxDecoration(
+                                                  color: const Color(0xFF1A1D2E),
+                                                  borderRadius: const BorderRadius.vertical(
+                                                    top: Radius.circular(20),
+                                                  ),
+                                                  border: Border.all(
+                                                    color: const Color(0xFF00D9FF).withOpacity(0.3),
+                                                    width: 2,
+                                                  ),
+                                                ),
+                                                child: Column(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    const Text(
+                                                      '리액션 추가',
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight: FontWeight.bold,
+                                                        color: Color(0xFF00D9FF),
+                                                      ),
                                                     ),
-                                                  ]
-                                                : [
-                                                    BoxShadow(
-                                                      color: Colors.black.withOpacity(0.3),
-                                                      blurRadius: 4,
-                                                      offset: const Offset(0, 2),
+                                                    const SizedBox(height: 16),
+                                                    Wrap(
+                                                      spacing: 12,
+                                                      runSpacing: 12,
+                                                      children: ['😂', '❤️', '👍', '👎', '😮', '😢', '🔥', '✨']
+                                                          .map((emoji) => GestureDetector(
+                                                                onTap: () {
+                                                                  ref.read(storyProviderV2.notifier)
+                                                                      .addReactionToMessage(index, emoji);
+                                                                  Navigator.pop(context);
+                                                                },
+                                                                child: Container(
+                                                                  width: 50,
+                                                                  height: 50,
+                                                                  decoration: BoxDecoration(
+                                                                    color: const Color(0xFF2D3348),
+                                                                    borderRadius: BorderRadius.circular(12),
+                                                                  ),
+                                                                  child: Center(
+                                                                    child: Text(
+                                                                      emoji,
+                                                                      style: const TextStyle(fontSize: 28),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ))
+                                                          .toList(),
                                                     ),
+                                                    const SizedBox(height: 16),
                                                   ],
-                                          ),
-                                          child: Text(
-                                            message.text,
-                                            style: TextStyle(
-                                              fontSize: 15,
-                                              color: isPlayerMessage ? const Color(0xFF0A0E1A) : Colors.white,
-                                              fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 14,
+                                              vertical: 10,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: isPlayerMessage
+                                                  ? const Color(0xFF00D9FF) // Cyan neon
+                                                  : const Color(0xFF2D3348), // Dark card
+                                              borderRadius: BorderRadius.only(
+                                                topLeft: const Radius.circular(18),
+                                                topRight: const Radius.circular(18),
+                                                bottomLeft: Radius.circular(isPlayerMessage ? 18 : 4),
+                                                bottomRight: Radius.circular(isPlayerMessage ? 4 : 18),
+                                              ),
+                                              boxShadow: isPlayerMessage
+                                                  ? [
+                                                      BoxShadow(
+                                                        color: const Color(0xFF00D9FF).withOpacity(0.3),
+                                                        blurRadius: 10,
+                                                        spreadRadius: 1,
+                                                      ),
+                                                    ]
+                                                  : [
+                                                      BoxShadow(
+                                                        color: Colors.black.withOpacity(0.3),
+                                                        blurRadius: 4,
+                                                        offset: const Offset(0, 2),
+                                                      ),
+                                                    ],
+                                            ),
+                                            child: Text(
+                                              message.text,
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                color: isPlayerMessage ? const Color(0xFF0A0E1A) : Colors.white,
+                                                fontWeight: FontWeight.w500,
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -398,61 +493,66 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
                                     ],
                                   ),
 
-                                  // Reaction emoji if present (animated, colorful)
+                                  // Reaction emoji if present (animated, colorful) - 탭하면 제거
                                   if (message.reaction != null)
                                     Padding(
                                       padding: const EdgeInsets.only(top: 6, left: 12),
-                                      child: TweenAnimationBuilder<double>(
-                                        tween: Tween(begin: 0.0, end: 1.0),
-                                        duration: const Duration(milliseconds: 400),
-                                        curve: Curves.elasticOut,
-                                        builder: (context, value, child) {
-                                          return Transform.scale(
-                                            scale: value,
-                                            child: Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                                              decoration: BoxDecoration(
-                                                gradient: LinearGradient(
-                                                  begin: Alignment.topLeft,
-                                                  end: Alignment.bottomRight,
-                                                  colors: [
-                                                    const Color(0xFF252A3E),
-                                                    const Color(0xFF1E2130),
-                                                  ],
-                                                ),
-                                                borderRadius: BorderRadius.circular(16),
-                                                border: Border.all(
-                                                  color: const Color(0xFF00D9FF).withOpacity(0.4),
-                                                  width: 1.5,
-                                                ),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: const Color(0xFF00D9FF).withOpacity(0.3),
-                                                    blurRadius: 8,
-                                                    spreadRadius: 1,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          ref.read(storyProviderV2.notifier).removeReactionFromMessage(index);
+                                        },
+                                        child: TweenAnimationBuilder<double>(
+                                          tween: Tween(begin: 0.0, end: 1.0),
+                                          duration: const Duration(milliseconds: 400),
+                                          curve: Curves.elasticOut,
+                                          builder: (context, value, child) {
+                                            return Transform.scale(
+                                              scale: value,
+                                              child: Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                                decoration: BoxDecoration(
+                                                  gradient: LinearGradient(
+                                                    begin: Alignment.topLeft,
+                                                    end: Alignment.bottomRight,
+                                                    colors: [
+                                                      const Color(0xFF252A3E),
+                                                      const Color(0xFF1E2130),
+                                                    ],
                                                   ),
-                                                  BoxShadow(
-                                                    color: Colors.black.withOpacity(0.3),
-                                                    blurRadius: 6,
-                                                    offset: const Offset(0, 2),
+                                                  borderRadius: BorderRadius.circular(16),
+                                                  border: Border.all(
+                                                    color: const Color(0xFF00D9FF).withOpacity(0.4),
+                                                    width: 1.5,
                                                   ),
-                                                ],
-                                              ),
-                                              child: Text(
-                                                message.reaction!,
-                                                style: const TextStyle(
-                                                  fontSize: 20,
-                                                  shadows: [
-                                                    Shadow(
-                                                      color: Color(0xFF00D9FF),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      color: const Color(0xFF00D9FF).withOpacity(0.3),
                                                       blurRadius: 8,
+                                                      spreadRadius: 1,
+                                                    ),
+                                                    BoxShadow(
+                                                      color: Colors.black.withOpacity(0.3),
+                                                      blurRadius: 6,
+                                                      offset: const Offset(0, 2),
                                                     ),
                                                   ],
                                                 ),
+                                                child: Text(
+                                                  message.reaction!,
+                                                  style: const TextStyle(
+                                                    fontSize: 20,
+                                                    shadows: [
+                                                      Shadow(
+                                                        color: Color(0xFF00D9FF),
+                                                        blurRadius: 8,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
                                               ),
-                                            ),
-                                          );
-                                        },
+                                            );
+                                          },
+                                        ),
                                       ),
                                     ),
                                 ],
@@ -467,10 +567,12 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
                   ),
                 ),
 
-                // Choices section
+                // Choices section - 개선된 스크롤 가능 버전
                 if (storyState.currentChoices != null && storyState.currentChoices!.isNotEmpty)
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    constraints: const BoxConstraints(
+                      maxHeight: 280, // 최대 높이 제한
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF6366F1).withOpacity(0.1),
                       border: Border(
@@ -482,27 +584,57 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          settings.language == 'ko' ? '선택하세요:' : 'Choose:',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                        // 헤더 (고정)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.touch_app,
+                                size: 18,
+                                color: Color(0xFF6366F1),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                settings.language == 'ko' ? '선택하세요:' : 'Choose:',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const Spacer(),
+                              Text(
+                                '${storyState.currentChoices!.length}개',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[400],
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 12),
-                        ...storyState.currentChoices!.asMap().entries.map((entry) {
-                          final choice = entry.value;
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: _ChoiceButton(
-                              choice: choice,
-                              onPressed: () {
-                                ref.read(storyProviderV2.notifier).makeChoice(choice.id);
-                              },
-                            ),
-                          );
-                        }),
+                        // 선택지 리스트 (스크롤 가능)
+                        Flexible(
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+                            itemCount: storyState.currentChoices!.length,
+                            itemBuilder: (context, index) {
+                              final choice = storyState.currentChoices![index];
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: _ChoiceButton(
+                                  choice: choice,
+                                  onPressed: () {
+                                    ref.read(storyProviderV2.notifier).makeChoice(choice.id);
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -589,8 +721,7 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
-                                  elevation: 8,
-                                  shadowColor: const Color(0xFF00D9FF).withOpacity(0.5),
+                                  elevation: 2,
                                 ),
                                 child: const Icon(Icons.send, size: 20, weight: 700),
                               ),
@@ -610,8 +741,7 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              elevation: 8,
-                              shadowColor: const Color(0xFF00D9FF).withOpacity(0.5),
+                              elevation: 2,
                             ),
                             child: storyState.isLoading
                                 ? const SizedBox(
@@ -732,40 +862,58 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
     );
   }
 
-  // Email card widget
+  // Email card widget - 중요 증거 하이라이트
   Widget _buildEmailCard(StoryMessage message, AppSettings settings) {
     final emailData = message.emailData!;
-    return InkWell(
-      onTap: () {
-        // 진동 피드백
-        ScreenEffects.vibrate(VibrationPattern.light);
-        
-        // 전체화면 이메일 표시
-        EmailFullScreen.show(
-          context,
-          EmailData(
-            from: emailData['from'] ?? 'Unknown',
-            subject: emailData['subject'] ?? '',
-            body: emailData['body'] ?? '',
-            time: message.storyTime ?? message.timestamp.toString(),
-            isRead: true,
-            avatar: _getAvatarPath(emailData['fromAvatar'] ?? ''),
-          ),
-        );
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeOut,
+      builder: (context, value, child) {
+        return Transform.scale(
+          scale: 0.9 + (value * 0.1),
+          child: Opacity(
+            opacity: value,
+            child: InkWell(
+              onTap: () {
+                // 진동 피드백
+                ScreenEffects.vibrate(VibrationPattern.light);
+                
+                // 전체화면 이메일 표시
+                EmailFullScreen.show(
+                  context,
+                  EmailData(
+                    from: emailData['from'] ?? 'Unknown',
+                    subject: emailData['subject'] ?? '',
+                    body: emailData['body'] ?? '',
+                    time: message.storyTime ?? message.timestamp.toString(),
+                    isRead: true,
+                    avatar: _getAvatarPath(emailData['fromAvatar'] ?? ''),
+                  ),
+                );
+              },
+              child: Container(
+                margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: const Color(0xFF3B82F6).withOpacity(0.5),
+                    width: 2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF3B82F6).withOpacity(0.3),
+                      blurRadius: 12,
+                      spreadRadius: 2,
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
         child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -848,7 +996,11 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
           ),
         ],
       ),
-    ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 

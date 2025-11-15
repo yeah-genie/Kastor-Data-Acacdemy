@@ -11,8 +11,15 @@ import 'screens/tutorial/tutorial_screen.dart';
 import 'screens/demo/episode1_demo_screen.dart';
 import 'screens/inventory/inventory_screen.dart';
 import 'theme/academy_theme.dart';
+import 'services/notification_service.dart';
+import 'widgets/hologram_loading.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // 알림 서비스 초기화 (OS 레벨 알림)
+  await NotificationService().initialize();
+  
   runApp(
     const ProviderScope(
       child: KastorDataAcademyApp(),
@@ -101,58 +108,9 @@ class _HomePageState extends ConsumerState<HomePage> {
     final settings = ref.watch(settingsProvider);
 
     if (_isLoading) {
-      return Scaffold(
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: AcademyColors.academicGradient,
-          ),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Logo with hologram glow
-                Container(
-                  width: 150,
-                  height: 150,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    boxShadow: NeonGlow.hologram(),
-                  ),
-                  child: const Text(
-                    '🎓',
-                    style: TextStyle(fontSize: 100),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(height: 40),
-                const CircularProgressIndicator(
-                  color: AcademyColors.neonCyan,
-                  strokeWidth: 3,
-                ),
-                const SizedBox(height: 24),
-                const Text(
-                  'KASTOR DATA ACADEMY',
-                  style: TextStyle(
-                    fontFamily: 'Playfair Display',
-                    fontSize: 24,
-                    fontWeight: FontWeight.w600,
-                    color: AcademyColors.creamPaper,
-                    letterSpacing: 2,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Est. 2025',
-                  style: TextStyle(
-                    fontFamily: 'Cinzel',
-                    fontSize: 14,
-                    color: AcademyColors.slate.withOpacity(0.7),
-                    letterSpacing: 1,
-                  ),
-                ),
-              ],
-            ),
-          ),
+      return const Scaffold(
+        body: HologramLoadingScreen(
+          message: 'Initializing Academy...',
         ),
       );
     }
@@ -273,19 +231,24 @@ class _HomePageState extends ConsumerState<HomePage> {
                   
                   const SizedBox(height: 8),
                   
-                  // Language toggle (Cyber UI)
+                  // Evidence Vault quick access (Cyber UI)
                   TextButton.icon(
                     onPressed: () {
-                      final newLang = settings.language == 'ko' ? 'en' : 'ko';
-                      ref.read(settingsProvider.notifier).setLanguage(newLang);
+                      _navigateWithDebounce(() {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const InventoryScreen(),
+                          ),
+                        );
+                      });
                     },
                     icon: Icon(
-                      Icons.language,
+                      Icons.inventory_2,
                       size: 18,
                       color: AcademyColors.neonCyan.withOpacity(0.7),
                     ),
                     label: Text(
-                      settings.language == 'ko' ? 'English 🇺🇸' : '한국어 🇰🇷',
+                      settings.language == 'ko' ? '📦 증거 보관함' : '📦 Evidence Vault',
                       style: TextStyle(
                         fontFamily: 'Space Grotesk',
                         color: AcademyColors.neonCyan.withOpacity(0.7),
@@ -343,21 +306,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => const EpisodeSelectionScreen(),
-                          ),
-                        );
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 10),
-                  _MenuButton(
-                    text: settings.language == 'ko' ? '📦 증거 보관함' : '📦 Evidence Vault',
-                    icon: Icons.inventory_2,
-                    isLoading: _isNavigating,
-                    onPressed: () {
-                      _navigateWithDebounce(() {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const InventoryScreen(),
                           ),
                         );
                       });

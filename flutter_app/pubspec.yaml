@@ -68,6 +68,10 @@ dependencies:
   # Animations
   flutter_animate: ^4.5.0
 
+  # Notifications
+  flutter_local_notifications: ^17.2.3
+  overlay_support: ^2.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
