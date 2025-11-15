@@ -9,7 +9,6 @@ import 'screens/episode/episode_selection_screen.dart';
 import 'screens/settings/settings_screen.dart';
 import 'screens/tutorial/tutorial_screen.dart';
 import 'screens/demo/episode1_demo_screen.dart';
-import 'screens/interactive_widgets_demo_screen.dart';
 
 void main() {
   runApp(
@@ -270,21 +269,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => const SettingsScreen(),
-                        ),
-                      );
-                    });
-                  },
-                ),
-                const SizedBox(height: 16),
-                _MenuButton(
-                  text: settings.language == 'ko' ? '🎮 인터랙티브 데모' : '🎮 Interactive Demo',
-                  icon: Icons.science,
-                  isLoading: _isNavigating,
-                  onPressed: () {
-                    _navigateWithDebounce(() {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const InteractiveWidgetsDemoScreen(),
                         ),
                       );
                     });

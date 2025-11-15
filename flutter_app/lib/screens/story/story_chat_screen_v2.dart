@@ -97,7 +97,8 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          settings.language == 'ko' ? '에피소드 1: 사라진 밸런스 패치' : 'Episode 1: The Missing Balance Patch',
+          settings.language == 'ko' ? 'EP1: 사라진 밸런스 패치' : 'EP1: The Missing Balance Patch',
+          style: const TextStyle(fontSize: 16),
         ),
         actions: [
           // Language switcher
@@ -290,7 +291,7 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
                                           ),
                                           decoration: BoxDecoration(
                                             color: isPlayerMessage
-                                                ? const Color(0xFFFEE500) // KakaoTalk yellow
+                                                ? const Color(0xFF3B82F6) // Blue color
                                                 : Colors.white,
                                             borderRadius: BorderRadius.only(
                                               topLeft: const Radius.circular(18),
@@ -310,7 +311,7 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
                                             message.text,
                                             style: TextStyle(
                                               fontSize: 15,
-                                              color: isPlayerMessage ? Colors.black87 : Colors.black87,
+                                              color: isPlayerMessage ? Colors.white : Colors.black87,
                                             ),
                                           ),
                                         ),
@@ -335,9 +336,23 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
                                   if (message.reaction != null)
                                     Padding(
                                       padding: const EdgeInsets.only(top: 4, left: 12),
-                                      child: Text(
-                                        message.reaction!,
-                                        style: const TextStyle(fontSize: 18),
+                                      child: Container(
+                                        padding: const EdgeInsets.all(6),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(12),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black.withOpacity(0.1),
+                                              blurRadius: 4,
+                                              offset: const Offset(0, 2),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Text(
+                                          message.reaction!,
+                                          style: const TextStyle(fontSize: 18),
+                                        ),
                                       ),
                                     ),
                                 ],
@@ -413,80 +428,119 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
                     ),
                   ),
 
-                // Input section
-                if (storyState.waitingForInput)
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF10B981).withOpacity(0.1),
-                      border: Border(
-                        top: BorderSide(
-                          color: const Color(0xFF10B981).withOpacity(0.3),
-                          width: 2,
-                        ),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _inputController,
-                            decoration: InputDecoration(
-                              hintText: storyState.inputPrompt ??
-                                  (settings.language == 'ko' ? '입력하세요...' : 'Type here...'),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              filled: true,
-                              fillColor: Colors.white.withOpacity(0.1),
-                            ),
-                            onSubmitted: (value) {
-                              if (value.isNotEmpty) {
-                                ref.read(storyProviderV2.notifier).submitDetectiveName(value);
-                                _inputController.clear();
-                              }
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        IconButton(
-                          onPressed: () {
-                            if (_inputController.text.isNotEmpty) {
-                              ref.read(storyProviderV2.notifier)
-                                  .submitDetectiveName(_inputController.text);
-                              _inputController.clear();
-                            }
-                          },
-                          icon: const Icon(Icons.send),
-                          style: IconButton.styleFrom(
-                            backgroundColor: const Color(0xFF10B981),
-                            foregroundColor: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                // Continue button (for manual mode)
-                if (!settings.autoTextMode &&
-                    !storyState.waitingForInput &&
-                    storyState.currentChoices == null)
+                // Input or Continue button
+                if (!settings.autoTextMode && storyState.currentChoices == null)
                   Container(
                     padding: const EdgeInsets.all(16),
                     width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        ref.read(storyProviderV2.notifier).continueStory();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        backgroundColor: const Color(0xFF6366F1),
-                      ),
-                      child: Text(
-                        settings.language == 'ko' ? '계속 →' : 'Continue →',
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ),
+                    child: storyState.waitingForInput
+                        ? Row(
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: _inputController,
+                                  autofocus: true,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.white,
+                                  ),
+                                  decoration: InputDecoration(
+                                    hintText: storyState.inputPrompt ??
+                                        (settings.language == 'ko'
+                                            ? '이름을 입력하세요...'
+                                            : 'Enter your name...'),
+                                    hintStyle: TextStyle(
+                                      color: Colors.white.withOpacity(0.5),
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: const BorderSide(
+                                        color: Color(0xFF6366F1),
+                                        width: 2,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: BorderSide(
+                                        color: const Color(0xFF6366F1).withOpacity(0.5),
+                                        width: 2,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                      borderSide: const BorderSide(
+                                        color: Color(0xFF6366F1),
+                                        width: 2,
+                                      ),
+                                    ),
+                                    filled: true,
+                                    fillColor: Colors.white.withOpacity(0.05),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 16,
+                                    ),
+                                  ),
+                                  onSubmitted: (value) {
+                                    if (value.isNotEmpty) {
+                                      ref
+                                          .read(storyProviderV2.notifier)
+                                          .submitDetectiveName(value);
+                                      _inputController.clear();
+                                    }
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              ElevatedButton(
+                                onPressed: () {
+                                  if (_inputController.text.isNotEmpty) {
+                                    ref
+                                        .read(storyProviderV2.notifier)
+                                        .submitDetectiveName(_inputController.text);
+                                    _inputController.clear();
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF6366F1),
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 18,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                child: const Icon(Icons.send, size: 20),
+                              ),
+                            ],
+                          )
+                        : ElevatedButton(
+                            onPressed: () {
+                              ref.read(storyProviderV2.notifier).continueStory();
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              backgroundColor: const Color(0xFF6366F1),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  settings.language == 'ko' ? 'Continue' : 'Continue',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                const Icon(Icons.arrow_forward, size: 20),
+                              ],
+                            ),
+                          ),
                   ),
 
                 // Pending messages indicator
