@@ -167,7 +167,7 @@ class _Episode1DemoScreenState extends ConsumerState<Episode1DemoScreen> {
                   ),
                 ),
               )
-            else ..[
+            else ...[
               // Responsive chart container
               LayoutBuilder(
                 builder: (context, constraints) {
@@ -284,7 +284,7 @@ class _Episode1DemoScreenState extends ConsumerState<Episode1DemoScreen> {
                       setState(() {
                         _isLoadingChart = true;
                       });
-                      await ref.read(settingsProvider.notifier).setLanguage(newLang);
+                      ref.read(settingsProvider.notifier).setLanguage(newLang);
                       // Simulate chart reload
                       await Future.delayed(const Duration(milliseconds: 500));
                       if (mounted) {

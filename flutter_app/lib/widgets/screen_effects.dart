@@ -1,5 +1,13 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+enum VibrationPattern {
+  light,
+  medium,
+  heavy,
+  selection,
+}
 
 class ScreenEffects {
   // Flash effect - 화면 플래시
@@ -21,7 +29,7 @@ class ScreenEffects {
   // Fade effect - 페이드 인/아웃
   static void fade(
     BuildContext context, {
-    required Color color,
+    Color? color,
     Duration duration = const Duration(milliseconds: 500),
   }) {
     final overlay = Overlay.of(context);
@@ -29,7 +37,7 @@ class ScreenEffects {
 
     entry = OverlayEntry(
       builder: (context) => _FadeOverlay(
-        color: color,
+        color: color ?? Colors.black,
         duration: duration,
         onComplete: () => entry.remove(),
       ),
@@ -45,7 +53,7 @@ class ScreenEffects {
   }
 
   // Vibrate - 진동
-  static void vibrate({VibrationPattern pattern = VibrationPattern.medium}) {
+  static void vibrate(VibrationPattern pattern) {
     switch (pattern) {
       case VibrationPattern.light:
         HapticFeedback.lightImpact();
@@ -80,13 +88,6 @@ class ScreenEffects {
     overlay.insert(entry);
     return entry;
   }
-}
-
-enum VibrationPattern {
-  light,
-  medium,
-  heavy,
-  selection,
 }
 
 // Flash overlay widget

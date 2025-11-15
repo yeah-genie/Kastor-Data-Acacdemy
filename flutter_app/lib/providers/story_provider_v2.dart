@@ -438,7 +438,7 @@ class StoryNotifierV2 extends Notifier<StoryState> {
   }
 
   void showFadeEffect(BuildContext context, {Color? color}) {
-    ScreenEffects.fade(context, color: color);
+    ScreenEffects.fade(context, color: color ?? Colors.black);
   }
 
   void vibrateEffect(VibrationPattern pattern) {

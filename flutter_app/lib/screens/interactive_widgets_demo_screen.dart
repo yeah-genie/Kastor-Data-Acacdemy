@@ -31,7 +31,7 @@ class InteractiveWidgetsDemoScreen extends StatelessWidget {
                 onPressed: () {
                   NotificationOverlay.show(
                     context,
-                    const NotificationData(
+                    NotificationData(
                       type: NotificationType.email,
                       title: '새 메일 도착',
                       message: 'Maya Kim: [긴급] 랭킹 조작 의심 사례 발견',
@@ -47,7 +47,7 @@ class InteractiveWidgetsDemoScreen extends StatelessWidget {
                 onPressed: () {
                   NotificationOverlay.show(
                     context,
-                    const NotificationData(
+                    NotificationData(
                       type: NotificationType.phone,
                       title: '부재중 전화',
                       message: 'Maya Kim',
@@ -63,7 +63,7 @@ class InteractiveWidgetsDemoScreen extends StatelessWidget {
                 onPressed: () {
                   NotificationOverlay.show(
                     context,
-                    const NotificationData(
+                    NotificationData(
                       type: NotificationType.alarm,
                       title: '알람',
                       message: '회의 시작 10분 전',
@@ -79,7 +79,7 @@ class InteractiveWidgetsDemoScreen extends StatelessWidget {
                 onPressed: () {
                   NotificationOverlay.show(
                     context,
-                    const NotificationData(
+                    NotificationData(
                       type: NotificationType.message,
                       title: 'Kastor',
                       message: '데이터 확인 부탁드립니다',
@@ -95,7 +95,7 @@ class InteractiveWidgetsDemoScreen extends StatelessWidget {
                 onPressed: () {
                   NotificationOverlay.show(
                     context,
-                    const NotificationData(
+                    NotificationData(
                       type: NotificationType.system,
                       title: '시스템 알림',
                       message: '데이터 동기화 완료',
@@ -127,7 +127,7 @@ class InteractiveWidgetsDemoScreen extends StatelessWidget {
                 label: '페이드 효과 (장면 전환)',
                 color: Colors.black,
                 onPressed: () {
-                  ScreenEffects.fade(context);
+                  ScreenEffects.fade(context, color: Colors.black);
                 },
               ),
               _buildDemoButton(
@@ -195,9 +195,8 @@ class InteractiveWidgetsDemoScreen extends StatelessWidget {
                 onPressed: () {
                   EmailFullScreen.show(
                     context,
-                    const EmailData(
+                    EmailData(
                       from: 'Maya Kim',
-                      fromEmail: 'maya.kim@company.com',
                       subject: '[긴급] 랭킹 조작 의심 사례 발견',
                       body: '''안녕하세요, Kastor님
 
@@ -219,7 +218,7 @@ Maya Kim
 Data Analyst''',
                       time: '2024년 1월 15일 오전 9:30',
                       isRead: false,
-                      avatarPath: 'assets/characters/maya.svg',
+                      avatar: 'assets/characters/maya.svg',
                     ),
                   );
                 },
@@ -231,9 +230,8 @@ Data Analyst''',
                 onPressed: () {
                   EmailFullScreen.show(
                     context,
-                    const EmailData(
+                    EmailData(
                       from: 'Sarah Johnson',
-                      fromEmail: 'ceo@company.com',
                       subject: '[중요] 긴급 전사 회의 소집',
                       body: '''전 직원 귀하
 
@@ -326,7 +324,7 @@ CEO''',
                   // 1. 아침 알람
                   NotificationOverlay.show(
                     context,
-                    const NotificationData(
+                    NotificationData(
                       type: NotificationType.alarm,
                       title: '알람',
                       message: '기상 시간',
@@ -338,14 +336,14 @@ CEO''',
                   await Future.delayed(const Duration(seconds: 2));
 
                   // 2. 페이드 효과 (시간 경과)
-                  ScreenEffects.fade(context);
+                  ScreenEffects.fade(context, color: Colors.black);
 
                   await Future.delayed(const Duration(milliseconds: 500));
 
                   // 3. Maya의 긴급 이메일 알림
                   NotificationOverlay.show(
                     context,
-                    const NotificationData(
+                    NotificationData(
                       type: NotificationType.email,
                       title: '새 메일',
                       message: 'Maya Kim: [긴급] 랭킹 조작 의심',
@@ -365,7 +363,7 @@ CEO''',
                   // 1. 시스템 알림
                   NotificationOverlay.show(
                     context,
-                    const NotificationData(
+                    NotificationData(
                       type: NotificationType.system,
                       title: '데이터 분석 완료',
                       message: '승률 패턴 이상 징후 감지',

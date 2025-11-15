@@ -595,12 +595,11 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
           context,
           EmailData(
             from: emailData['from'] ?? 'Unknown',
-            fromEmail: emailData['fromEmail'] ?? '',
             subject: emailData['subject'] ?? '',
             body: emailData['body'] ?? '',
             time: message.storyTime ?? message.timestamp.toString(),
             isRead: true,
-            avatarPath: _getAvatarPath(emailData['fromAvatar'] ?? ''),
+            avatar: _getAvatarPath(emailData['fromAvatar'] ?? ''),
           ),
         );
       },
