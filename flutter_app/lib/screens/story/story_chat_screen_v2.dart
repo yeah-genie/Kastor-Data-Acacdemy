@@ -430,7 +430,6 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
                             ),
 
                             // Avatar for player (right side) - REMOVED
-                            ],
                           ],
                         ),
                       );
