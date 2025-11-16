@@ -436,7 +436,7 @@ def display_message_with_typing(role, content, container=None):
     for char in content:
         full_response += char
         message_placeholder.write(full_response + "▌")
-        time.sleep(0.02)  # 타이핑 속도
+        time.sleep(0.01)  # 타이핑 속도
 
     message_placeholder.write(full_response)
 
@@ -455,286 +455,21 @@ st.title("🔍 Kastor Data Academy")
 st.subheader("Episode 1: 사라진 밸런스 패치")
 st.divider()
 
-# 인트로 메시지 단계별 표시
-intro_messages = [
-    "띠링~ 안녕! 나는 캐스터야! 🎉",
-    "오늘 첫 사건이 들어왔어! 게임 '레전드 아레나'의 디렉터 마야가 긴급 의뢰를 보냈거든.",
-    "**문제**: 캐릭터 '셰도우'의 승률이 하루 만에 50% → 85%로 폭등! 😱",
-    "패치도 안 했는데 왜 이렇게 된 거지? 커뮤니티가 난리 났대!",
-    "자, 먼저 탐정님의 이름이 뭐야? 👀"
-]
+# 인트로 메시지 - 한 번에 표시
+if st.session_state.episode_stage == "intro" and len(st.session_state.messages) == 0:
+    intro_message = """띠링~ 안녕! 나는 캐스터야! 🎉
 
-# 인트로 자동 시작
-if st.session_state.episode_stage == "intro" and st.session_state.intro_step < len(intro_messages):
-    current_step = st.session_state.intro_step
-    add_message("assistant", intro_messages[current_step])
-    st.session_state.intro_step += 1
+오늘 첫 사건이 들어왔어! 게임 '레전드 아레나'의 디렉터 마야가 긴급 의뢰를 보냈거든.
+
+**문제**: 캐릭터 '셰도우'의 승률이 하루 만에 50% → 85%로 폭등! 😱
+
+패치도 안 했는데 왜 이렇게 된 거지? 커뮤니티가 난리 났대!
+
+자, 탐정과 함께 이 사건을 해결해보자! 👀"""
+    add_message("assistant", intro_message)
     st.session_state.last_message_count = len(st.session_state.messages)
-    time.sleep(0.5)  # 메시지 간 간격
-    if st.session_state.intro_step < len(intro_messages):
-        st.rerun()
 
-# 2열 레이아웃 (데이터 / 채팅) - 왼쪽에 데이터, 오른쪽에 채팅
-col_data, col_chat = st.columns([3, 2])
-
-# 채팅 열 (오른쪽)
-with col_chat:
-    st.subheader("💬 탐정 파트너 캐스터")
-
-    # 대화 표시 - 자동 스크롤 JavaScript 추가
-    st.markdown("""
-    <script>
-    // 채팅 자동 스크롤
-    function scrollToBottom() {
-        const chatContainer = window.parent.document.querySelector('[data-testid="stVerticalBlock"]');
-        if (chatContainer) {
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-    }
-    // 페이지 로드 시 및 메시지 추가 시 자동 스크롤
-    setTimeout(scrollToBottom, 100);
-    </script>
-    """, unsafe_allow_html=True)
-
-    # 대화 표시
-    chat_container = st.container(height=600)
-    with chat_container:
-        # 이전 메시지는 일반 표시
-        for i, message in enumerate(st.session_state.messages[:-1]):
-            with st.chat_message(message["role"]):
-                st.write(message["content"])
-
-        # 가장 최근 메시지는 타이핑 효과
-        if len(st.session_state.messages) > 0:
-            last_msg = st.session_state.messages[-1]
-            if len(st.session_state.messages) > st.session_state.last_message_count:
-                # 새 메시지 - 타이핑 효과
-                display_message_with_typing(last_msg["role"], last_msg["content"])
-                st.session_state.last_message_count = len(st.session_state.messages)
-            else:
-                # 기존 메시지 - 일반 표시
-                with st.chat_message(last_msg["role"]):
-                    st.write(last_msg["content"])
-
-    st.divider()
-
-    # 선택지 버튼 (스테이지별)
-    if st.session_state.episode_stage == "intro":
-        st.write("**💡 추천 행동:**")
-
-        if st.button("📊 데이터부터 확인하자!", use_container_width=True):
-            add_message("user", "데이터부터 확인해보자!")
-            st.session_state.episode_stage = "exploration"
-
-            # 탐색 시작 배지
-            if award_badge("🔍 이상치 탐정"):
-                add_message("assistant", "🏆 배지 획득: 🔍 이상치 탐정! 탐색을 시작했어!")
-
-            response = get_kastor_response(
-                "데이터부터 확인해보자!",
-                STAGE_CONTEXTS["exploration"]
-            )
-            add_message("assistant", response)
-            st.rerun()
-
-        if st.button("🤔 이게 왜 문제야?", use_container_width=True):
-            add_message("user", "이게 왜 문제야?")
-            response = get_kastor_response(
-                "이게 왜 문제야?",
-                "유저가 문제의 심각성을 모르고 있습니다. 게임 밸런스가 왜 중요한지 설명해주세요."
-            )
-            add_message("assistant", response)
-            st.rerun()
-
-        if st.button("💪 바로 시작하자!", use_container_width=True):
-            add_message("user", "바로 시작하자!")
-            st.session_state.episode_stage = "exploration"
-
-            # 탐색 시작 배지
-            if award_badge("🔍 이상치 탐정"):
-                add_message("assistant", "🏆 배지 획득: 🔍 이상치 탐정!")
-
-            response = "오~ 적극적인데? 좋아! 데이터 탭을 확인해봐! 📊"
-            add_message("assistant", response)
-            st.rerun()
-
-    st.divider()
-
-    # 자유 대화 입력
-    user_input = st.chat_input("캐스터에게 메시지 보내기...")
-    if user_input:
-        add_message("user", user_input)
-
-        # 이름 입력 체크
-        if st.session_state.user_name is None and st.session_state.episode_stage == "intro":
-            # 이름 정리 (조사 제거)
-            cleaned_name = clean_name(user_input)
-            st.session_state.user_name = cleaned_name
-            response = f"오, {cleaned_name} 탐정! 멋진 이름이네? 🎉 자, 그럼 사건 해결 시작해볼까? 데이터 탭을 확인해봐! 뭔가 말이 이상하지?"
-            st.session_state.episode_stage = "exploration"
-        else:
-            context = STAGE_CONTEXTS.get(st.session_state.episode_stage, "")
-            response = get_kastor_response(user_input, context)
-
-        add_message("assistant", response)
-        st.rerun()
-
-# 데이터 열 (왼쪽)
-with col_data:
-    st.subheader("📊 사건 증거 데이터")
-
-    # 데이터 영역 (스테이지별 순차 공개)
-    if st.session_state.episode_stage == "intro":
-        st.info("👉 오른쪽 캐스터와 대화를 시작해보세요!")
-
-    # 1단계: 캐릭터 데이터 (exploration부터 공개)
-    if st.session_state.episode_stage in ["exploration", "hypothesis_1", "hypothesis_2", "hypothesis_3", "conclusion"]:
-        is_current = st.session_state.episode_stage == "exploration"
-        title = "🎮 캐릭터 승률 데이터" + (" 👈 여기부터!" if is_current else " ✅" if "exploration" in st.session_state.evidence_found else "")
-
-        with st.expander(title, expanded=is_current):
-            st.caption("💡 데이터를 클릭하거나 호버하면 자세한 정보를 볼 수 있습니다")
-
-            st.dataframe(characters_df, use_container_width=True)
-
-            # 승률 차트 with 색상 범례 설명
-            st.markdown("**📊 차트 안내**: 색상은 승률을 나타냅니다 (빨강=낮음 → 노랑=보통 → 초록=높음)")
-            fig = px.bar(
-                characters_df.sort_values("평균_승률", ascending=False),
-                x="캐릭터명",
-                y="평균_승률",
-                color="평균_승률",
-                color_continuous_scale="RdYlGn",
-                title="캐릭터별 승률 비교",
-                labels={"평균_승률": "승률 (%)"}
-            )
-            fig.add_hline(y=50, line_dash="dash", line_color="gray", annotation_text="평균 50%")
-            fig.update_layout(
-                coloraxis_colorbar=dict(
-                    title="승률 (%)",
-                    tickvals=[40, 50, 60, 70, 80],
-                )
-            )
-            st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': True})
-
-    # 2단계: 일별 데이터 (hypothesis_1부터 공개)
-    if st.session_state.episode_stage in ["hypothesis_1", "hypothesis_2", "hypothesis_3", "conclusion"]:
-        is_current = st.session_state.episode_stage == "hypothesis_1"
-        title = "📅 셰도우 일별 승률 변화" + (" 👈 지금 여기!" if is_current else " ✅" if "hypothesis_1" in st.session_state.evidence_found else "")
-
-        with st.expander(title, expanded=is_current):
-            st.caption("💡 그래프를 드래그해서 확대하고, 데이터 포인트에 호버하면 자세한 정보를 볼 수 있습니다")
-
-            st.dataframe(shadow_daily_df, use_container_width=True)
-
-            # 시계열 차트 with 인터랙션 개선
-            st.markdown("**📊 차트 안내**: 빨간 선은 셰도우의 승률 변화를 나타냅니다. 점선은 정상 범위(50%)입니다")
-            fig = go.Figure()
-            fig.add_trace(go.Scatter(
-                x=shadow_daily_df["날짜"],
-                y=shadow_daily_df["승률"],
-                mode='lines+markers',
-                name='셰도우 승률',
-                line=dict(color='red', width=3),
-                marker=dict(size=8),
-                hovertemplate='%{x}<br>승률: %{y}%<extra></extra>'
-            ))
-            fig.add_hline(y=50, line_dash="dash", line_color="gray", annotation_text="정상 범위 (50%)")
-            fig.update_layout(
-                title="셰도우 일별 승률 추이",
-                xaxis_title="날짜",
-                yaxis_title="승률 (%)",
-                hovermode='x unified',
-                dragmode='zoom'
-            )
-            st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': True})
-
-    # 3단계: 패치 노트 (hypothesis_1부터 공개)
-    if st.session_state.episode_stage in ["hypothesis_1", "hypothesis_2", "hypothesis_3", "conclusion"]:
-        with st.expander("📄 공식 패치 노트", expanded=False):
-            st.caption("💡 표를 스크롤하여 모든 패치 내역을 확인하세요")
-            st.dataframe(patch_notes_df, use_container_width=True, height=300)
-
-    # 4단계: 서버 로그 (hypothesis_2부터 공개)
-    if st.session_state.episode_stage in ["hypothesis_2", "hypothesis_3", "conclusion"]:
-        with st.expander("🖥️ 서버 로그 (필터링된 데이터)", expanded=(st.session_state.episode_stage == "hypothesis_2")):
-            st.caption("💡 표에서 수상한 패턴을 찾아보세요")
-            st.dataframe(server_logs_df, use_container_width=True, height=300)
-
-            # 중요 로그 하이라이트
-            suspicious_log = server_logs_df[server_logs_df["승인토큰"].str.contains("DBG", na=False)]
-            if not suspicious_log.empty and st.session_state.episode_stage == "hypothesis_3":
-                st.warning("🔍 **중요 발견!**")
-                st.dataframe(suspicious_log, use_container_width=True)
-
-    # 5단계: 플레이어 프로필 (hypothesis_3부터 공개)
-    if st.session_state.episode_stage in ["hypothesis_3", "conclusion"]:
-        with st.expander("👤 플레이어 프로필 - 녹티스", expanded=(st.session_state.episode_stage == "hypothesis_3")):
-            st.caption("💡 IP 주소와 기기 정보를 주의깊게 확인하세요")
-            st.dataframe(player_profile_df, use_container_width=True, height=200)
-
-            # 승률 변화 차트 with 개선
-            st.markdown("**📊 차트 안내**: 보라색 선은 녹티스의 승률 변화입니다")
-            fig = go.Figure()
-            fig.add_trace(go.Scatter(
-                x=player_profile_df["날짜"],
-                y=player_profile_df["승률"],
-                mode='lines+markers',
-                name='녹티스 승률',
-                line=dict(color='purple', width=3),
-                marker=dict(size=8),
-                hovertemplate='%{x}<br>승률: %{y}%<extra></extra>'
-            ))
-            fig.add_hline(y=50, line_dash="dash", line_color="gray", annotation_text="평균 50%")
-            fig.update_layout(
-                title="녹티스(플레이어) 승률 변화",
-                xaxis_title="날짜",
-                yaxis_title="승률 (%)",
-                hovermode='x unified'
-            )
-            st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': True})
-
-            if st.session_state.episode_stage == "hypothesis_3":
-                st.error("🎯 **결정적 증거**: IP 주소와 기기 지문이 일치합니다!")
-
-    # 6단계: 25일 밤 매치 세션 (hypothesis_3부터 공개)
-    if st.session_state.episode_stage in ["hypothesis_3", "conclusion"]:
-        with st.expander("🎮 25일 밤 매치 기록 (녹티스)", expanded=False):
-            st.caption("💡 시간대별 매치 결과를 확인하세요")
-            st.dataframe(match_sessions_df, use_container_width=True, height=300)
-
-            if st.session_state.episode_stage == "hypothesis_3":
-                st.success("✅ **타임라인 분석**: 수정 직후 플레이가 시작되었습니다")
-
-                if st.button("🎉 사건 해결! 카이토가 범인이야!"):
-                    st.session_state.episode_stage = "conclusion"
-
-                    # 사건 해결 배지 및 점수
-                    st.session_state.detective_score += 50
-                    if award_badge("⭐ 마스터 탐정"):
-                        add_message("assistant", "🎊 축하합니다! 최종 배지 획득: ⭐ 마스터 탐정!")
-
-                    conclusion = """🎉 대박! 사건 해결! +50점!
-
-    **범인**: 카이토 (밸런스 디자이너)
-    **방법**: 25일 23:47 집에서 debug_token으로 무단 수정
-    **동기**: 자신의 셰도우 버프 제안이 옳다는 것을 증명하고 싶었음
-    **증거**:
-    1. 서버 로그: admin01_kaito가 23:47에 셰도우 수정 (집 IP)
-    2. 플레이어 프로필: 녹티스 = 카이토 (같은 IP, 같은 기기)
-    3. 매치 기록: 수정 3분 후 플레이 시작, 90% 승률
-
-**오늘 배운 것:**
-1. **이상치 탐지**: 급격한 변화는 외부 개입 의심
-2. **타임라인 분석**: 이벤트와 변화 매칭하기
-3. **로그 필터링**: 빅데이터에서 증거 찾기
-4. **디지털 지문**: IP & 기기 지문으로 신원 추적
-
-완벽한 데이터 탐정이었어! 🍕"""
-                add_message("assistant", conclusion)
-                st.rerun()
-
-# 진행상황 섹션 (하단)
+# 진행상황 섹션 (상단)
 st.divider()
 st.subheader("🎯 탐정 진행 상황")
 
@@ -787,36 +522,246 @@ st.info(f"**현재 단계:** {current_stage}")
 
 st.divider()
 
-# 증거 체크리스트
-st.markdown('<div class="detective-board">', unsafe_allow_html=True)
-st.markdown("### 🔎 증거 보드")
-st.markdown("</div>", unsafe_allow_html=True)
+# 2열 레이아웃 (데이터 / 채팅) - 왼쪽에 데이터, 오른쪽에 채팅
+col_data, col_chat = st.columns([2, 1])
 
-evidence_checklist = {
-    "25일 승률 급등 발견": "exploration" in st.session_state.evidence_found,
-    "패치 노트 확인": "hypothesis_1" in st.session_state.evidence_found,
-    "서버 로그 분석": "hypothesis_2" in st.session_state.evidence_found,
-    "용의자 특정": "hypothesis_3" in st.session_state.evidence_found,
-    "증거 연결 완료": st.session_state.episode_stage == "conclusion"
-}
+# 채팅 열 (오른쪽)
+with col_chat:
+    st.subheader("💬 탐정 파트너 캐스터")
 
-for evidence, found in evidence_checklist.items():
-    card_class = "evidence-card found" if found else "evidence-card"
-    status = "✅" if found else "⬜"
-    st.markdown(f'<div class="{card_class}">{status} {evidence}</div>', unsafe_allow_html=True)
+    # 대화 표시 - 자동 스크롤 JavaScript 추가
+    st.markdown("""
+    <script>
+    // 채팅 자동 스크롤
+    function scrollToBottom() {
+        const chatContainer = window.parent.document.querySelector('[data-testid="stVerticalBlock"]');
+        if (chatContainer) {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    }
+    // 페이지 로드 시 및 메시지 추가 시 자동 스크롤
+    setTimeout(scrollToBottom, 100);
+    </script>
+    """, unsafe_allow_html=True)
 
+    # 대화 표시
+    chat_container = st.container(height=700)
+    with chat_container:
+        # 이전 메시지는 일반 표시
+        for i, message in enumerate(st.session_state.messages[:-1]):
+            with st.chat_message(message["role"]):
+                st.write(message["content"])
+
+        # 가장 최근 메시지는 타이핑 효과
+        if len(st.session_state.messages) > 0:
+            last_msg = st.session_state.messages[-1]
+            if len(st.session_state.messages) > st.session_state.last_message_count:
+                # 새 메시지 - 타이핑 효과
+                display_message_with_typing(last_msg["role"], last_msg["content"])
+                st.session_state.last_message_count = len(st.session_state.messages)
+            else:
+                # 기존 메시지 - 일반 표시
+                with st.chat_message(last_msg["role"]):
+                    st.write(last_msg["content"])
+
+    st.divider()
+
+    # 선택지 버튼 (스테이지별)
+    if st.session_state.episode_stage == "intro":
+        if st.button("🚀 탐정 시작!", use_container_width=True, type="primary"):
+            add_message("user", "시작하자!")
+            st.session_state.episode_stage = "exploration"
+
+            # 탐색 시작 배지
+            if award_badge("🔍 이상치 탐정"):
+                add_message("assistant", "🏆 배지 획득: 🔍 이상치 탐정!")
+
+            response = get_kastor_response(
+                "시작하자!",
+                STAGE_CONTEXTS["exploration"]
+            )
+            add_message("assistant", response)
+            st.rerun()
+
+    st.divider()
+
+# 데이터 열 (왼쪽)
+with col_data:
+    st.subheader("📊 사건 증거 데이터")
+
+    # 데이터 영역을 스크롤 가능한 컨테이너로 감싸기
+    data_container = st.container(height=700)
+    with data_container:
+        # 데이터 영역 (스테이지별 순차 공개)
+        if st.session_state.episode_stage == "intro":
+            st.info("👉 오른쪽 캐스터와 대화를 시작해보세요!")
+
+        # 1단계: 캐릭터 데이터 (exploration부터 공개)
+        if st.session_state.episode_stage in ["exploration", "hypothesis_1", "hypothesis_2", "hypothesis_3", "conclusion"]:
+            is_current = st.session_state.episode_stage == "exploration"
+            title = "🎮 캐릭터 승률 데이터" + (" 👈 여기부터!" if is_current else " ✅" if "exploration" in st.session_state.evidence_found else "")
+
+            with st.expander(title, expanded=is_current):
+                st.caption("💡 데이터를 클릭하거나 호버하면 자세한 정보를 볼 수 있습니다")
+
+                st.dataframe(characters_df, use_container_width=True)
+
+                # 승률 차트 with 색상 범례 설명
+                st.markdown("**📊 차트 안내**: 색상은 승률을 나타냅니다 (빨강=낮음 → 노랑=보통 → 초록=높음)")
+                fig = px.bar(
+                    characters_df.sort_values("평균_승률", ascending=False),
+                    x="캐릭터명",
+                    y="평균_승률",
+                    color="평균_승률",
+                    color_continuous_scale="RdYlGn",
+                    title="캐릭터별 승률 비교",
+                    labels={"평균_승률": "승률 (%)"}
+                )
+                fig.add_hline(y=50, line_dash="dash", line_color="gray", annotation_text="평균 50%")
+                fig.update_layout(
+                    coloraxis_colorbar=dict(
+                        title="승률 (%)",
+                        tickvals=[40, 50, 60, 70, 80],
+                    )
+                )
+                st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': True})
+
+        # 2단계: 일별 데이터 (hypothesis_1부터 공개)
+        if st.session_state.episode_stage in ["hypothesis_1", "hypothesis_2", "hypothesis_3", "conclusion"]:
+            is_current = st.session_state.episode_stage == "hypothesis_1"
+            title = "📅 셰도우 일별 승률 변화" + (" 👈 지금 여기!" if is_current else " ✅" if "hypothesis_1" in st.session_state.evidence_found else "")
+
+            with st.expander(title, expanded=is_current):
+                st.caption("💡 그래프를 드래그해서 확대하고, 데이터 포인트에 호버하면 자세한 정보를 볼 수 있습니다")
+
+                st.dataframe(shadow_daily_df, use_container_width=True)
+
+                # 시계열 차트 with 인터랙션 개선
+                st.markdown("**📊 차트 안내**: 빨간 선은 셰도우의 승률 변화를 나타냅니다. 점선은 정상 범위(50%)입니다")
+                fig = go.Figure()
+                fig.add_trace(go.Scatter(
+                    x=shadow_daily_df["날짜"],
+                    y=shadow_daily_df["승률"],
+                    mode='lines+markers',
+                    name='셰도우 승률',
+                    line=dict(color='red', width=3),
+                    marker=dict(size=8),
+                    hovertemplate='%{x}<br>승률: %{y}%<extra></extra>'
+                ))
+                fig.add_hline(y=50, line_dash="dash", line_color="gray", annotation_text="정상 범위 (50%)")
+                fig.update_layout(
+                    title="셰도우 일별 승률 추이",
+                    xaxis_title="날짜",
+                    yaxis_title="승률 (%)",
+                    hovermode='x unified',
+                    dragmode='zoom'
+                )
+                st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': True})
+
+        # 3단계: 패치 노트 (hypothesis_1부터 공개)
+        if st.session_state.episode_stage in ["hypothesis_1", "hypothesis_2", "hypothesis_3", "conclusion"]:
+            with st.expander("📄 공식 패치 노트", expanded=False):
+                st.caption("💡 표를 스크롤하여 모든 패치 내역을 확인하세요")
+                st.dataframe(patch_notes_df, use_container_width=True, height=300)
+
+        # 4단계: 서버 로그 (hypothesis_2부터 공개)
+        if st.session_state.episode_stage in ["hypothesis_2", "hypothesis_3", "conclusion"]:
+            with st.expander("🖥️ 서버 로그 (필터링된 데이터)", expanded=(st.session_state.episode_stage == "hypothesis_2")):
+                st.caption("💡 표에서 수상한 패턴을 찾아보세요")
+                st.dataframe(server_logs_df, use_container_width=True, height=300)
+
+                # 중요 로그 하이라이트
+                suspicious_log = server_logs_df[server_logs_df["승인토큰"].str.contains("DBG", na=False)]
+                if not suspicious_log.empty and st.session_state.episode_stage == "hypothesis_3":
+                    st.warning("🔍 **중요 발견!**")
+                    st.dataframe(suspicious_log, use_container_width=True)
+
+        # 5단계: 플레이어 프로필 (hypothesis_3부터 공개)
+        if st.session_state.episode_stage in ["hypothesis_3", "conclusion"]:
+            with st.expander("👤 플레이어 프로필 - 녹티스", expanded=(st.session_state.episode_stage == "hypothesis_3")):
+                st.caption("💡 IP 주소와 기기 정보를 주의깊게 확인하세요")
+                st.dataframe(player_profile_df, use_container_width=True, height=200)
+
+                # 승률 변화 차트 with 개선
+                st.markdown("**📊 차트 안내**: 보라색 선은 녹티스의 승률 변화입니다")
+                fig = go.Figure()
+                fig.add_trace(go.Scatter(
+                    x=player_profile_df["날짜"],
+                    y=player_profile_df["승률"],
+                    mode='lines+markers',
+                    name='녹티스 승률',
+                    line=dict(color='purple', width=3),
+                    marker=dict(size=8),
+                    hovertemplate='%{x}<br>승률: %{y}%<extra></extra>'
+                ))
+                fig.add_hline(y=50, line_dash="dash", line_color="gray", annotation_text="평균 50%")
+                fig.update_layout(
+                    title="녹티스(플레이어) 승률 변화",
+                    xaxis_title="날짜",
+                    yaxis_title="승률 (%)",
+                    hovermode='x unified'
+                )
+                st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': True})
+
+                if st.session_state.episode_stage == "hypothesis_3":
+                    st.error("🎯 **결정적 증거**: IP 주소와 기기 지문이 일치합니다!")
+
+        # 6단계: 25일 밤 매치 세션 (hypothesis_3부터 공개)
+        if st.session_state.episode_stage in ["hypothesis_3", "conclusion"]:
+            with st.expander("🎮 25일 밤 매치 기록 (녹티스)", expanded=False):
+                st.caption("💡 시간대별 매치 결과를 확인하세요")
+                st.dataframe(match_sessions_df, use_container_width=True, height=300)
+
+                if st.session_state.episode_stage == "hypothesis_3":
+                    st.success("✅ **타임라인 분석**: 수정 직후 플레이가 시작되었습니다")
+
+                    if st.button("🎉 사건 해결! 카이토가 범인이야!"):
+                        st.session_state.episode_stage = "conclusion"
+
+                        # 사건 해결 배지 및 점수
+                        st.session_state.detective_score += 50
+                        if award_badge("⭐ 마스터 탐정"):
+                            add_message("assistant", "🎊 축하합니다! 최종 배지 획득: ⭐ 마스터 탐정!")
+
+                        conclusion = """🎉 대박! 사건 해결! +50점!
+
+        **범인**: 카이토 (밸런스 디자이너)
+        **방법**: 25일 23:47 집에서 debug_token으로 무단 수정
+        **동기**: 자신의 셰도우 버프 제안이 옳다는 것을 증명하고 싶었음
+        **증거**:
+        1. 서버 로그: admin01_kaito가 23:47에 셰도우 수정 (집 IP)
+        2. 플레이어 프로필: 녹티스 = 카이토 (같은 IP, 같은 기기)
+        3. 매치 기록: 수정 3분 후 플레이 시작, 90% 승률
+
+    **오늘 배운 것:**
+    1. **이상치 탐지**: 급격한 변화는 외부 개입 의심
+    2. **타임라인 분석**: 이벤트와 변화 매칭하기
+    3. **로그 필터링**: 빅데이터에서 증거 찾기
+    4. **디지털 지문**: IP & 기기 지문으로 신원 추적
+
+    완벽한 데이터 탐정이었어! 🍕"""
+                        add_message("assistant", conclusion)
+                        st.rerun()
+
+# 자유 대화 입력 (전체 하단 - 항상 접근 가능)
 st.divider()
+user_input = st.chat_input("캐스터에게 메시지 보내기...")
+if user_input:
+    add_message("user", user_input)
 
-# 가설 추적
-if st.session_state.hypotheses:
-    st.markdown("### 📋 내가 세운 가설들")
-    for i, hyp in enumerate(st.session_state.hypotheses, 1):
-        status = "✅" if hyp.get("verified") else "🔍"
-        st.write(f"{status} **가설 {i}**: {hyp['text']}")
-        if hyp.get("result"):
-            st.write(f"   → {hyp['result']}")
-else:
-    st.info("아직 가설을 세우지 않았어요. 채팅에서 가설을 선택해보세요!")
+    # 이름 입력 체크
+    if st.session_state.user_name is None and st.session_state.episode_stage == "intro":
+        # 이름 정리 (조사 제거)
+        cleaned_name = clean_name(user_input)
+        st.session_state.user_name = cleaned_name
+        response = f"오, {cleaned_name} 탐정! 멋진 이름이네? 🎉 자, 그럼 사건 해결 시작해볼까? 왼쪽 데이터 패널을 확인해봐! 뭔가 말이 이상하지?"
+        st.session_state.episode_stage = "exploration"
+    else:
+        context = STAGE_CONTEXTS.get(st.session_state.episode_stage, "")
+        response = get_kastor_response(user_input, context)
+
+    add_message("assistant", response)
+    st.rerun()
 
 # 푸터
 st.divider()
