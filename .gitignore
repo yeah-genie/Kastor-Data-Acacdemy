@@ -13,6 +13,7 @@ __pycache__/
 research_tool/output/
 *.xlsx
 *.csv
+!data/*.csv
 
 # Playwright
 test-results/
