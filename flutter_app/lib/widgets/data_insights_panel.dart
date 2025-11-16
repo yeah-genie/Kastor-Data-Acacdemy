@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../widgets/win_rate_chart.dart';
 import '../providers/settings_provider.dart';
 import '../providers/story_provider_v2.dart';
+import '../models/character_data.dart';
+import '../screens/character/character_profile_screen.dart';
 
 /// 데이터 인사이트 패널 - 데스크톱 왼쪽 / 모바일 Drawer에 표시
 class DataInsightsPanel extends ConsumerWidget {
@@ -15,9 +18,9 @@ class DataInsightsPanel extends ConsumerWidget {
     final isMobile = screenWidth < 900;
 
     return Container(
-      width: isMobile ? double.infinity : 380,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
+      width: double.infinity, // Fill parent width (7:3 비율로 제어됨)
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
@@ -25,14 +28,6 @@ class DataInsightsPanel extends ConsumerWidget {
             Color(0xFF0F172A),
           ],
         ),
-        border: !isMobile
-            ? Border(
-                right: BorderSide(
-                  color: const Color(0xFF6366F1).withOpacity(0.2),
-                  width: 1,
-                ),
-              )
-            : null,
       ),
       child: SafeArea(
         child: SingleChildScrollView(
@@ -99,6 +94,20 @@ class DataInsightsPanel extends ConsumerWidget {
                     '조사 중' if settings.language == 'ko' else 'Investigating',
                     valueColor: const Color(0xFFFBBF24),
                   ),
+                ],
+              ),
+
+              const SizedBox(height: 16),
+
+              // 인물 파일
+              _buildInfoCard(
+                title: settings.language == 'ko' ? '관련 인물' : 'Characters',
+                icon: Icons.people_outline,
+                children: [
+                  ...episode1Characters.map((char) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: _buildCharacterItem(char, settings.language, ref.context),
+                  )),
                 ],
               ),
 
@@ -412,5 +421,145 @@ class DataInsightsPanel extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildCharacterItem(CharacterData character, String language, BuildContext context) {
+    final isKo = language == 'ko';
+    final suspicionColor = _getCharacterSuspicionColor(character.suspicionLevel);
+
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CharacterProfileScreen(character: character),
+          ),
+        );
+      },
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: suspicionColor.withOpacity(0.3),
+            width: 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            // 아바타
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [
+                    suspicionColor.withOpacity(0.3),
+                    suspicionColor.withOpacity(0.1),
+                  ],
+                ),
+                border: Border.all(
+                  color: suspicionColor,
+                  width: 2,
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(6),
+                child: SvgPicture.asset(
+                  character.avatar,
+                  width: 28,
+                  height: 28,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            // 이름과 역할
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isKo ? character.nameKo : character.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    isKo ? character.roleKo : character.role,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.white.withOpacity(0.6),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // 의심 수준 인디케이터
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: suspicionColor.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.security,
+                    color: suspicionColor,
+                    size: 12,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    _getCharacterSuspicionText(character.suspicionLevel, isKo),
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: suspicionColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 4),
+            Icon(
+              Icons.chevron_right,
+              color: Colors.white.withOpacity(0.3),
+              size: 18,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _getCharacterSuspicionColor(String level) {
+    switch (level) {
+      case 'high':
+        return const Color(0xFFEF4444);
+      case 'medium':
+        return const Color(0xFFFBBF24);
+      case 'low':
+      default:
+        return const Color(0xFF10B981);
+    }
+  }
+
+  String _getCharacterSuspicionText(String level, bool isKo) {
+    switch (level) {
+      case 'high':
+        return isKo ? '높음' : 'High';
+      case 'medium':
+        return isKo ? '보통' : 'Med';
+      case 'low':
+      default:
+        return isKo ? '낮음' : 'Low';
+    }
   }
 }

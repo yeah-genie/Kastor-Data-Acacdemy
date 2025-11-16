@@ -13,7 +13,7 @@ load_dotenv()
 
 # 페이지 설정
 st.set_page_config(
-    page_title="캐스터 Data Academy - Episode 1",
+    page_title="Kastor Data Academy - Episode 1",
     page_icon="🔍",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -451,7 +451,7 @@ STAGE_CONTEXTS = {
 }
 
 # 헤더
-st.title("🔍 캐스터 Data Academy")
+st.title("🔍 Kastor Data Academy")
 st.subheader("Episode 1: 사라진 밸런스 패치")
 st.divider()
 
@@ -474,11 +474,11 @@ if st.session_state.episode_stage == "intro" and st.session_state.intro_step < l
     if st.session_state.intro_step < len(intro_messages):
         st.rerun()
 
-# 탭 레이아웃으로 변경 (데이터 / 채팅 / 진행상황)
-tab_data, tab_chat, tab_progress = st.tabs(["📊 데이터", "💬 채팅", "🎯 진행상황"])
+# 2열 레이아웃 (채팅 / 데이터)
+col_chat, col_data = st.columns([2, 3])
 
-# 채팅 탭
-with tab_chat:
+# 채팅 열
+with col_chat:
     st.subheader("💬 탐정 파트너 캐스터")
 
     # 대화 표시 - 자동 스크롤 JavaScript 추가
@@ -497,7 +497,7 @@ with tab_chat:
     """, unsafe_allow_html=True)
 
     # 대화 표시
-    chat_container = st.container(height=500)
+    chat_container = st.container(height=600)
     with chat_container:
         # 이전 메시지는 일반 표시
         for i, message in enumerate(st.session_state.messages[:-1]):
@@ -680,13 +680,13 @@ with tab_chat:
         add_message("assistant", response)
         st.rerun()
 
-# 데이터 탭
-with tab_data:
+# 데이터 열
+with col_data:
     st.subheader("📊 사건 증거 데이터")
 
     # 데이터 영역 (스테이지별 순차 공개)
     if st.session_state.episode_stage == "intro":
-        st.info("👈 오른쪽 캐스터와 대화를 시작해보세요!")
+        st.info("👈 왼쪽 캐스터와 대화를 시작해보세요!")
 
     # 1단계: 캐릭터 데이터 (exploration부터 공개)
     if st.session_state.episode_stage in ["exploration", "hypothesis_1", "hypothesis_2", "hypothesis_3", "conclusion"]:
@@ -826,93 +826,93 @@ with tab_data:
                 add_message("assistant", conclusion)
                 st.rerun()
 
-# 진행상황 탭
-with tab_progress:
-    st.subheader("🎯 탐정 진행 상황")
+# 진행상황 섹션 (하단)
+st.divider()
+st.subheader("🎯 탐정 진행 상황")
 
-    # 점수와 배지 표시
-    col_score, col_badges = st.columns(2)
+# 점수와 배지 표시
+col_score, col_badges = st.columns(2)
 
-    with col_score:
-        # 점수 애니메이션 표시
-        score_display = f'<div class="score-animation"><h1 style="color: #667eea;">⭐ {st.session_state.detective_score}점</h1></div>'
-        st.markdown(score_display, unsafe_allow_html=True)
-        st.caption(f"힌트 사용: {st.session_state.hints_used}/5")
+with col_score:
+    # 점수 애니메이션 표시
+    score_display = f'<div class="score-animation"><h1 style="color: #667eea;">⭐ {st.session_state.detective_score}점</h1></div>'
+    st.markdown(score_display, unsafe_allow_html=True)
+    st.caption(f"힌트 사용: {st.session_state.hints_used}/5")
 
-    with col_badges:
-        st.markdown("### 🏆 획득 배지")
-        if st.session_state.badges:
-            for badge in st.session_state.badges:
-                badge_html = f'<div class="badge badge-gold" style="display: block; margin: 0.5rem 0;">{badge}</div>'
-                st.markdown(badge_html, unsafe_allow_html=True)
-        else:
-            st.info("아직 획득한 배지가 없어요. 증거를 찾아보세요!")
-
-    st.divider()
-
-    # 진행률 표시
-    progress_map = {
-        "intro": 0,
-        "exploration": 20,
-        "hypothesis_1": 40,
-        "hypothesis_2": 60,
-        "hypothesis_3": 80,
-        "conclusion": 100
-    }
-    progress = progress_map.get(st.session_state.episode_stage, 0)
-
-    st.markdown("### 🔍 사건 진행률")
-    st.progress(progress / 100)
-    st.caption(f"{progress}% 완료")
-
-    # 현재 단계 설명
-    stage_descriptions = {
-        "intro": "🎬 사건 소개 단계",
-        "exploration": "🔍 데이터 탐색 단계 - 이상 징후를 찾아보세요!",
-        "hypothesis_1": "📋 가설 검증 1단계 - 패치 노트를 확인하세요!",
-        "hypothesis_2": "🖥️ 가설 검증 2단계 - 서버 로그를 분석하세요!",
-        "hypothesis_3": "🎯 범인 특정 단계 - 증거를 연결하세요!",
-        "conclusion": "🎉 사건 해결! 축하합니다!"
-    }
-    current_stage = stage_descriptions.get(st.session_state.episode_stage, "탐색 중")
-    st.info(f"**현재 단계:** {current_stage}")
-
-    st.divider()
-
-    # 증거 체크리스트
-    st.markdown('<div class="detective-board">', unsafe_allow_html=True)
-    st.markdown("### 🔎 증거 보드")
-    st.markdown("</div>", unsafe_allow_html=True)
-
-    evidence_checklist = {
-        "25일 승률 급등 발견": "exploration" in st.session_state.evidence_found,
-        "패치 노트 확인": "hypothesis_1" in st.session_state.evidence_found,
-        "서버 로그 분석": "hypothesis_2" in st.session_state.evidence_found,
-        "용의자 특정": "hypothesis_3" in st.session_state.evidence_found,
-        "증거 연결 완료": st.session_state.episode_stage == "conclusion"
-    }
-
-    for evidence, found in evidence_checklist.items():
-        card_class = "evidence-card found" if found else "evidence-card"
-        status = "✅" if found else "⬜"
-        st.markdown(f'<div class="{card_class}">{status} {evidence}</div>', unsafe_allow_html=True)
-
-    st.divider()
-
-    # 가설 추적
-    if st.session_state.hypotheses:
-        st.markdown("### 📋 내가 세운 가설들")
-        for i, hyp in enumerate(st.session_state.hypotheses, 1):
-            status = "✅" if hyp.get("verified") else "🔍"
-            st.write(f"{status} **가설 {i}**: {hyp['text']}")
-            if hyp.get("result"):
-                st.write(f"   → {hyp['result']}")
+with col_badges:
+    st.markdown("### 🏆 획득 배지")
+    if st.session_state.badges:
+        for badge in st.session_state.badges:
+            badge_html = f'<div class="badge badge-gold" style="display: block; margin: 0.5rem 0;">{badge}</div>'
+            st.markdown(badge_html, unsafe_allow_html=True)
     else:
-        st.info("아직 가설을 세우지 않았어요. 채팅 탭에서 가설을 선택해보세요!")
+        st.info("아직 획득한 배지가 없어요. 증거를 찾아보세요!")
+
+st.divider()
+
+# 진행률 표시
+progress_map = {
+    "intro": 0,
+    "exploration": 20,
+    "hypothesis_1": 40,
+    "hypothesis_2": 60,
+    "hypothesis_3": 80,
+    "conclusion": 100
+}
+progress = progress_map.get(st.session_state.episode_stage, 0)
+
+st.markdown("### 🔍 사건 진행률")
+st.progress(progress / 100)
+st.caption(f"{progress}% 완료")
+
+# 현재 단계 설명
+stage_descriptions = {
+    "intro": "🎬 사건 소개 단계",
+    "exploration": "🔍 데이터 탐색 단계 - 이상 징후를 찾아보세요!",
+    "hypothesis_1": "📋 가설 검증 1단계 - 패치 노트를 확인하세요!",
+    "hypothesis_2": "🖥️ 가설 검증 2단계 - 서버 로그를 분석하세요!",
+    "hypothesis_3": "🎯 범인 특정 단계 - 증거를 연결하세요!",
+    "conclusion": "🎉 사건 해결! 축하합니다!"
+}
+current_stage = stage_descriptions.get(st.session_state.episode_stage, "탐색 중")
+st.info(f"**현재 단계:** {current_stage}")
+
+st.divider()
+
+# 증거 체크리스트
+st.markdown('<div class="detective-board">', unsafe_allow_html=True)
+st.markdown("### 🔎 증거 보드")
+st.markdown("</div>", unsafe_allow_html=True)
+
+evidence_checklist = {
+    "25일 승률 급등 발견": "exploration" in st.session_state.evidence_found,
+    "패치 노트 확인": "hypothesis_1" in st.session_state.evidence_found,
+    "서버 로그 분석": "hypothesis_2" in st.session_state.evidence_found,
+    "용의자 특정": "hypothesis_3" in st.session_state.evidence_found,
+    "증거 연결 완료": st.session_state.episode_stage == "conclusion"
+}
+
+for evidence, found in evidence_checklist.items():
+    card_class = "evidence-card found" if found else "evidence-card"
+    status = "✅" if found else "⬜"
+    st.markdown(f'<div class="{card_class}">{status} {evidence}</div>', unsafe_allow_html=True)
+
+st.divider()
+
+# 가설 추적
+if st.session_state.hypotheses:
+    st.markdown("### 📋 내가 세운 가설들")
+    for i, hyp in enumerate(st.session_state.hypotheses, 1):
+        status = "✅" if hyp.get("verified") else "🔍"
+        st.write(f"{status} **가설 {i}**: {hyp['text']}")
+        if hyp.get("result"):
+            st.write(f"   → {hyp['result']}")
+else:
+    st.info("아직 가설을 세우지 않았어요. 채팅에서 가설을 선택해보세요!")
 
 # 푸터
 st.divider()
-st.caption("💡 Tip: 탭을 전환하며 데이터를 확인하고, 캐스터와 대화하며 사건을 해결하세요!")
+st.caption("💡 Tip: 왼쪽 채팅창에서 캐스터와 대화하고, 오른쪽에서 데이터를 확인하며 사건을 해결하세요!")
 
 # 디버그 정보 (개발용)
 with st.sidebar:
