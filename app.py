@@ -142,19 +142,25 @@ def add_mobile_styles():
         box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
     }
 
-    /* 사용자 메시지 스타일 (오른쪽, 노란색 말풍선) */
+    /* 사용자 메시지 스타일 (오른쪽, 회색 말풍선) */
     .stChatMessage[data-testid="user-message"] {
-        background: linear-gradient(135deg, #FFE500 0%, #FFF3A0 100%) !important;
-        margin-left: 20% !important;
+        background: linear-gradient(135deg, #E5E5EA 0%, #D1D1D6 100%) !important;
+        margin-left: 25% !important;
         border-bottom-right-radius: 4px !important;
     }
 
-    /* AI 메시지 스타일 (왼쪽, 흰색 말풍선) */
+    /* AI 메시지 스타일 (왼쪽, 보라색 말풍선) */
     .stChatMessage[data-testid="assistant-message"] {
-        background: white !important;
-        margin-right: 20% !important;
+        background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%) !important;
+        margin-right: 25% !important;
         border-bottom-left-radius: 4px !important;
-        border: 1px solid #e0e0e0 !important;
+        border: none !important;
+    }
+
+    /* AI 메시지 텍스트는 흰색으로 */
+    .stChatMessage[data-testid="assistant-message"] p,
+    .stChatMessage[data-testid="assistant-message"] * {
+        color: white !important;
     }
 
     /* 메시지 내용 텍스트 스타일 */
@@ -626,9 +632,30 @@ with layout_col2:
         st.session_state.layout_mode = "tab" if st.session_state.layout_mode == "column" else "column"
         st.rerun()
 
-# 레이아웃 렌더링 - 채팅 중심 레이아웃
+# 레이아웃 렌더링 - 반응형 2분할 레이아웃
+# 반응형 감지용 JavaScript
+st.markdown("""
+<script>
+// 화면 크기 감지 및 쿠키 저장
+(function() {
+    const width = window.innerWidth;
+    let mode = 'column'; // 기본값: 2분할
+
+    if (width <= 768) {
+        mode = 'tab'; // 모바일: 탭
+    } else if (width <= 1024) {
+        mode = 'tab'; // 태블릿: 탭
+    } else {
+        mode = 'column'; // 데스크톱: 2분할
+    }
+
+    document.cookie = "layout_mode=" + mode + "; path=/";
+})();
+</script>
+""", unsafe_allow_html=True)
+
 if st.session_state.layout_mode == "tab":
-    # 탭 모드 (모바일 친화적) - 채팅 탭을 먼저
+    # 탭 모드 (모바일/태블릿) - 채팅 탭을 먼저
     tab1, tab2 = st.tabs(["💬 채팅", "📊 데이터"])
 
     with tab1:
@@ -636,10 +663,8 @@ if st.session_state.layout_mode == "tab":
     with tab2:
         col_data = st.container()
 else:
-    # 새로운 레이아웃: 채팅 전체, 데이터는 하단 확장 가능
-    col_chat = st.container()
-    with st.expander("📊 데이터 증거 보기 (클릭하여 펼치기)", expanded=False):
-        col_data = st.container()
+    # 2열 레이아웃 (데스크톱용) - 왼쪽 채팅, 오른쪽 데이터
+    col_chat, col_data = st.columns([1, 1])
 
 # 채팅 열 (왼쪽 또는 첫 번째 탭)
 with col_chat:
@@ -821,7 +846,7 @@ with col_chat:
                 st.rerun()
 
         with col2:
-            if st.button("😊 좋아! 같이 해보자!", use_container_width=True, type="primary", key="scene0_r2_together"):
+            if st.button("😊 좋아! 같이 해보자!", use_container_width=True, key="scene0_r2_together"):
                 add_message("user", "좋아! 같이 해보자!")
                 add_message("assistant", "오예! 완벽한 팀이 될 거야! 데이터 사건은 우리한테 맡겨!")
                 add_message("assistant", "자! 그럼 이름부터 알려줘! 계속 '야~' 하고 부를 수는 없잖아?")
@@ -926,7 +951,7 @@ with col_chat:
 
     # Scene 2: 마야에게 전화 (exploration 시작)
     elif st.session_state.episode_stage == "exploration":
-        if st.button("📞 마야에게 전화 걸기", use_container_width=True, type="primary", key="btn_20_____________"):
+        if st.button("📞 마야에게 전화 걸기", use_container_width=True, key="btn_20_____________"):
             # Scene 2 대화
             scene_2_messages = [
                 "*[전화 거는 소리]*",
@@ -968,7 +993,7 @@ with col_chat:
                     st.error("❌ 다시 그래프를 확인해봐!")
                     st.rerun()
             with col2:
-                if st.button("25일", use_container_width=True, type="primary", key="btn_18_25_"):
+                if st.button("25일", use_container_width=True, key="btn_18_25_"):
                     st.session_state.graph_verified = True
                     add_message("user", "25일에 급등했어!")
                     st.rerun()
@@ -1079,7 +1104,7 @@ with col_chat:
         st.markdown("**캐스터**: 자, 공식 패치 노트 확인!")
         st.markdown("왼쪽 데이터 패널에서 '📄 공식 패치 노트'를 펼쳐서 2025-01-25를 찾아봐!")
 
-        if st.button("📋 패치 노트 확인 완료!", use_container_width=True, type="primary", key="btn_10_______________"):
+        if st.button("📋 패치 노트 확인 완료!", use_container_width=True, key="btn_10_______________"):
             add_message("user", "패치 노트 확인! 셰도우: 변경사항 없음이라고 써있어!")
             add_message("assistant", "'셰도우: 변경사항 없음'...")
             add_message("assistant", "근데 그래프는 뭐라고 했어?")
@@ -1106,7 +1131,7 @@ with col_chat:
 - 28일: 버그 수정 → 셰도우 약간 하락
 """)
 
-        if st.button("💡 25일에 '알 수 없는 이벤트'가 발생!", use_container_width=True, type="primary", key="btn_9___25____________________"):
+        if st.button("💡 25일에 '알 수 없는 이벤트'가 발생!", use_container_width=True, key="btn_9___25____________________"):
             add_message("user", "25일에 공식 이벤트가 없는데 셰도우만 급등했어!")
             add_message("assistant", "**대박! 완벽해!**")
             add_message("assistant", "25일 좀 봐! 공식 이벤트가 없는데 셰도우만 급등...")
@@ -1142,7 +1167,7 @@ with col_chat:
 - ⚙️ **무엇을** 했는지 (수행한 작업)
 """)
 
-        if st.button("🔍 서버 로그 확인 시작!", use_container_width=True, type="primary", key="btn_8_______________"):
+        if st.button("🔍 서버 로그 확인 시작!", use_container_width=True, key="btn_8_______________"):
             add_message("user", "서버 로그 보자!")
             add_message("assistant", "그럼 누가 셰도우 바꿨는지 볼 수 있겠네?")
             add_message("assistant", "응! 근데... 로그가 10,000개야.")
@@ -1199,7 +1224,7 @@ with col_chat:
         elif st.session_state.filter_date or st.session_state.filter_user or st.session_state.filter_action:
             st.info(f"💡 필터 설정 중... ({sum([bool(st.session_state.filter_date), bool(st.session_state.filter_user), bool(st.session_state.filter_action)])}/3)")
 
-        if st.button("🔍 필터 적용하기", use_container_width=True, type="primary",
+        if st.button("🔍 필터 적용하기", use_container_width=True,
                      disabled=not (st.session_state.filter_date and st.session_state.filter_user and st.session_state.filter_action), key="btn_filter_apply"):
             add_message("user", "25일, 카이토, Modify로 필터링!")
             add_message("assistant", "**찾았다! 이거야!**")
@@ -1237,7 +1262,7 @@ IP 주소: 203.0.113.45 (집 IP!)
         st.markdown("### 👤 Scene 6: 플레이어 프로필 분석")
         st.markdown("**캐스터**: 카이토가 셰도우 수정하고... 3분 후!")
 
-        if st.button("🔍 플레이어 '녹티스' 프로필 확인", use_container_width=True, type="primary", key="btn_6____________________"):
+        if st.button("🔍 플레이어 '녹티스' 프로필 확인", use_container_width=True, key="btn_6____________________"):
             add_message("user", "녹티스 프로필 확인!")
             add_message("assistant", """
 👤 **플레이어 프로필: 녹티스**
@@ -1279,7 +1304,7 @@ IP 주소: 203.0.113.45
         st.markdown("---")
         st.markdown("### ⏰ Scene 7-10: 타임라인 완성 & 사건 해결")
 
-        if st.button("🎯 카이토가 범인이야! 사건 해결!", use_container_width=True, type="primary", key="btn_5____________________"):
+        if st.button("🎯 카이토가 범인이야! 사건 해결!", use_container_width=True, key="btn_5____________________"):
             add_message("user", "카이토가 범인이야!")
             add_message("assistant", """🎉 **대박! 사건 해결! +50점!**
 
@@ -1358,7 +1383,7 @@ IP 주소: 203.0.113.45
                 st.rerun()
 
         with col2:
-            if st.button("📊 내 결과 보기", use_container_width=True, type="primary", key="btn_3__________"):
+            if st.button("📊 내 결과 보기", use_container_width=True, key="btn_3__________"):
                 st.balloons()
                 user_display_name = st.session_state.user_name if st.session_state.user_name else "탐정"
                 st.info(f"""
@@ -1385,7 +1410,7 @@ IP 주소: 203.0.113.45
             st.error(f"⚠️ API 오류가 발생했습니다: {st.session_state.api_error}")
             col1, col2 = st.columns(2)
             with col1:
-                if st.button("🔄 다시 시도", use_container_width=True, type="primary", key="btn_2________"):
+                if st.button("🔄 다시 시도", use_container_width=True, key="btn_2________"):
                     if st.session_state.last_user_message:
                         context = STAGE_CONTEXTS.get(st.session_state.episode_stage, "")
                         response = get_kastor_response(st.session_state.last_user_message, context)
