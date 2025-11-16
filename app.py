@@ -658,7 +658,354 @@ with col_chat:
                 st.session_state.episode_stage = "exploration"
                 st.rerun()
 
-    # exploration 이후: 자유 채팅
+    # Scene 2: 마야에게 전화 (exploration 시작)
+    elif st.session_state.episode_stage == "exploration":
+        if st.button("📞 마야에게 전화 걸기", use_container_width=True, type="primary"):
+            # Scene 2 대화
+            scene_2_messages = [
+                "*[전화 거는 소리]*",
+                "**마야**: 여보세요? 탐정님?",
+                "네, 메일 받았어요. 자세히 설명해주실 수 있나요?",
+                "**마야**: 셰도우 승률이 **25일**에 급등했어요. 분명히 패치 안 했는데 커뮤니티에서는 우리가 거짓말한다고...",
+                "**캐스터**: 안녕하세요~ 저 AI 조수 캐스터예요!",
+                "**마야**: 아, AI? 신기하다! 안녕하세요!",
+                "하하! 게임 데이터 좀 보내주실 수 있어요? 패치 노트, 서버 로그, 플레이어 통계!",
+                "**마야**: 지금 바로 보낼게요!",
+                "**마야**: 제발 빨리 해결해주세요. 시간 갈수록 플레이어들이 떠나요!",
+                "해결해드릴게요.",
+                "*[전화 끊김]*",
+                "자, 데이터 받았다!",
+                "AI니까! 속도 빠름!",
+            ]
+            for msg in scene_2_messages:
+                add_message("assistant", msg)
+
+            st.session_state.episode_stage = "scene_3_graph"
+            st.session_state.detective_score += 10
+            st.rerun()
+
+    # Scene 3: 그래프 분석
+    elif st.session_state.episode_stage == "scene_3_graph":
+        st.markdown("---")
+        st.markdown("### 📊 Scene 3: 그래프 분석")
+        st.markdown("**캐스터**: 자자자! **승률 그래프** 열어보자!")
+        st.markdown("왼쪽 데이터 패널에서 '📅 셰도우 일별 승률 변화' 그래프를 확인해봐!")
+
+        if st.button("🔍 그래프 확인 완료!", use_container_width=True, type="primary"):
+            add_message("user", "그래프 확인했어! 25일에 수직으로 솟았어!")
+            add_message("assistant", "우주 가는 로켓 같지? 붕~ 하고!")
+            add_message("assistant", "피닉스(파란 선)도 조금 올라가는데 그건 계단 오르는 것처럼 완만해. 셰도우는? 엘리베이터!")
+            add_message("assistant", "확실히 차이 나지?")
+            add_message("assistant", "자, 이제부터 진짜 게임 시작이야!")
+            add_message("assistant", "🎮 **미니게임 1.1: 급등 찾기**")
+            add_message("assistant", "두구두구두구! 첫 번째 데이터 게임!")
+
+            st.session_state.episode_stage = "minigame_1_1"
+            st.session_state.detective_score += 15
+            st.rerun()
+
+    # 미니게임 1.1: 급등 찾기
+    elif st.session_state.episode_stage == "minigame_1_1":
+        st.markdown("---")
+        st.markdown("### 🎮 미니게임 1.1: 급등 찾기")
+        st.markdown("**캐스터**: 셰도우 승률이 가장 의심스럽게 급등한 날을 찾아!")
+        st.markdown("**힌트**: 그래프에서 빨간 선이 수직으로 솟은 날짜는?")
+
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            if st.button("📅 24일", use_container_width=True):
+                add_message("user", "24일?")
+                add_message("assistant", "오~ 아깝다! 24일은 급등 전이야. 다시!")
+                st.rerun()
+
+        with col2:
+            if st.button("📅 25일 ✅", use_container_width=True, type="primary"):
+                add_message("user", "25일!")
+                add_message("assistant", "**우와! 정답!**")
+                add_message("assistant", "완벽해! 그것도 엄청 빨리 찾았어!")
+                add_message("assistant", "25일이 바로 셰도우 승률이 폭발한 날이야!")
+                add_message("assistant", "하루 만에 50%에서 85%로...")
+                add_message("assistant", "그게 바로 **이상치 탐지**! 데이터에서 이상한 거 찾아내는 거지.")
+                add_message("assistant", "🏆 **+25점** — 이상치 탐정 배지 획득! ⭐")
+                add_message("assistant", """📊 **데이터 배움 타임 #1: 트렌드 읽기**
+✓ 점진적 변화 = 자연스러움 (연습, 학습)
+✓ 급격한 급등 = 의심스러움 (외부 개입)
+✓ 항상 다른 데이터와 비교하기""")
+
+                st.session_state.detective_score += 25
+                if award_badge("⭐ 이상치 탐정"):
+                    pass
+
+                st.session_state.episode_stage = "choice_2_investigation"
+                st.rerun()
+
+        with col3:
+            if st.button("📅 26일", use_container_width=True):
+                add_message("user", "26일?")
+                add_message("assistant", "오~ 아깝다! 26일은 이미 올라간 '후'야. 우리가 찾는 건 '폭발한 순간'! 다시 한 번!")
+                st.rerun()
+
+    # 인터랙티브 선택 #2: 무엇을 먼저 조사할까?
+    elif st.session_state.episode_stage == "choice_2_investigation":
+        st.markdown("---")
+        st.markdown("### 🔍 인터랙티브 선택 #2: 무엇을 먼저 조사할까?")
+        st.markdown("**캐스터**: 자, 이제 뭘 볼까?")
+
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            if st.button("📄 A) 공식 패치 노트", use_container_width=True, type="primary"):
+                add_message("user", "A) 공식 패치 노트 확인")
+                add_message("assistant", "오! 현명한 선택!")
+                add_message("assistant", "항상 **공식 기록**부터 확인해야 해. 기계 분해하기 전에 설명서 읽는 것처럼!")
+                add_message("assistant", "역시 똑똑해!")
+                add_message("assistant", "🏆 **+10점** — 체계적 접근!")
+
+                st.session_state.detective_score += 10
+                st.session_state.episode_stage = "scene_4_patch_notes"
+                st.rerun()
+
+        with col2:
+            if st.button("🎤 B) 플레이어 인터뷰", use_container_width=True):
+                add_message("user", "B) 플레이어 인터뷰")
+                add_message("assistant", "플레이어 인터뷰? 오~ 현장 목격자!")
+                add_message("assistant", "좋은 생각인데... 하나 빠뜨렸어.")
+                add_message("assistant", "플레이어들은 '뭐'가 일어났는지는 알아. 근데 '왜'는 몰라.")
+                add_message("assistant", "공식 기록 먼저 보고, 그 다음에 물어봐야 뭘 물을지 알지!")
+                add_message("assistant", "순서가 중요해! **+5점**")
+
+                st.session_state.detective_score += 5
+                st.rerun()
+
+        with col3:
+            if st.button("🖥️ C) 서버 로그", use_container_width=True):
+                add_message("user", "C) 서버 로그 확인")
+                add_message("assistant", "오~ 서버 로그! 기술적 접근!")
+                add_message("assistant", "마음에 들어! 근데... 로그가 10,000줄이야.")
+                add_message("assistant", "뭘 찾아야 할지 모르면 헤매. 패치 노트로 단서 찾고, 그 다음 로그 보는 게 효율적!")
+                add_message("assistant", "데이터도 순서가 있어! **+5점**")
+
+                st.session_state.detective_score += 5
+                st.rerun()
+
+    # Scene 4: 문서 분석 + 미니게임 1.2
+    elif st.session_state.episode_stage == "scene_4_patch_notes":
+        st.markdown("---")
+        st.markdown("### 📄 Scene 4: 문서 분석")
+        st.markdown("**캐스터**: 자, 공식 패치 노트 확인!")
+        st.markdown("왼쪽 데이터 패널에서 '📄 공식 패치 노트'를 펼쳐서 2025-01-25를 찾아봐!")
+
+        if st.button("📋 패치 노트 확인 완료!", use_container_width=True, type="primary"):
+            add_message("user", "패치 노트 확인! 셰도우: 변경사항 없음이라고 써있어!")
+            add_message("assistant", "'셰도우: 변경사항 없음'...")
+            add_message("assistant", "근데 그래프는 뭐라고 했어?")
+            add_message("assistant", "...35% 폭등.")
+            add_message("assistant", "그치? 누군가 거짓말하고 있어.")
+            add_message("assistant", "노트가? 아니면 데이터가?")
+            add_message("assistant", "둘 중 하나! 타임라인 맞춰보면 알 수 있어!")
+
+            st.session_state.episode_stage = "minigame_1_2"
+            st.session_state.detective_score += 15
+            st.rerun()
+
+    # 미니게임 1.2: 타임라인 탐정
+    elif st.session_state.episode_stage == "minigame_1_2":
+        st.markdown("---")
+        st.markdown("### 🎮 미니게임 1.2: 타임라인 탐정")
+        st.markdown("**캐스터**: 자자! 두 번째 게임! '타임라인 퍼즐'!")
+        st.markdown("**임무**: 25일에 무슨 일이 일어났는지 추리해봐!")
+        st.markdown("""
+**타임라인**:
+- 15일: 신규 챔피언 출시 → 다른 캐릭터들 작은 변화
+- 20일: 서버 점검 → 변화 없음
+- 25일: ??? → 셰도우 대규모 급등 ⚠️
+- 28일: 버그 수정 → 셰도우 약간 하락
+""")
+
+        if st.button("💡 25일에 '알 수 없는 이벤트'가 발생!", use_container_width=True, type="primary"):
+            add_message("user", "25일에 공식 이벤트가 없는데 셰도우만 급등했어!")
+            add_message("assistant", "**대박! 완벽해!**")
+            add_message("assistant", "25일 좀 봐! 공식 이벤트가 없는데 셰도우만 급등...")
+            add_message("assistant", "타임라인이 패치 노트가 말 안 하는 걸 보여주고 있어!")
+            add_message("assistant", "공식 기록이 데이터랑 안 맞을 때는?")
+            add_message("assistant", "누군가 몰래 뭔가 했다?")
+            add_message("assistant", "빙고! **장부에 없는 일**을 한 거야!")
+            add_message("assistant", "🏆 **+30점** — 타임라인 마스터 배지 획득! 🔍")
+            add_message("assistant", """📊 **데이터 배움 타임 #2: 타임라인 분석**
+✓ 이벤트가 변화를 만듦 (패치 → 승률 변화)
+✓ 누락된 이벤트 = 의심 (패치 없는데 급등?)
+✓ 타임라인 공백이 숨겨진 행동을 드러냄""")
+
+            st.session_state.detective_score += 30
+            if award_badge("🔍 타임라인 마스터"):
+                pass
+
+            st.session_state.episode_stage = "scene_5_server_logs"
+            st.rerun()
+
+    # Scene 5: 서버 로그 + 미니게임 1.3
+    elif st.session_state.episode_stage == "scene_5_server_logs":
+        st.markdown("---")
+        st.markdown("### 🖥️ Scene 5: 서버 로그 분석")
+        st.markdown("**캐스터**: 자! 서버 로그 파헤칠 시간!")
+        st.markdown("컴퓨터의... CCTV 영상! 비유로는... 음식 배달 기록?")
+        st.markdown("배달 앱에 '누가, 언제, 어디서, 뭘 시켰는지' 다 남잖아?")
+        st.markdown("""
+📚 **데이터 배움 타임 #3: 서버 로그**
+- 🕐 **언제** 누군가 로그인했는지
+- 👤 **누가** 로그인했는지 (사용자명)
+- 📍 **어디서** 로그인했는지 (IP 주소)
+- ⚙️ **무엇을** 했는지 (수행한 작업)
+""")
+
+        if st.button("🔍 서버 로그 확인 시작!", use_container_width=True, type="primary"):
+            add_message("user", "서버 로그 보자!")
+            add_message("assistant", "그럼 누가 셰도우 바꿨는지 볼 수 있겠네?")
+            add_message("assistant", "응! 근데... 로그가 10,000개야.")
+            add_message("assistant", "하하! 놀랐지? 걱정 마! 필터 쓰면 돼!")
+
+            st.session_state.episode_stage = "minigame_1_3"
+            st.session_state.detective_score += 10
+            st.rerun()
+
+    # 미니게임 1.3: 로그 필터링
+    elif st.session_state.episode_stage == "minigame_1_3":
+        st.markdown("---")
+        st.markdown("### 🎮 미니게임 1.3: 코드 단서 헌터")
+        st.markdown("**캐스터**: 자자자! 마지막 게임! '로그 헌터 챔피언십'!")
+        st.markdown("**임무**: 필터를 사용해서 무단 수정을 증명하는 단 하나의 로그를 찾아!")
+        st.markdown("""
+**필터 힌트**:
+1. 📅 날짜: 25일 (급등한 날)
+2. 👤 사용자: 카이토 (admin01)
+3. ⚙️ 작업: Modify (수정)
+""")
+
+        if st.button("🔍 필터 적용: 25일 + 카이토 + Modify", use_container_width=True, type="primary"):
+            add_message("user", "25일, 카이토, Modify로 필터링!")
+            add_message("assistant", "**찾았다! 이거야!**")
+            add_message("assistant", """
+🔍 **증거 발견!**
+
+2025-01-25T23:47:22Z
+사용자: admin01 (카이토 나카무라)
+작업: MODIFY
+대상: Shadow.base_stats
+변경사항: ATK +15, DEF +10
+IP 주소: 203.0.113.45 (집 IP!)
+승인: debug_token=DBG-3344 ⚠️
+""")
+            add_message("assistant", "카이토가 밤 11시 47분에... 집에서! 셰도우를 수정했어!")
+            add_message("assistant", "그리고 봐봐! 디버그 토큰 사용!")
+            add_message("assistant", "긴급 접근 코드! 불 난 집에 뛰어들 때 쓰는 문 같은 거?")
+            add_message("assistant", "디버그 토큰은 중요한 버그 고칠 때만 써야 하는데... 밸런스 변경에 썼어! 이건 규칙 위반!")
+            add_message("assistant", "증거 확보!")
+            add_message("assistant", "🏆 **+35점** — 데이터 필터 전문가 배지 획득! 💾")
+            add_message("assistant", """📊 **데이터 배움 타임 #4: 데이터 필터링**
+✓ 필터가 빅데이터를 줄여줌 (10,000 → 1)
+✓ AND 논리: 모든 조건이 참이어야 함
+✓ 정확한 조합 찾기 = 탐정 기술!""")
+
+            st.session_state.detective_score += 35
+            if award_badge("💾 로그 헌터"):
+                pass
+
+            st.session_state.episode_stage = "scene_6_player_profile"
+            st.rerun()
+
+    # Scene 6: 플레이어 프로필 분석
+    elif st.session_state.episode_stage == "scene_6_player_profile":
+        st.markdown("---")
+        st.markdown("### 👤 Scene 6: 플레이어 프로필 분석")
+        st.markdown("**캐스터**: 카이토가 셰도우 수정하고... 3분 후!")
+
+        if st.button("🔍 플레이어 '녹티스' 프로필 확인", use_container_width=True, type="primary"):
+            add_message("user", "녹티스 프로필 확인!")
+            add_message("assistant", """
+👤 **플레이어 프로필: 녹티스**
+
+계정 나이: 3년
+주 캐릭터: 셀도우 (게임의 95%)
+랭크: 다이아몬드 II
+최근 성적:
+- 1~24일: 48% 승률 (평범)
+- 25일 (밤 11:50 이후): 90% 승률 (!!!)
+- 26~30일: 85% (여전히 높음)
+
+기기 지문: DFP:7a9c...
+IP 주소: 203.0.113.45
+""")
+            add_message("assistant", "잠깐... IP 주소가... 카이토 집 IP랑 똑같지?")
+            add_message("assistant", "기기 지문도... 카이토 핸드폰!")
+            add_message("assistant", "그럼... 카이토가 집에서 셰도우 수정하고... 바로 녹티스로 로그인해서 테스트한 거야!")
+            add_message("assistant", "완전 확실한 증거네!")
+            add_message("assistant", """📊 **데이터 배움 타임 #5: IP & 기기 지문**
+
+**IP 주소 = 인터넷 집 주소**
+- 치킨 배달 시키면 주소 필요하잖아?
+- 인터넷도 똑같아! 모든 기기가 주소 하나씩 받아
+- 203.0.113.45가 카이토 집 주소야
+
+**기기 지문 = 디지털 지문**
+- 네 지문이 너한테만 고유한 것처럼
+- 각 기기(핸드폰, 컴퓨터)도 고유 ID가 있어
+- DFP:7a9c...가 카이토 핸드폰 "지문"
+""")
+
+            st.session_state.episode_stage = "scene_7_timeline"
+            st.session_state.detective_score += 20
+            st.rerun()
+
+    # Scene 7~10: 사건 해결
+    elif st.session_state.episode_stage == "scene_7_timeline":
+        st.markdown("---")
+        st.markdown("### ⏰ Scene 7-10: 타임라인 완성 & 사건 해결")
+
+        if st.button("🎯 카이토가 범인이야! 사건 해결!", use_container_width=True, type="primary"):
+            add_message("user", "카이토가 범인이야!")
+            add_message("assistant", """🎉 **대박! 사건 해결! +50점!**
+
+**범인**: 카이토 (밸런스 디자이너)
+**방법**: 25일 23:47 집에서 debug_token으로 무단 수정
+**동기**: 자신의 셰도우 버프 제안이 옳다는 것을 증명하고 싶었음
+
+**증거**:
+1. 서버 로그: admin01_kaito가 23:47에 셰도우 수정 (집 IP)
+2. 플레이어 프로필: 녹티스 = 카이토 (같은 IP, 같은 기기)
+3. 매치 기록: 수정 3분 후 플레이 시작, 90% 승률
+
+**오늘 배운 것:**
+1. **이상치 탐지**: 급격한 변화는 외부 개입 의심
+2. **타임라인 분석**: 이벤트와 변화 매칭하기
+3. **로그 필터링**: 빅데이터에서 증거 찾기
+4. **디지털 지문**: IP & 기기 지문으로 신원 추적
+
+완벽한 데이터 탐정이었어! 🍕
+""")
+
+            st.session_state.detective_score += 50
+            if award_badge("⭐ 마스터 탐정"):
+                add_message("assistant", "🎊 축하합니다! 최종 배지 획득: ⭐ 마스터 탐정!")
+
+            st.session_state.episode_stage = "conclusion"
+            st.rerun()
+
+    # 결론
+    elif st.session_state.episode_stage == "conclusion":
+        st.markdown("---")
+        st.markdown("### 🎉 사건 해결 완료!")
+        st.markdown(f"**최종 점수**: {st.session_state.detective_score}점")
+        st.markdown(f"**획득 배지**: {len(st.session_state.badges)}개")
+
+        if st.button("🔄 처음부터 다시 하기"):
+            st.session_state.messages = []
+            st.session_state.episode_stage = "scene_0"
+            st.session_state.detective_score = 0
+            st.session_state.badges = []
+            st.session_state.user_name = None
+            st.session_state.awaiting_name_input = False
+            st.rerun()
+
+    # 기타 스테이지: 자유 채팅
     else:
         user_input = st.chat_input("캐스터에게 메시지 보내기...")
         if user_input:
@@ -681,10 +1028,10 @@ with col_data:
         if st.session_state.episode_stage in ["scene_0", "scene_1_hypothesis"]:
             st.info("👉 오른쪽 캐스터와 대화를 시작해보세요!")
 
-        # 1단계: 캐릭터 데이터 (exploration부터 공개)
-        if st.session_state.episode_stage in ["exploration", "hypothesis_1", "hypothesis_2", "hypothesis_3", "conclusion"]:
-            is_current = st.session_state.episode_stage == "exploration"
-            title = "🎮 캐릭터 승률 데이터" + (" 👈 여기부터!" if is_current else " ✅" if "exploration" in st.session_state.evidence_found else "")
+        # 1단계: 캐릭터 데이터 (scene_3_graph부터 공개)
+        if st.session_state.episode_stage in ["scene_3_graph", "minigame_1_1", "choice_2_investigation", "scene_4_patch_notes", "minigame_1_2", "scene_5_server_logs", "minigame_1_3", "scene_6_player_profile", "scene_7_timeline", "conclusion"]:
+            is_current = st.session_state.episode_stage == "scene_3_graph"
+            title = "🎮 캐릭터 승률 데이터" + (" 👈 여기부터!" if is_current else " ✅")
 
             with st.expander(title, expanded=is_current):
                 st.caption("💡 데이터를 클릭하거나 호버하면 자세한 정보를 볼 수 있습니다")
@@ -711,10 +1058,10 @@ with col_data:
                 )
                 st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': True})
 
-        # 2단계: 일별 데이터 (hypothesis_1부터 공개)
-        if st.session_state.episode_stage in ["hypothesis_1", "hypothesis_2", "hypothesis_3", "conclusion"]:
-            is_current = st.session_state.episode_stage == "hypothesis_1"
-            title = "📅 셰도우 일별 승률 변화" + (" 👈 지금 여기!" if is_current else " ✅" if "hypothesis_1" in st.session_state.evidence_found else "")
+        # 2단계: 일별 데이터 (scene_3_graph부터 공개)
+        if st.session_state.episode_stage in ["scene_3_graph", "minigame_1_1", "choice_2_investigation", "scene_4_patch_notes", "minigame_1_2", "scene_5_server_logs", "minigame_1_3", "scene_6_player_profile", "scene_7_timeline", "conclusion"]:
+            is_current = st.session_state.episode_stage in ["scene_3_graph", "minigame_1_1"]
+            title = "📅 셰도우 일별 승률 변화" + (" 👈 지금 여기!" if is_current else " ✅")
 
             with st.expander(title, expanded=is_current):
                 st.caption("💡 그래프를 드래그해서 확대하고, 데이터 포인트에 호버하면 자세한 정보를 볼 수 있습니다")
@@ -743,27 +1090,30 @@ with col_data:
                 )
                 st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': True})
 
-        # 3단계: 패치 노트 (hypothesis_1부터 공개)
-        if st.session_state.episode_stage in ["hypothesis_1", "hypothesis_2", "hypothesis_3", "conclusion"]:
-            with st.expander("📄 공식 패치 노트", expanded=False):
+        # 3단계: 패치 노트 (scene_4_patch_notes부터 공개)
+        if st.session_state.episode_stage in ["scene_4_patch_notes", "minigame_1_2", "scene_5_server_logs", "minigame_1_3", "scene_6_player_profile", "scene_7_timeline", "conclusion"]:
+            is_current = st.session_state.episode_stage == "scene_4_patch_notes"
+            with st.expander("📄 공식 패치 노트" + (" 👈 지금 여기!" if is_current else " ✅"), expanded=is_current):
                 st.caption("💡 표를 스크롤하여 모든 패치 내역을 확인하세요")
                 st.dataframe(patch_notes_df, use_container_width=True, height=300)
 
-        # 4단계: 서버 로그 (hypothesis_2부터 공개)
-        if st.session_state.episode_stage in ["hypothesis_2", "hypothesis_3", "conclusion"]:
-            with st.expander("🖥️ 서버 로그 (필터링된 데이터)", expanded=(st.session_state.episode_stage == "hypothesis_2")):
+        # 4단계: 서버 로그 (scene_5_server_logs부터 공개)
+        if st.session_state.episode_stage in ["scene_5_server_logs", "minigame_1_3", "scene_6_player_profile", "scene_7_timeline", "conclusion"]:
+            is_current = st.session_state.episode_stage in ["scene_5_server_logs", "minigame_1_3"]
+            with st.expander("🖥️ 서버 로그 (필터링된 데이터)" + (" 👈 지금 여기!" if is_current else " ✅"), expanded=is_current):
                 st.caption("💡 표에서 수상한 패턴을 찾아보세요")
                 st.dataframe(server_logs_df, use_container_width=True, height=300)
 
                 # 중요 로그 하이라이트
                 suspicious_log = server_logs_df[server_logs_df["승인토큰"].str.contains("DBG", na=False)]
-                if not suspicious_log.empty and st.session_state.episode_stage == "hypothesis_3":
+                if not suspicious_log.empty and st.session_state.episode_stage in ["minigame_1_3", "scene_6_player_profile", "scene_7_timeline", "conclusion"]:
                     st.warning("🔍 **중요 발견!**")
                     st.dataframe(suspicious_log, use_container_width=True)
 
-        # 5단계: 플레이어 프로필 (hypothesis_3부터 공개)
-        if st.session_state.episode_stage in ["hypothesis_3", "conclusion"]:
-            with st.expander("👤 플레이어 프로필 - 녹티스", expanded=(st.session_state.episode_stage == "hypothesis_3")):
+        # 5단계: 플레이어 프로필 (scene_6_player_profile부터 공개)
+        if st.session_state.episode_stage in ["scene_6_player_profile", "scene_7_timeline", "conclusion"]:
+            is_current = st.session_state.episode_stage == "scene_6_player_profile"
+            with st.expander("👤 플레이어 프로필 - 녹티스" + (" 👈 지금 여기!" if is_current else " ✅"), expanded=is_current):
                 st.caption("💡 IP 주소와 기기 정보를 주의깊게 확인하세요")
                 st.dataframe(player_profile_df, use_container_width=True, height=200)
 
@@ -788,45 +1138,17 @@ with col_data:
                 )
                 st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': True})
 
-                if st.session_state.episode_stage == "hypothesis_3":
+                if st.session_state.episode_stage in ["scene_6_player_profile", "scene_7_timeline", "conclusion"]:
                     st.error("🎯 **결정적 증거**: IP 주소와 기기 지문이 일치합니다!")
 
-        # 6단계: 25일 밤 매치 세션 (hypothesis_3부터 공개)
-        if st.session_state.episode_stage in ["hypothesis_3", "conclusion"]:
+        # 6단계: 25일 밤 매치 세션 (scene_6_player_profile부터 공개)
+        if st.session_state.episode_stage in ["scene_6_player_profile", "scene_7_timeline", "conclusion"]:
             with st.expander("🎮 25일 밤 매치 기록 (녹티스)", expanded=False):
                 st.caption("💡 시간대별 매치 결과를 확인하세요")
                 st.dataframe(match_sessions_df, use_container_width=True, height=300)
 
-                if st.session_state.episode_stage == "hypothesis_3":
+                if st.session_state.episode_stage in ["scene_6_player_profile", "scene_7_timeline"]:
                     st.success("✅ **타임라인 분석**: 수정 직후 플레이가 시작되었습니다")
-
-                    if st.button("🎉 사건 해결! 카이토가 범인이야!"):
-                        st.session_state.episode_stage = "conclusion"
-
-                        # 사건 해결 배지 및 점수
-                        st.session_state.detective_score += 50
-                        if award_badge("⭐ 마스터 탐정"):
-                            add_message("assistant", "🎊 축하합니다! 최종 배지 획득: ⭐ 마스터 탐정!")
-
-                        conclusion = """🎉 대박! 사건 해결! +50점!
-
-        **범인**: 카이토 (밸런스 디자이너)
-        **방법**: 25일 23:47 집에서 debug_token으로 무단 수정
-        **동기**: 자신의 셰도우 버프 제안이 옳다는 것을 증명하고 싶었음
-        **증거**:
-        1. 서버 로그: admin01_kaito가 23:47에 셰도우 수정 (집 IP)
-        2. 플레이어 프로필: 녹티스 = 카이토 (같은 IP, 같은 기기)
-        3. 매치 기록: 수정 3분 후 플레이 시작, 90% 승률
-
-    **오늘 배운 것:**
-    1. **이상치 탐지**: 급격한 변화는 외부 개입 의심
-    2. **타임라인 분석**: 이벤트와 변화 매칭하기
-    3. **로그 필터링**: 빅데이터에서 증거 찾기
-    4. **디지털 지문**: IP & 기기 지문으로 신원 추적
-
-    완벽한 데이터 탐정이었어! 🍕"""
-                        add_message("assistant", conclusion)
-                        st.rerun()
 
 # 디버그 정보 (개발용)
 with st.sidebar:
