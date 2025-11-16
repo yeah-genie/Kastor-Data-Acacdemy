@@ -61,70 +61,73 @@ def clean_name(raw_name):
 
 # 모바일 감지 및 CSS 스타일링
 def add_mobile_styles():
-    """모바일 최적화 CSS 추가 (전역 스크롤 허용, 섹션별 스크롤)"""
+    """스크롤 최적화 CSS - 각 섹션만 독립적으로 스크롤"""
     st.markdown("""
     <style>
-    /* 전역 스크롤 허용 */
+    /* 전역 스크롤 제거 - 화면에 딱 맞게 */
     html, body, [data-testid="stAppViewContainer"], .main {
-        overflow: auto !important;
-        height: auto !important;
-        max-height: none !important;
+        overflow: hidden !important;
+        height: 100vh !important;
+        max-height: 100vh !important;
     }
 
     .main .block-container {
-        overflow: visible !important;
+        overflow: hidden !important;
         padding: 0.5rem 1rem !important;
         padding-bottom: 0 !important;
+        max-height: 100vh !important;
     }
 
-    /* 헤더 영역 축소 */
+    /* 헤더 영역 최소화 */
     .main .block-container > div:first-child {
         padding-top: 0.5rem !important;
     }
 
-    /* 주요 컨테이너들은 자체 스크롤 사용 */
-    [data-testid="stVerticalBlock"] > [data-testid="stVerticalBlock"] {
-        max-height: none !important;
+    /* 2열 레이아웃 - 각 열이 화면 높이에 맞게 */
+    [data-testid="column"] {
+        height: 90vh !important;
+        overflow-y: auto !important;
+        padding: 0.5rem !important;
     }
 
-    /* 탭 컨텐츠 높이 제한 */
+    /* 탭 컨텐츠 - 화면 꽉 채우기 */
     .stTabs [data-baseweb="tab-panel"] {
-        max-height: 75vh;
-        overflow-y: auto;
+        height: 85vh !important;
+        max-height: 85vh !important;
+        overflow-y: auto !important;
     }
 
-    /* 채팅 컨테이너 자동 스크롤 */
+    /* 채팅 컨테이너 - 높이 늘림 */
     [data-testid="stVerticalBlock"] > div:has(.stChatMessage) {
         display: flex !important;
         flex-direction: column !important;
         overflow-y: auto !important;
-        max-height: 70vh;
-        padding-bottom: 80px !important; /* 입력창 위한 공간 */
+        max-height: 75vh !important;
+        padding-bottom: 80px !important;
     }
 
     /* 모바일 최적화 */
     @media (max-width: 768px) {
         .block-container {
-            padding: 1rem 0.5rem !important;
+            padding: 0.5rem !important;
         }
 
         .stTabs [data-baseweb="tab-panel"] {
-            max-height: 70vh;
-            overflow-y: auto;
+            height: 80vh !important;
+            max-height: 80vh !important;
+        }
+
+        [data-testid="stVerticalBlock"] > div:has(.stChatMessage) {
+            max-height: 65vh !important;
+            padding-bottom: 100px !important;
         }
 
         .stExpander {
             font-size: 0.9rem;
         }
-
-        /* 모바일에서 채팅 컨테이너 높이 조정 */
-        [data-testid="stVerticalBlock"] > div:has(.stChatMessage) {
-            max-height: 60vh;
-            padding-bottom: 100px !important;
-        }
     }
 
-    /* 채팅 입력창 위치 고정 */
+    /* 채팅 입력창 고정 */
     .stChatFloatingInputContainer {
         position: sticky !important;
         bottom: 0px !important;
@@ -348,10 +351,15 @@ def add_mobile_styles():
         animation: scoreUp 0.5s ease-out;
     }
 
-    /* 데이터 컨테이너 높이 제한 */
+    /* 데이터 컨테이너 - expander 내부도 충분히 높게 */
     .stExpander > div > div {
-        max-height: 400px;
-        overflow-y: auto;
+        max-height: none !important;
+        overflow-y: visible !important;
+    }
+
+    /* 데이터 섹션 전체 높이 */
+    [data-testid="column"]:has(.stExpander) {
+        overflow-y: auto !important;
     }
 
     /* 모션 축소 환경 대응 */
