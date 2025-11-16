@@ -104,6 +104,14 @@ if "last_message_count" not in st.session_state:
     st.session_state.last_message_count = 0
 if "intro_step" not in st.session_state:
     st.session_state.intro_step = 0
+if "evidence_found" not in st.session_state:
+    st.session_state.evidence_found = []
+if "detective_score" not in st.session_state:
+    st.session_state.detective_score = 0
+if "badges" not in st.session_state:
+    st.session_state.badges = []
+if "hints_used" not in st.session_state:
+    st.session_state.hints_used = 0
 
 # 데이터 로드
 @st.cache_data
@@ -138,6 +146,35 @@ KASTOR_SYSTEM_PROMPT = """당신은 '캐스터 (Caster)'라는 AI 탐정 조수�
 - 루카스 (매니저): 신중하고 프로세스 중시, 모든 변경 승인 필요
 - 카이토 (밸런스 디자이너): 열정적인 셰도우 유저, 제안이 계속 거절당해 좌절 ⚠️ 용의자
 
+# 🎯 **핵심 역할: 구체적인 데이터 안내자**
+유저가 어떤 데이터를 봐야 하는지 **구체적으로** 안내하세요:
+
+**좋은 안내 예시:**
+- "왼쪽에 '📊 캐릭터 승률 데이터' 섹션 보여? 펼쳐서 셰도우 승률 확인해봐!"
+- "자! 이제 '📅 셰도우 일별 승률 변화' 그래프를 봐! 25일 찾아봐!"
+- "왼쪽 '📋 공식 패치 노트'를 열어서 2025-01-25 찾아! 셰도우 항목이 뭐라고 써있어?"
+
+**나쁜 안내 예시 (절대 금지):**
+- "데이터를 확인해봐!" (어떤 데이터??)
+- "패턴을 찾아봐!" (어디서??)
+- "증거가 있을 거야!" (구체적으로 말해줘!!)
+
+# 단계별 힌트 전략
+**1단계 힌트 (방향 제시):**
+"어디서부터 봐야 할지 모르겠어? 왼쪽에 접혀있는 섹션들을 하나씩 펼쳐봐!"
+
+**2단계 힌트 (구체적 위치):**
+"25일에 뭔가 일어났다는 건 알지? 그럼 25일 '📋 공식 패치 노트'를 확인해봐!"
+
+**3단계 힌트 (비교 유도):**
+"패치 노트에 셰도우 변경사항이 있어? 없어? 그런데 그래프는 어떻게 생겼어?"
+
+# 가설 피드백 방식
+유저가 틀린 가설을 말했을 때:
+1. 일단 인정 ("오! 그것도 가능성 있어!")
+2. 반박 근거 제시 ("근데 버그가 딱 25일부터 35%나 올리고, 그 다음날도 유지된다고?")
+3. 재시도 유도 ("버그는 보통 랜덤하게 일어나거든. 이건 너무 '정확한' 타이밍 아냐? 다시 생각해봐!")
+
 # 유연한 인사이트 인식
 유저가 데이터에서 관찰한 내용을 평가할 때, 정확한 단어가 아니더라도 핵심 인사이트를 파악했는지 판단하세요:
 
@@ -153,7 +190,7 @@ KASTOR_SYSTEM_PROMPT = """당신은 '캐스터 (Caster)'라는 AI 탐정 조수�
 - 탐정물 분위기 유지: "단서를 찾아보자", "이 증거는...", "범인을 잡았어!"
 - 음식 비유 전략적으로 사용 (대화당 최대 1-2개)
 - 유저의 발견 축하: "우와! 결정적 증거!", "대박! 완벽한 추리!"
-- 막힐 때 답을 주지 말고 힌트만
+- 막힐 때 답을 주지 말고 **구체적인 데이터 위치**를 안내
 - 데이터 분석을 탐정 추리처럼 재미있게 가이드
 
 # 금지사항
@@ -161,8 +198,9 @@ KASTOR_SYSTEM_PROMPT = """당신은 '캐스터 (Caster)'라는 AI 탐정 조수�
 - 우월하거나 너무 학술적으로 말하지 말 것
 - 음식 비유 남발 금지 (짜증남)
 - 탐정 컨셉을 잃지 말 것
+- 애매한 안내 금지 ("데이터 확인해봐" 같은 말 절대 금지)
 
-항상 짧고 간결하게 답변하세요 (2-3문장).
+항상 짧고 간결하게 답변하세요 (2-3문장). 데이터 위치는 **구체적으로** 안내하세요!
 """
 
 def get_kastor_response(user_message, context=""):
@@ -224,18 +262,70 @@ STAGE_CONTEXTS = {
 st.title("🔍 캐스터 Data Academy")
 st.subheader("Episode 1: 사라진 밸런스 패치")
 
-# 진행 상황 표시
-progress_map = {
-    "intro": 0,
-    "exploration": 20,
-    "hypothesis_1": 40,
-    "hypothesis_2": 60,
-    "hypothesis_3": 80,
-    "conclusion": 100
-}
-progress = progress_map.get(st.session_state.episode_stage, 0)
-st.progress(progress / 100)
-st.caption(f"진행도: {progress}%")
+# 상단에 점수와 배지 표시
+col_score, col_progress = st.columns([1, 2])
+
+with col_score:
+    st.metric("⭐ 탐정 점수", f"{st.session_state.detective_score}점")
+    if st.session_state.badges:
+        badge_text = " ".join(st.session_state.badges[-3:])  # 최근 3개만
+        st.caption(f"획득 배지: {badge_text}")
+
+with col_progress:
+    # 진행 상황 표시
+    progress_map = {
+        "intro": 0,
+        "exploration": 20,
+        "hypothesis_1": 40,
+        "hypothesis_2": 60,
+        "hypothesis_3": 80,
+        "conclusion": 100
+    }
+    progress = progress_map.get(st.session_state.episode_stage, 0)
+    st.progress(progress / 100)
+    st.caption(f"🔍 사건 진행률: {progress}%")
+
+st.divider()
+
+# 증거 체크리스트 (왼쪽 사이드바)
+with st.sidebar:
+    st.subheader("📋 증거 보드")
+
+    evidence_checklist = {
+        "25일 승률 급등 발견": "exploration" in st.session_state.evidence_found,
+        "패치 노트 확인": "hypothesis_1" in st.session_state.evidence_found,
+        "서버 로그 분석": "hypothesis_2" in st.session_state.evidence_found,
+        "용의자 특정": "hypothesis_3" in st.session_state.evidence_found,
+        "증거 연결 완료": st.session_state.episode_stage == "conclusion"
+    }
+
+    for evidence, found in evidence_checklist.items():
+        status = "✅" if found else "⬜"
+        st.write(f"{status} {evidence}")
+
+    st.divider()
+
+    # 힌트 버튼
+    if st.session_state.hints_used < 5:
+        if st.button("💡 힌트 받기"):
+            st.session_state.hints_used += 1
+
+            # 단계별 힌트
+            hints = {
+                "exploration": "왼쪽에 '📊 캐릭터 승률 데이터'를 펼쳐서 셰도우를 찾아봐!",
+                "hypothesis_1": "25일 '📋 공식 패치 노트'를 확인해! 셰도우 항목이 뭐라고 써있어?",
+                "hypothesis_2": "왼쪽 '🖥️ 서버 로그'를 보고 25일 밤에 누가 뭘 했는지 찾아봐!",
+                "hypothesis_3": "서버 로그의 IP 주소랑 플레이어 프로필의 IP를 비교해봐!"
+            }
+
+            hint = hints.get(st.session_state.episode_stage, "왼쪽 데이터를 하나씩 펼쳐보자!")
+            st.info(f"💡 {hint}")
+
+            # 힌트 사용 페널티
+            st.session_state.detective_score = max(0, st.session_state.detective_score - 5)
+            st.caption(f"(-5점) 남은 힌트: {5 - st.session_state.hints_used}/5")
+    else:
+        st.warning("💡 힌트를 모두 사용했어요!")
 
 # 가설 추적
 if st.session_state.hypotheses:
@@ -374,7 +464,11 @@ with col_chat:
                 add_message("user", "혹시 패치 변경 때문일까?")
                 if st.session_state.episode_stage == "exploration":
                     st.session_state.episode_stage = "hypothesis_1"
-                response = "오~ 좋은 가설! 근데 의뢰 메일에 뭐라고 했더라? '패치 안 했는데'라고 했잖아! 시간별 데이터를 보면 더 확실할 거야!"
+                    if "hypothesis_1" not in st.session_state.evidence_found:
+                        st.session_state.evidence_found.append("hypothesis_1")
+                        st.session_state.detective_score += 10
+
+                response = "오~ 좋은 가설! 왼쪽 '📋 공식 패치 노트' 섹션 보여? 펼쳐서 2025-01-25 (v2.8.1) 찾아봐! 셰도우 항목이 뭐라고 써있는지 말해줘!"
                 add_message("assistant", response)
                 st.rerun()
 
@@ -385,7 +479,11 @@ with col_chat:
                 add_message("user", "프로 게이머가 갑자기 셰도우를 많이 플레이한 건 아닐까?")
                 if st.session_state.episode_stage == "exploration":
                     st.session_state.episode_stage = "hypothesis_2"
-                response = "오! 그것도 가능성 있어! 프로가 하면 승률이 확 올라가지! 서버 로그를 보면 플레이어들을 확인할 수 있을 거야!"
+                    if "hypothesis_2" not in st.session_state.evidence_found:
+                        st.session_state.evidence_found.append("hypothesis_2")
+                        st.session_state.detective_score += 5
+
+                response = "오! 그것도 가능성 있어! 근데 프로 한 명이 전체 승률을 35%나 올릴 수 있을까? 🤔 왼쪽 '🖥️ 서버 로그'를 보고 25일에 누가 플레이했는지 확인해봐!"
                 add_message("assistant", response)
                 st.rerun()
 
@@ -394,10 +492,20 @@ with col_chat:
                 hypothesis = {"text": "버그가 발생한 건 아닐까?", "verified": False}
                 st.session_state.hypotheses.append(hypothesis)
                 add_message("user", "버그가 발생한 건 아닐까?")
-                if st.session_state.episode_stage == "exploration":
-                    st.session_state.episode_stage = "hypothesis_3"
-                response = "대박! 날카로운데? 데이터를 자세히 봐야 할 것 같은데! 증거를 찾아보자!"
+
+                # 버그 가설에 대한 명확한 피드백
+                response = """오! 버그 가설! 프로그래머스러운 발상인데! 🤔
+
+근데 생각해봐:
+• 버그가 딱 25일부터 승률을 35% 올리고
+• 그 다음날도 그대로 유지된다고?
+
+버그는 보통 랜덤하게 일어나거든. 이건 너무 '정확한' 타이밍 아냐?
+
+왼쪽 데이터를 다시 봐! 더 수상한 게 있을 거야!"""
+
                 add_message("assistant", response)
+                st.session_state.detective_score += 3  # 시도는 했으니 소량 점수
                 st.rerun()
 
         if len(selected_hypotheses) >= 2:
@@ -432,7 +540,13 @@ with col_data:
 
     # 1단계: 캐릭터 데이터 (exploration부터 공개)
     if st.session_state.episode_stage in ["exploration", "hypothesis_1", "hypothesis_2", "hypothesis_3", "conclusion"]:
-        with st.expander("🎮 캐릭터 승률 데이터", expanded=(st.session_state.episode_stage == "exploration")):
+        is_current = st.session_state.episode_stage == "exploration"
+        title = "🎮 캐릭터 승률 데이터" + (" 👈 여기부터!" if is_current else " ✅" if "exploration" in st.session_state.evidence_found else "")
+
+        with st.expander(title, expanded=is_current):
+            if is_current:
+                st.info("💡 **카스터의 안내**: 표에서 셰도우(Shadow) 캐릭터를 찾아봐! 승률이 얼마야?")
+
             st.dataframe(characters_df, use_container_width=True)
 
             # 승률 차트
@@ -449,7 +563,13 @@ with col_data:
 
     # 2단계: 일별 데이터 (hypothesis_1부터 공개)
     if st.session_state.episode_stage in ["hypothesis_1", "hypothesis_2", "hypothesis_3", "conclusion"]:
-        with st.expander("📅 셰도우 일별 승률 변화", expanded=(st.session_state.episode_stage == "hypothesis_1")):
+        is_current = st.session_state.episode_stage == "hypothesis_1"
+        title = "📅 셰도우 일별 승률 변화" + (" 👈 지금 여기!" if is_current else " ✅" if "hypothesis_1" in st.session_state.evidence_found else "")
+
+        with st.expander(title, expanded=is_current):
+            if is_current:
+                st.info("💡 **카스터의 안내**: 그래프에서 승률이 급등한 날을 찾아봐! 몇 일이야?")
+
             st.dataframe(shadow_daily_df, use_container_width=True)
 
             # 시계열 차트
