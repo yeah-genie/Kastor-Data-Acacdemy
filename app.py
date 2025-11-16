@@ -60,11 +60,11 @@ def add_mobile_styles():
     """모바일 최적화 CSS 추가"""
     st.markdown("""
     <style>
-    /* 전체 화면 높이 최적화 (탭 레이아웃) */
+    /* 전체 화면 높이 최적화 - viewport 100% */
     .main .block-container {
         max-height: 100vh;
-        overflow-y: auto;
-        padding-bottom: 2rem;
+        overflow: hidden;
+        padding: 1rem;
     }
 
     /* 탭 컨텐츠 높이 제한 */
@@ -492,7 +492,7 @@ with col_chat:
     """, unsafe_allow_html=True)
 
     # 대화 표시
-    chat_container = st.container(height=700)
+    chat_container = st.container(height=650)
     with chat_container:
         # 이전 메시지는 일반 표시
         for i, message in enumerate(st.session_state.messages[:-1]):
@@ -511,9 +511,7 @@ with col_chat:
                 with st.chat_message(last_msg["role"]):
                     st.write(last_msg["content"])
 
-    st.divider()
-
-    # 선택지 버튼 (스테이지별)
+    # 선택지 버튼 (스테이지별 - 컨테이너 밖)
     if st.session_state.episode_stage == "intro":
         if st.button("🚀 탐정 시작!", use_container_width=True, type="primary"):
             add_message("user", "시작하자!")
@@ -530,7 +528,24 @@ with col_chat:
             add_message("assistant", response)
             st.rerun()
 
-    st.divider()
+    # 채팅 입력창 (컬럼 내부)
+    user_input = st.chat_input("캐스터에게 메시지 보내기...")
+    if user_input:
+        add_message("user", user_input)
+
+        # 이름 입력 체크
+        if st.session_state.user_name is None and st.session_state.episode_stage == "intro":
+            # 이름 정리 (조사 제거)
+            cleaned_name = clean_name(user_input)
+            st.session_state.user_name = cleaned_name
+            response = f"오, {cleaned_name} 탐정! 멋진 이름이네? 🎉 자, 그럼 사건 해결 시작해볼까? 왼쪽 데이터 패널을 확인해봐! 뭔가 말이 이상하지?"
+            st.session_state.episode_stage = "exploration"
+        else:
+            context = STAGE_CONTEXTS.get(st.session_state.episode_stage, "")
+            response = get_kastor_response(user_input, context)
+
+        add_message("assistant", response)
+        st.rerun()
 
 # 데이터 열 (왼쪽)
 with col_data:
@@ -689,30 +704,6 @@ with col_data:
     완벽한 데이터 탐정이었어! 🍕"""
                         add_message("assistant", conclusion)
                         st.rerun()
-
-# 자유 대화 입력 (전체 하단 - 항상 접근 가능)
-st.divider()
-user_input = st.chat_input("캐스터에게 메시지 보내기...")
-if user_input:
-    add_message("user", user_input)
-
-    # 이름 입력 체크
-    if st.session_state.user_name is None and st.session_state.episode_stage == "intro":
-        # 이름 정리 (조사 제거)
-        cleaned_name = clean_name(user_input)
-        st.session_state.user_name = cleaned_name
-        response = f"오, {cleaned_name} 탐정! 멋진 이름이네? 🎉 자, 그럼 사건 해결 시작해볼까? 왼쪽 데이터 패널을 확인해봐! 뭔가 말이 이상하지?"
-        st.session_state.episode_stage = "exploration"
-    else:
-        context = STAGE_CONTEXTS.get(st.session_state.episode_stage, "")
-        response = get_kastor_response(user_input, context)
-
-    add_message("assistant", response)
-    st.rerun()
-
-# 푸터
-st.divider()
-st.caption("💡 Tip: 왼쪽 데이터 패널에서 증거를 탐색하고, 오른쪽 채팅창에서 캐스터와 대화하며 사건을 해결하세요!")
 
 # 디버그 정보 (개발용)
 with st.sidebar:
