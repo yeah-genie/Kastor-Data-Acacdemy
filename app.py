@@ -60,17 +60,42 @@ def add_mobile_styles():
     """모바일 최적화 CSS 추가"""
     st.markdown("""
     <style>
-    /* 전체 화면 높이 최적화 - viewport 100% */
+    /* 전체 페이지 스크롤 완전 제거 */
+    html, body, [data-testid="stAppViewContainer"], .main {
+        overflow: hidden !important;
+        height: 100vh !important;
+        max-height: 100vh !important;
+    }
+
     .main .block-container {
-        max-height: 100vh;
-        overflow: hidden;
-        padding: 1rem;
+        height: 100vh !important;
+        max-height: 100vh !important;
+        overflow: hidden !important;
+        padding: 0.5rem 1rem !important;
+        padding-bottom: 0 !important;
+    }
+
+    /* 헤더 영역 축소 */
+    .main .block-container > div:first-child {
+        padding-top: 0.5rem !important;
+    }
+
+    /* 컨테이너 높이 viewport 기준으로 제한 */
+    [data-testid="stVerticalBlock"] > [data-testid="stVerticalBlock"] {
+        max-height: calc(100vh - 80px) !important;
     }
 
     /* 탭 컨텐츠 높이 제한 */
     .stTabs [data-baseweb="tab-panel"] {
         max-height: 75vh;
         overflow-y: auto;
+    }
+
+    /* 채팅 컨테이너 자동 스크롤 */
+    [data-testid="stVerticalBlock"] > div:has(.stChatMessage) {
+        display: flex !important;
+        flex-direction: column !important;
+        overflow-y: auto !important;
     }
 
     /* 모바일 최적화 */
@@ -88,9 +113,9 @@ def add_mobile_styles():
         }
     }
 
-    /* 채팅 자동 스크롤 */
+    /* 채팅 입력창 위치 */
     .stChatFloatingInputContainer {
-        bottom: 20px;
+        bottom: 0px;
     }
 
     /* 메시지 간격 조정 */
@@ -450,10 +475,8 @@ STAGE_CONTEXTS = {
     "conclusion": "유저가 원인을 발견했습니다! 축하하고 배운 내용을 정리해주세요."
 }
 
-# 헤더
-st.title("🔍 Kastor Data Academy")
-st.subheader("Episode 1: 사라진 밸런스 패치")
-st.divider()
+# 헤더 (축소)
+st.markdown("### 🔍 Kastor Data Academy - Episode 1: 사라진 밸런스 패치")
 
 # 인트로 메시지 - 한 번에 표시
 if st.session_state.episode_stage == "intro" and len(st.session_state.messages) == 0:
@@ -470,7 +493,7 @@ if st.session_state.episode_stage == "intro" and len(st.session_state.messages) 
     st.session_state.last_message_count = len(st.session_state.messages)
 
 # 2열 레이아웃 (데이터 / 채팅) - 왼쪽에 데이터, 오른쪽에 채팅
-col_data, col_chat = st.columns([2, 1])
+col_data, col_chat = st.columns([3, 2])
 
 # 채팅 열 (오른쪽)
 with col_chat:
@@ -479,20 +502,34 @@ with col_chat:
     # 대화 표시 - 자동 스크롤 JavaScript 추가
     st.markdown("""
     <script>
-    // 채팅 자동 스크롤
-    function scrollToBottom() {
-        const chatContainer = window.parent.document.querySelector('[data-testid="stVerticalBlock"]');
-        if (chatContainer) {
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
+    // 채팅 자동 스크롤 - 새 메시지 감지 및 스크롤
+    function scrollChatToBottom() {
+        const containers = window.parent.document.querySelectorAll('[data-testid="stVerticalBlock"]');
+        containers.forEach(container => {
+            const chatMessages = container.querySelectorAll('.stChatMessage');
+            if (chatMessages.length > 0) {
+                container.scrollTop = container.scrollHeight;
+            }
+        });
     }
-    // 페이지 로드 시 및 메시지 추가 시 자동 스크롤
-    setTimeout(scrollToBottom, 100);
+
+    // 초기 로드 및 주기적 체크
+    setTimeout(scrollChatToBottom, 100);
+    setInterval(scrollChatToBottom, 500);
+
+    // MutationObserver로 DOM 변경 감지
+    const observer = new MutationObserver(scrollChatToBottom);
+    setTimeout(() => {
+        const appView = window.parent.document.querySelector('[data-testid="stAppViewContainer"]');
+        if (appView) {
+            observer.observe(appView, { childList: true, subtree: true });
+        }
+    }, 1000);
     </script>
     """, unsafe_allow_html=True)
 
     # 대화 표시
-    chat_container = st.container(height=650)
+    chat_container = st.container(height=800)
     with chat_container:
         # 이전 메시지는 일반 표시
         for i, message in enumerate(st.session_state.messages[:-1]):
@@ -511,7 +548,7 @@ with col_chat:
                 with st.chat_message(last_msg["role"]):
                     st.write(last_msg["content"])
 
-    # 선택지 버튼 (스테이지별 - 컨테이너 밖)
+    # intro 단계: 시작 버튼만 표시
     if st.session_state.episode_stage == "intro":
         if st.button("🚀 탐정 시작!", use_container_width=True, type="primary"):
             add_message("user", "시작하자!")
@@ -528,31 +565,24 @@ with col_chat:
             add_message("assistant", response)
             st.rerun()
 
-    # 채팅 입력창 (컬럼 내부)
-    user_input = st.chat_input("캐스터에게 메시지 보내기...")
-    if user_input:
-        add_message("user", user_input)
+    # exploration 이후: 채팅 입력창 표시
+    else:
+        user_input = st.chat_input("캐스터에게 메시지 보내기...")
+        if user_input:
+            add_message("user", user_input)
 
-        # 이름 입력 체크
-        if st.session_state.user_name is None and st.session_state.episode_stage == "intro":
-            # 이름 정리 (조사 제거)
-            cleaned_name = clean_name(user_input)
-            st.session_state.user_name = cleaned_name
-            response = f"오, {cleaned_name} 탐정! 멋진 이름이네? 🎉 자, 그럼 사건 해결 시작해볼까? 왼쪽 데이터 패널을 확인해봐! 뭔가 말이 이상하지?"
-            st.session_state.episode_stage = "exploration"
-        else:
             context = STAGE_CONTEXTS.get(st.session_state.episode_stage, "")
             response = get_kastor_response(user_input, context)
 
-        add_message("assistant", response)
-        st.rerun()
+            add_message("assistant", response)
+            st.rerun()
 
 # 데이터 열 (왼쪽)
 with col_data:
     st.subheader("📊 사건 증거 데이터")
 
     # 데이터 영역을 스크롤 가능한 컨테이너로 감싸기
-    data_container = st.container(height=700)
+    data_container = st.container(height=800)
     with data_container:
         # 데이터 영역 (스테이지별 순차 공개)
         if st.session_state.episode_stage == "intro":
