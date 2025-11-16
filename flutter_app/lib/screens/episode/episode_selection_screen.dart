@@ -71,6 +71,18 @@ class EpisodeSelectionScreen extends ConsumerWidget {
                         ],
                       ),
                     ),
+                    // 홈으로 가기 버튼
+                    IconButton(
+                      onPressed: () {
+                        Navigator.of(context).popUntil((route) => route.isFirst);
+                      },
+                      icon: Icon(
+                        Icons.home_outlined,
+                        color: Colors.white.withOpacity(0.9),
+                        size: isMobile ? 20 : 24,
+                      ),
+                      tooltip: 'Home',
+                    ),
                   ],
                 ),
               ),

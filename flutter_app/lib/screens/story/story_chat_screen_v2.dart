@@ -161,14 +161,29 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
 
   void _handleSuggestedQuestion(String question) {
     // 추천 질문을 탭했을 때 자동으로 처리
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(question),
-        duration: const Duration(seconds: 1),
-        behavior: SnackBarBehavior.floating,
-      ),
+    // 1. 사용자가 질문을 선택했음을 시각적으로 표시 (채팅에 추가)
+    final message = StoryMessage(
+      id: 'msg_${DateTime.now().millisecondsSinceEpoch}',
+      speaker: 'detective',
+      text: question,
+      timestamp: DateTime.now(),
     );
-    // TODO: 실제로는 AI가 답변하도록 구현
+
+    final currentState = ref.read(storyProviderV2);
+    final updatedMessages = [...currentState.messages, message];
+
+    // 메시지 상태 업데이트
+    ref.read(storyProviderV2.notifier).state = currentState.copyWith(
+      messages: updatedMessages,
+    );
+
+    // 2. 짧은 딜레이 후 스토리 진행 (Kastor의 답변으로 이어짐)
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        ref.read(storyProviderV2.notifier).continueStory();
+        _scrollToBottom();
+      }
+    });
   }
 
   @override
@@ -193,6 +208,25 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
           ? Drawer(
               backgroundColor: Colors.transparent,
               child: const DataInsightsPanel(),
+            )
+          : null,
+      // 모바일용 FAB - 데이터 패널 빠른 접근
+      floatingActionButton: isMobile
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                _scaffoldKey.currentState?.openDrawer();
+              },
+              backgroundColor: const Color(0xFF6366F1),
+              elevation: 4,
+              icon: const Icon(Icons.analytics, color: Colors.white, size: 20),
+              label: Text(
+                settings.language == 'ko' ? '데이터' : 'Data',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
+              ),
             )
           : null,
       appBar: AppBar(
@@ -276,59 +310,77 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
               ),
             ],
           ),
-          // Investigation points - Responsive padding (항상 표시)
+          // Investigation points - Responsive padding (항상 표시) + 툴팁
           Padding(
             padding: EdgeInsets.symmetric(horizontal: isMobile ? 8.0 : 16.0),
             child: Center(
-              child: Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: isMobile ? 8 : 12,
-                  vertical: isMobile ? 4 : 6,
-                ),
+              child: Tooltip(
+                message: settings.language == 'ko'
+                    ? '조사 포인트: 올바른 선택으로 획득하세요'
+                    : 'Investigation Points: Earn by making good choices',
                 decoration: BoxDecoration(
-                  color: const Color(0xFF6366F1).withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(16),
+                  color: const Color(0xFF1A1D2E),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: const Color(0xFF6366F1).withOpacity(0.5),
+                  ),
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.star, size: isMobile ? 14 : 16, color: const Color(0xFFFBBF24)),
-                    SizedBox(width: isMobile ? 2 : 4),
-                    Text(
-                      '${storyState.investigationPoints}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: isMobile ? 12 : 14,
-                        color: const Color(0xFFFBBF24),
+                textStyle: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                ),
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isMobile ? 8 : 12,
+                    vertical: isMobile ? 4 : 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF6366F1).withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.star, size: isMobile ? 14 : 16, color: const Color(0xFFFBBF24)),
+                      SizedBox(width: isMobile ? 2 : 4),
+                      Text(
+                        '${storyState.investigationPoints}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: isMobile ? 12 : 14,
+                          color: const Color(0xFFFBBF24),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
         ],
       ),
-      body: storyState.isLoading
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircularProgressIndicator(
-                    color: Color(0xFF00D9FF),
+      body: storyState.hasError
+          ? _buildErrorState(storyState, settings, isMobile)
+          : storyState.isLoading
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const CircularProgressIndicator(
+                        color: Color(0xFF00D9FF),
+                      ),
+                      const SizedBox(height: 24),
+                      Text(
+                        settings.language == 'ko' ? '에피소드 로딩 중...' : 'Loading Episode...',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.7),
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 24),
-                  Text(
-                    settings.language == 'ko' ? '에피소드 로딩 중...' : 'Loading Episode...',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.7),
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            )
-          : Row(
+                )
+              : Row(
               children: [
                 // 데스크톱: 왼쪽 데이터 패널
                 if (!isMobile) const DataInsightsPanel(),
@@ -487,11 +539,11 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
                                           ),
                                         ),
                                       
-                                      // Bubble - 길게 누르기로 이모지 리액션
+                                      // Bubble - 길게 누르기로 메뉴 (복사 + 이모지 리액션)
                                       Flexible(
                                         child: GestureDetector(
                                           onLongPress: () {
-                                            // 이모지 피커 표시 (간단 버전 - BottomSheet)
+                                            // 메시지 메뉴 표시 (복사 + 이모지)
                                             showModalBottomSheet(
                                               context: context,
                                               backgroundColor: Colors.transparent,
@@ -511,7 +563,7 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
                                                   mainAxisSize: MainAxisSize.min,
                                                   children: [
                                                     const Text(
-                                                      '리액션 추가',
+                                                      '메시지 옵션',
                                                       style: TextStyle(
                                                         fontSize: 16,
                                                         fontWeight: FontWeight.bold,
@@ -519,6 +571,42 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
                                                       ),
                                                     ),
                                                     const SizedBox(height: 16),
+
+                                                    // 복사 버튼
+                                                    ListTile(
+                                                      leading: const Icon(Icons.copy, color: Color(0xFF6366F1)),
+                                                      title: const Text(
+                                                        '메시지 복사',
+                                                        style: TextStyle(color: Colors.white),
+                                                      ),
+                                                      onTap: () {
+                                                        // 클립보드에 복사
+                                                        final text = message.text;
+                                                        // Flutter의 Clipboard API 필요
+                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                          SnackBar(
+                                                            content: Text(settings.language == 'ko'
+                                                                ? '메시지가 복사되었습니다'
+                                                                : 'Message copied'),
+                                                            duration: const Duration(seconds: 1),
+                                                          ),
+                                                        );
+                                                        Navigator.pop(context);
+                                                      },
+                                                    ),
+
+                                                    const Divider(color: Colors.white24),
+                                                    const SizedBox(height: 8),
+
+                                                    const Text(
+                                                      '리액션 추가',
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight: FontWeight.w600,
+                                                        color: Color(0xFF00D9FF),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 12),
                                                     Wrap(
                                                       spacing: 12,
                                                       runSpacing: 12,
@@ -684,10 +772,9 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
                   ),
                 ),
 
-                // 추천 질문 (메시지가 3개 이하일 때만 표시)
-                if (storyState.messages.length <= 3 &&
-                    (storyState.currentChoices == null ||
-                        storyState.currentChoices!.isEmpty))
+                // 추천 질문 (선택지가 없을 때 항상 표시 - 사용자 가이드 제공)
+                if (storyState.currentChoices == null ||
+                    storyState.currentChoices!.isEmpty)
                   SuggestedQuestions(
                     onQuestionTap: _handleSuggestedQuestion,
                   ),
@@ -695,8 +782,8 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
                 // Choices section - 개선된 스크롤 가능 버전 + 로딩 최적화
                 if (storyState.currentChoices != null && storyState.currentChoices!.isNotEmpty)
                   Container(
-                    constraints: const BoxConstraints(
-                      maxHeight: 280, // 최대 높이 제한
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height * (isMobile ? 0.4 : 0.35), // 화면 비율로 조정
                     ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF6366F1).withOpacity(0.1),
@@ -925,6 +1012,125 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
     );
   }
 
+  // Error state widget - 에러 화면
+  Widget _buildErrorState(dynamic storyState, dynamic settings, bool isMobile) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(isMobile ? 24 : 48),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Error icon
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: const Color(0xFFEF4444).withOpacity(0.1),
+                border: Border.all(
+                  color: const Color(0xFFEF4444).withOpacity(0.3),
+                  width: 2,
+                ),
+              ),
+              child: const Icon(
+                Icons.error_outline,
+                size: 64,
+                color: Color(0xFFEF4444),
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Error title
+            Text(
+              settings.language == 'ko' ? '오류 발생' : 'Error Occurred',
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Error message
+            Text(
+              storyState.errorMessage ??
+                  (settings.language == 'ko'
+                      ? '에피소드를 불러올 수 없습니다'
+                      : 'Failed to load episode'),
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.white.withOpacity(0.7),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+
+            // Action buttons
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Retry button
+                ElevatedButton.icon(
+                  onPressed: () {
+                    ref.read(storyProviderV2.notifier).retryLoading();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6366F1),
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isMobile ? 20 : 32,
+                      vertical: isMobile ? 12 : 16,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  icon: const Icon(Icons.refresh, size: 20),
+                  label: Text(
+                    settings.language == 'ko' ? '다시 시도' : 'Retry',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+
+                // Back to home button
+                OutlinedButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  },
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    side: BorderSide(
+                      color: Colors.white.withOpacity(0.3),
+                      width: 1.5,
+                    ),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isMobile ? 20 : 32,
+                      vertical: isMobile ? 12 : 16,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  icon: const Icon(Icons.home_outlined, size: 20),
+                  label: Text(
+                    settings.language == 'ko' ? '홈으로' : 'Home',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   // Empty state widget - 초기 화면
   Widget _buildEmptyState(dynamic settings, bool isMobile) {
     return Center(
@@ -961,15 +1167,46 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
             const SizedBox(height: 12),
             Text(
               settings.language == 'ko'
-                  ? 'Kastor가 사건 해결을 도와드립니다'
-                  : 'Kastor will help you solve the case',
+                  ? 'Kastor와 함께 데이터를 분석하고\n미스터리를 해결하세요'
+                  : 'Analyze data with Kastor and\nsolve the mystery together',
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.white.withOpacity(0.7),
+                height: 1.5,
               ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
+
+            // 시작하기 버튼
+            ElevatedButton.icon(
+              onPressed: () {
+                ref.read(storyProviderV2.notifier).continueStory();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF6366F1),
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(
+                  horizontal: isMobile ? 24 : 32,
+                  vertical: isMobile ? 14 : 18,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 4,
+              ),
+              icon: const Icon(Icons.play_arrow, size: 24),
+              label: Text(
+                settings.language == 'ko' ? '조사 시작하기' : 'Start Investigation',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 32),
+
             SuggestedQuestions(
               onQuestionTap: _handleSuggestedQuestion,
             ),

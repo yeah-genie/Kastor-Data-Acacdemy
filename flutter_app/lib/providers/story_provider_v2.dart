@@ -75,6 +75,8 @@ class StoryState {
   final int totalScore; // 총 점수
   final bool episodeCompleted; // 에피소드 완료 여부
   final String currentEpisodeId; // 현재 에피소드 ID
+  final bool hasError; // 에러 발생 여부
+  final String? errorMessage; // 에러 메시지
 
   StoryState({
     required this.messages,
@@ -92,6 +94,8 @@ class StoryState {
     this.totalScore = 0,
     this.episodeCompleted = false,
     this.currentEpisodeId = '',
+    this.hasError = false,
+    this.errorMessage,
   });
 
   StoryState copyWith({
@@ -110,6 +114,8 @@ class StoryState {
     int? totalScore,
     bool? episodeCompleted,
     String? currentEpisodeId,
+    bool? hasError,
+    String? errorMessage,
   }) {
     return StoryState(
       messages: messages ?? this.messages,
@@ -127,6 +133,8 @@ class StoryState {
       totalScore: totalScore ?? this.totalScore,
       episodeCompleted: episodeCompleted ?? this.episodeCompleted,
       currentEpisodeId: currentEpisodeId ?? this.currentEpisodeId,
+      hasError: hasError ?? this.hasError,
+      errorMessage: errorMessage ?? this.errorMessage,
     );
   }
 }
@@ -217,21 +225,21 @@ class StoryNotifierV2 extends Notifier<StoryState> {
         episodeData: episodeData,
         isLoading: false,
         currentEpisodeId: 'episode1',
+        hasError: false,
+        errorMessage: null,
       );
 
       // Start with first scene
       _loadScene('scene_0');
     } catch (e) {
       print('Error initializing story: $e');
-      final errorMessage = StoryMessage(
-        id: 'error_${DateTime.now().millisecondsSinceEpoch}',
-        speaker: 'system',
-        text: '❌ 에피소드 로드 실패. 다시 시도해주세요.',
-        timestamp: DateTime.now(),
-      );
+      final language = ref.read(settingsProvider).language;
       state = state.copyWith(
         isLoading: false,
-        messages: [errorMessage],
+        hasError: true,
+        errorMessage: language == 'ko'
+            ? '에피소드를 불러오는 중 오류가 발생했습니다.'
+            : 'Failed to load episode.',
       );
     }
   }
@@ -678,14 +686,27 @@ class StoryNotifierV2 extends Notifier<StoryState> {
   // 에피소드 재시작
   Future<void> restartEpisode() async {
     await SaveLoadService.clearProgress();
-    
+
     _cancelAllTimers();
-    
+
     state = StoryState(
       messages: [],
       currentSceneId: 'scene_0',
       isLoading: true,
       currentEpisodeId: 'episode1',
+    );
+
+    await _initializeStory();
+  }
+
+  // 에러 발생 후 재시도
+  Future<void> retryLoading() async {
+    _cancelAllTimers();
+
+    state = state.copyWith(
+      isLoading: true,
+      hasError: false,
+      errorMessage: null,
     );
 
     await _initializeStory();

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/win_rate_chart.dart';
 import '../providers/settings_provider.dart';
+import '../providers/story_provider_v2.dart';
 
 /// 데이터 인사이트 패널 - 데스크톱 왼쪽 / 모바일 Drawer에 표시
 class DataInsightsPanel extends ConsumerWidget {
@@ -39,7 +40,7 @@ class DataInsightsPanel extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header
+              // Header + 모바일 닫기 버튼
               Row(
                 children: [
                   Container(
@@ -65,6 +66,15 @@ class DataInsightsPanel extends ConsumerWidget {
                       ),
                     ),
                   ),
+                  // 모바일 전용: 닫기 버튼
+                  if (isMobile)
+                    IconButton(
+                      onPressed: () {
+                        Navigator.of(ref.context).pop();
+                      },
+                      icon: const Icon(Icons.close, color: Colors.white70),
+                      tooltip: settings.language == 'ko' ? '닫기' : 'Close',
+                    ),
                 ],
               ),
               const SizedBox(height: 24),
@@ -216,6 +226,87 @@ class DataInsightsPanel extends ConsumerWidget {
                   ],
                 ),
               ),
+
+              // 모바일 전용: 설정 섹션
+              if (isMobile) ...[
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.1),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.settings_outlined,
+                            color: Color(0xFF6366F1),
+                            size: 18,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            settings.language == 'ko' ? '설정' : 'Settings',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      // 언어 전환 버튼
+                      InkWell(
+                        onTap: () {
+                          final newLanguage = settings.language == 'ko' ? 'en' : 'ko';
+                          ref.read(settingsProvider.notifier).setLanguage(newLanguage);
+                          ref.read(storyProviderV2.notifier).reloadWithLanguage(newLanguage);
+                        },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.05),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.1),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Text(
+                                settings.language == 'ko' ? '🇰🇷' : '🇺🇸',
+                                style: const TextStyle(fontSize: 20),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  settings.language == 'ko' ? '한국어 ↔ English' : 'English ↔ 한국어',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.white.withOpacity(0.9),
+                                  ),
+                                ),
+                              ),
+                              Icon(
+                                Icons.language,
+                                color: const Color(0xFF6366F1),
+                                size: 18,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ],
           ),
         ),
