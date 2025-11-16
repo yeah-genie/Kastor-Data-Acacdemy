@@ -310,105 +310,112 @@ if user_input:
     add_message("assistant", response)
     st.rerun()
 
-# 데이터 영역
-st.divider()
-st.subheader("📊 사건 데이터")
+# 데이터 영역 (스테이지별 순차 공개)
+if st.session_state.episode_stage != "intro":
+    st.divider()
+    st.subheader("📊 사건 데이터")
 
-# 캐릭터 데이터
-with st.expander("🎮 캐릭터 승률 데이터", expanded=True):
-    st.dataframe(characters_df, use_container_width=True)
+# 1단계: 캐릭터 데이터 (exploration부터 공개)
+if st.session_state.episode_stage in ["exploration", "hypothesis_1", "hypothesis_2", "hypothesis_3", "conclusion"]:
+    with st.expander("🎮 캐릭터 승률 데이터", expanded=(st.session_state.episode_stage == "exploration")):
+        st.dataframe(characters_df, use_container_width=True)
 
-    # 승률 차트
-    fig = px.bar(
-        characters_df.sort_values("평균_승률", ascending=False),
-        x="캐릭터명",
-        y="평균_승률",
-        color="평균_승률",
-        color_continuous_scale="RdYlGn",
-        title="캐릭터별 승률 비교"
-    )
-    fig.add_hline(y=50, line_dash="dash", line_color="gray", annotation_text="평균 50%")
-    st.plotly_chart(fig, use_container_width=True)
+        # 승률 차트
+        fig = px.bar(
+            characters_df.sort_values("평균_승률", ascending=False),
+            x="캐릭터명",
+            y="평균_승률",
+            color="평균_승률",
+            color_continuous_scale="RdYlGn",
+            title="캐릭터별 승률 비교"
+        )
+        fig.add_hline(y=50, line_dash="dash", line_color="gray", annotation_text="평균 50%")
+        st.plotly_chart(fig, use_container_width=True)
 
-# 일별 데이터
-with st.expander("📅 셰도우 일별 승률 변화", expanded=False):
-    st.dataframe(shadow_daily_df, use_container_width=True)
+# 2단계: 일별 데이터 (hypothesis_1부터 공개)
+if st.session_state.episode_stage in ["hypothesis_1", "hypothesis_2", "hypothesis_3", "conclusion"]:
+    with st.expander("📅 셰도우 일별 승률 변화", expanded=(st.session_state.episode_stage == "hypothesis_1")):
+        st.dataframe(shadow_daily_df, use_container_width=True)
 
-    # 시계열 차트
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(
-        x=shadow_daily_df["날짜"],
-        y=shadow_daily_df["승률"],
-        mode='lines+markers',
-        name='승률',
-        line=dict(color='red', width=3),
-        marker=dict(size=8)
-    ))
-    fig.add_hline(y=50, line_dash="dash", line_color="gray", annotation_text="정상 범위")
-    fig.update_layout(
-        title="셰도우 일별 승률 추이",
-        xaxis_title="날짜",
-        yaxis_title="승률 (%)",
-        hovermode='x unified'
-    )
-    st.plotly_chart(fig, use_container_width=True)
+        # 시계열 차트
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(
+            x=shadow_daily_df["날짜"],
+            y=shadow_daily_df["승률"],
+            mode='lines+markers',
+            name='승률',
+            line=dict(color='red', width=3),
+            marker=dict(size=8)
+        ))
+        fig.add_hline(y=50, line_dash="dash", line_color="gray", annotation_text="정상 범위")
+        fig.update_layout(
+            title="셰도우 일별 승률 추이",
+            xaxis_title="날짜",
+            yaxis_title="승률 (%)",
+            hovermode='x unified'
+        )
+        st.plotly_chart(fig, use_container_width=True)
 
-    if st.session_state.episode_stage == "hypothesis_1":
-        st.info("💡 **캐스터의 힌트**: 25일! 라면 한 개에서 짬뽕 세 그릇으로 점프한 것 같아!")
+        if st.session_state.episode_stage == "hypothesis_1":
+            st.info("💡 **캐스터의 힌트**: 25일! 라면 한 개에서 짬뽕 세 그릇으로 점프한 것 같아!")
 
-# 패치 노트
-with st.expander("📄 공식 패치 노트", expanded=False):
-    st.dataframe(patch_notes_df, use_container_width=True)
+# 3단계: 패치 노트 (hypothesis_1부터 공개)
+if st.session_state.episode_stage in ["hypothesis_1", "hypothesis_2", "hypothesis_3", "conclusion"]:
+    with st.expander("📄 공식 패치 노트", expanded=False):
+        st.dataframe(patch_notes_df, use_container_width=True)
 
-    if st.session_state.episode_stage in ["hypothesis_1", "hypothesis_2", "hypothesis_3"]:
-        st.info("💡 **캐스터의 힌트**: 25일 패치 노트 보면... '셰도우: 변경사항 없음'이라고 되어 있어. 근데 승률은 폭등했지? 수상한데?")
+        if st.session_state.episode_stage in ["hypothesis_1", "hypothesis_2", "hypothesis_3"]:
+            st.info("💡 **캐스터의 힌트**: 25일 패치 노트 보면... '셰도우: 변경사항 없음'이라고 되어 있어. 근데 승률은 폭등했지? 수상한데?")
 
-# 서버 로그
-with st.expander("🖥️ 서버 로그 (필터링된 데이터)", expanded=False):
-    st.dataframe(server_logs_df, use_container_width=True)
+# 4단계: 서버 로그 (hypothesis_2부터 공개)
+if st.session_state.episode_stage in ["hypothesis_2", "hypothesis_3", "conclusion"]:
+    with st.expander("🖥️ 서버 로그 (필터링된 데이터)", expanded=(st.session_state.episode_stage == "hypothesis_2")):
+        st.dataframe(server_logs_df, use_container_width=True)
 
-    # 중요 로그 하이라이트
-    suspicious_log = server_logs_df[server_logs_df["승인토큰"].str.contains("DBG", na=False)]
-    if not suspicious_log.empty and st.session_state.episode_stage == "hypothesis_3":
-        st.warning("🔍 **중요 발견!**")
-        st.dataframe(suspicious_log, use_container_width=True)
-        st.info("💡 **캐스터의 힌트**: 23:47에 카이토가 집에서... debug_token으로 셰도우 수정했어! ATK +15, DEF +10!")
+        # 중요 로그 하이라이트
+        suspicious_log = server_logs_df[server_logs_df["승인토큰"].str.contains("DBG", na=False)]
+        if not suspicious_log.empty and st.session_state.episode_stage == "hypothesis_3":
+            st.warning("🔍 **중요 발견!**")
+            st.dataframe(suspicious_log, use_container_width=True)
+            st.info("💡 **캐스터의 힌트**: 23:47에 카이토가 집에서... debug_token으로 셰도우 수정했어! ATK +15, DEF +10!")
 
-# 플레이어 프로필 (녹티스)
-with st.expander("👤 플레이어 프로필 - 녹티스", expanded=False):
-    st.dataframe(player_profile_df, use_container_width=True)
+# 5단계: 플레이어 프로필 (hypothesis_3부터 공개)
+if st.session_state.episode_stage in ["hypothesis_3", "conclusion"]:
+    with st.expander("👤 플레이어 프로필 - 녹티스", expanded=(st.session_state.episode_stage == "hypothesis_3")):
+        st.dataframe(player_profile_df, use_container_width=True)
 
-    # 승률 변화 차트
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(
-        x=player_profile_df["날짜"],
-        y=player_profile_df["승률"],
-        mode='lines+markers',
-        name='녹티스 승률',
-        line=dict(color='purple', width=3),
-        marker=dict(size=8)
-    ))
-    fig.add_hline(y=50, line_dash="dash", line_color="gray")
-    fig.update_layout(
-        title="녹티스(플레이어) 승률 변화",
-        xaxis_title="날짜",
-        yaxis_title="승률 (%)"
-    )
-    st.plotly_chart(fig, use_container_width=True)
+        # 승률 변화 차트
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(
+            x=player_profile_df["날짜"],
+            y=player_profile_df["승률"],
+            mode='lines+markers',
+            name='녹티스 승률',
+            line=dict(color='purple', width=3),
+            marker=dict(size=8)
+        ))
+        fig.add_hline(y=50, line_dash="dash", line_color="gray")
+        fig.update_layout(
+            title="녹티스(플레이어) 승률 변화",
+            xaxis_title="날짜",
+            yaxis_title="승률 (%)"
+        )
+        st.plotly_chart(fig, use_container_width=True)
 
-    if st.session_state.episode_stage == "hypothesis_3":
-        st.error("🎯 **결정적 증거**: IP 주소 203.0.113.45 = 카이토 집! 기기지문 DFP:7a9c42b1 = 카이토 핸드폰!")
+        if st.session_state.episode_stage == "hypothesis_3":
+            st.error("🎯 **결정적 증거**: IP 주소 203.0.113.45 = 카이토 집! 기기지문 DFP:7a9c42b1 = 카이토 핸드폰!")
 
-# 25일 밤 매치 세션
-with st.expander("🎮 25일 밤 매치 기록 (녹티스)", expanded=False):
-    st.dataframe(match_sessions_df, use_container_width=True)
+# 6단계: 25일 밤 매치 세션 (hypothesis_3부터 공개)
+if st.session_state.episode_stage in ["hypothesis_3", "conclusion"]:
+    with st.expander("🎮 25일 밤 매치 기록 (녹티스)", expanded=False):
+        st.dataframe(match_sessions_df, use_container_width=True)
 
-    if st.session_state.episode_stage == "hypothesis_3":
-        st.success("✅ **타임라인 완성**: 23:47 셰도우 수정 → 23:50 녹티스 플레이 시작 → 20경기 중 18승 (90%!)")
+        if st.session_state.episode_stage == "hypothesis_3":
+            st.success("✅ **타임라인 완성**: 23:47 셰도우 수정 → 23:50 녹티스 플레이 시작 → 20경기 중 18승 (90%!)")
 
-        if st.button("🎉 사건 해결! 카이토가 범인이야!"):
-            st.session_state.episode_stage = "conclusion"
-            conclusion = """🎉 대박! 사건 해결!
+            if st.button("🎉 사건 해결! 카이토가 범인이야!"):
+                st.session_state.episode_stage = "conclusion"
+                conclusion = """🎉 대박! 사건 해결!
 
 **범인**: 카이토 (밸런스 디자이너)
 **방법**: 25일 23:47 집에서 debug_token으로 무단 수정
@@ -425,8 +432,8 @@ with st.expander("🎮 25일 밤 매치 기록 (녹티스)", expanded=False):
 4. **디지털 지문**: IP & 기기 지문으로 신원 추적
 
 완벽한 데이터 탐정이었어! 🍕"""
-            add_message("assistant", conclusion)
-            st.rerun()
+                add_message("assistant", conclusion)
+                st.rerun()
 
 # 푸터
 st.divider()
