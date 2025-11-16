@@ -469,59 +469,6 @@ if st.session_state.episode_stage == "intro" and len(st.session_state.messages) 
     add_message("assistant", intro_message)
     st.session_state.last_message_count = len(st.session_state.messages)
 
-# 진행상황 섹션 (상단)
-st.divider()
-st.subheader("🎯 탐정 진행 상황")
-
-# 점수와 배지 표시
-col_score, col_badges = st.columns(2)
-
-with col_score:
-    # 점수 애니메이션 표시
-    score_display = f'<div class="score-animation"><h1 style="color: #667eea;">⭐ {st.session_state.detective_score}점</h1></div>'
-    st.markdown(score_display, unsafe_allow_html=True)
-    st.caption(f"힌트 사용: {st.session_state.hints_used}/5")
-
-with col_badges:
-    st.markdown("### 🏆 획득 배지")
-    if st.session_state.badges:
-        for badge in st.session_state.badges:
-            badge_html = f'<div class="badge badge-gold" style="display: block; margin: 0.5rem 0;">{badge}</div>'
-            st.markdown(badge_html, unsafe_allow_html=True)
-    else:
-        st.info("아직 획득한 배지가 없어요. 증거를 찾아보세요!")
-
-st.divider()
-
-# 진행률 표시
-progress_map = {
-    "intro": 0,
-    "exploration": 20,
-    "hypothesis_1": 40,
-    "hypothesis_2": 60,
-    "hypothesis_3": 80,
-    "conclusion": 100
-}
-progress = progress_map.get(st.session_state.episode_stage, 0)
-
-st.markdown("### 🔍 사건 진행률")
-st.progress(progress / 100)
-st.caption(f"{progress}% 완료")
-
-# 현재 단계 설명
-stage_descriptions = {
-    "intro": "🎬 사건 소개 단계",
-    "exploration": "🔍 데이터 탐색 단계 - 이상 징후를 찾아보세요!",
-    "hypothesis_1": "📋 가설 검증 1단계 - 패치 노트를 확인하세요!",
-    "hypothesis_2": "🖥️ 가설 검증 2단계 - 서버 로그를 분석하세요!",
-    "hypothesis_3": "🎯 범인 특정 단계 - 증거를 연결하세요!",
-    "conclusion": "🎉 사건 해결! 축하합니다!"
-}
-current_stage = stage_descriptions.get(st.session_state.episode_stage, "탐색 중")
-st.info(f"**현재 단계:** {current_stage}")
-
-st.divider()
-
 # 2열 레이아웃 (데이터 / 채팅) - 왼쪽에 데이터, 오른쪽에 채팅
 col_data, col_chat = st.columns([2, 1])
 
