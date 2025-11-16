@@ -718,10 +718,9 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
                   ),
                 ),
 
-                // 추천 질문 (메시지가 3개 이하일 때만 표시)
-                if (storyState.messages.length <= 3 &&
-                    (storyState.currentChoices == null ||
-                        storyState.currentChoices!.isEmpty))
+                // 추천 질문 (선택지가 없을 때 항상 표시 - 사용자 가이드 제공)
+                if (storyState.currentChoices == null ||
+                    storyState.currentChoices!.isEmpty)
                   SuggestedQuestions(
                     onQuestionTap: _handleSuggestedQuestion,
                   ),
