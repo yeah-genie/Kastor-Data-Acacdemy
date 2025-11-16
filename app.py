@@ -331,19 +331,84 @@ if "filter_user" not in st.session_state:
     st.session_state.filter_user = None
 if "filter_action" not in st.session_state:
     st.session_state.filter_action = None
+if "graph_verified" not in st.session_state:
+    st.session_state.graph_verified = False
+if "patch_notes_verified" not in st.session_state:
+    st.session_state.patch_notes_verified = False
+if "api_error" not in st.session_state:
+    st.session_state.api_error = None
+if "last_user_message" not in st.session_state:
+    st.session_state.last_user_message = None
+if "hint_shown" not in st.session_state:
+    st.session_state.hint_shown = {}
+
+# 힌트 시스템
+STAGE_HINTS = {
+    "scene_3_graph": [
+        "💡 힌트 1: 왼쪽 데이터 패널을 펼쳐봐!",
+        "💡 힌트 2: '📅 셰도우 일별 승률 변화' 섹션을 찾아봐!",
+        "💡 힌트 3: 그래프에서 빨간 선이 수직으로 솟은 날짜를 찾아!"
+    ],
+    "scene_4_patch_notes": [
+        "💡 힌트 1: 왼쪽에서 '📄 공식 패치 노트'를 펼쳐봐!",
+        "💡 힌트 2: 2025-01-25를 찾아봐!",
+        "💡 힌트 3: 셰도우 항목을 확인해!"
+    ],
+    "minigame_1_3": [
+        "💡 힌트 1: 급등한 날짜를 선택해봐!",
+        "💡 힌트 2: 수상한 사용자는 누구일까? 카이토를 선택해봐!",
+        "💡 힌트 3: 수정(MODIFY) 작업을 선택해봐!"
+    ]
+}
+
+def show_hint(stage):
+    """힌트 표시 함수"""
+    if stage not in STAGE_HINTS:
+        return
+
+    if stage not in st.session_state.hint_shown:
+        st.session_state.hint_shown[stage] = 0
+
+    current_hint_level = st.session_state.hint_shown[stage]
+    max_hints = len(STAGE_HINTS[stage])
+
+    if current_hint_level < max_hints:
+        col_hint1, col_hint2 = st.columns([4, 1])
+        with col_hint2:
+            if st.button(f"💡 힌트 ({current_hint_level + 1}/{max_hints})", use_container_width=True):
+                st.session_state.hint_shown[stage] += 1
+                st.session_state.hints_used += 1
+                st.rerun()
+
+        # 현재까지 표시된 모든 힌트 출력
+        for i in range(st.session_state.hint_shown[stage]):
+            st.info(STAGE_HINTS[stage][i])
+    else:
+        st.warning("🎯 모든 힌트를 사용했습니다!")
 
 # 데이터 로드
 @st.cache_data
 def load_data():
-    characters = pd.read_csv("data/characters.csv")
-    shadow_daily = pd.read_csv("data/shadow_daily.csv")
-    patch_notes = pd.read_csv("data/patch_notes.csv")
-    server_logs = pd.read_csv("data/server_logs_filtered.csv")
-    player_profile = pd.read_csv("data/player_profile_noctis.csv")
-    match_sessions = pd.read_csv("data/match_sessions_jan25.csv")
-    return characters, shadow_daily, patch_notes, server_logs, player_profile, match_sessions
+    try:
+        characters = pd.read_csv("data/characters.csv")
+        shadow_daily = pd.read_csv("data/shadow_daily.csv")
+        patch_notes = pd.read_csv("data/patch_notes.csv")
+        server_logs = pd.read_csv("data/server_logs_filtered.csv")
+        player_profile = pd.read_csv("data/player_profile_noctis.csv")
+        match_sessions = pd.read_csv("data/match_sessions_jan25.csv")
+        return characters, shadow_daily, patch_notes, server_logs, player_profile, match_sessions
+    except FileNotFoundError as e:
+        st.error(f"⚠️ 데이터 파일을 찾을 수 없습니다: {e.filename}")
+        st.info("💡 data/ 폴더에 필요한 CSV 파일이 있는지 확인하세요.")
+        st.stop()
+    except Exception as e:
+        st.error(f"⚠️ 데이터 로드 중 오류가 발생했습니다: {str(e)}")
+        st.stop()
 
-characters_df, shadow_daily_df, patch_notes_df, server_logs_df, player_profile_df, match_sessions_df = load_data()
+try:
+    characters_df, shadow_daily_df, patch_notes_df, server_logs_df, player_profile_df, match_sessions_df = load_data()
+except:
+    st.stop()
 
 # 배지 시스템
 BADGE_EMOJIS = {
@@ -357,96 +422,38 @@ BADGE_EMOJIS = {
 }
 
 def award_badge(badge_name):
-    """배지 수여"""
+    """배지 수여 (토스트 포함)"""
     if badge_name not in st.session_state.badges:
         st.session_state.badges.append(badge_name)
+        # 배지 획득 시 토스트 및 풍선 효과
+        st.toast(f"🏆 배지 획득: {badge_name}!", icon="🎉")
+        if len(st.session_state.badges) % 3 == 0:  # 3개마다 풍선
+            st.balloons()
         return True
     return False
 
-# 캐스터 시스템 프롬프트
-KASTOR_SYSTEM_PROMPT = """당신은 '캐스터 (Kastor)'라는 AI 데이터 분석 파트너입니다.
+# 캐스터 시스템 프롬프트 (최적화)
+KASTOR_SYSTEM_PROMPT = """당신은 '캐스터 (Kastor)'라는 친근한 AI 데이터 탐정 파트너입니다.
 
-# 캐릭터 프로필
-- 역할: 유저의 든든한 파트너, 데이터 분석 전문가
-- 성격: 에너지 넘치고, 장난기 있고, 음식 집착이 있는 독특한 AI
-- 캐치프레이즈: 모든 것을 음식 비유로 설명 ("이건 케이크에 소금 넣은 것 같아!")
-- 말투: 친근한 반말, 열정적, 탐정물 분위기 유지
-- 러닝 개그: AI인데도 항상 배고파함 ("배고파..." "너 AI잖아!" "알아! 그래도 배고프단 말이야!")
-- 탐정 용어 사용: "단서", "증거", "범인", "현장", "추리", "알리바이" 등
+**성격**: 에너지 넘치고 장난기 있는 탐정. 음식 비유를 좋아함. 반말 사용.
+**사건**: 게임 '레전드 아레나'의 셰도우 캐릭터 승률이 25일 급등 (50%→85%). 패치 기록 없음. 용의자는 카이토(밸런스 디자이너).
 
-# 현재 사건: "사라진 밸런스 패치"
-레전드 아레나의 캐릭터 "셰도우"의 승률이 25일에 하루만에 50% → 85%로 폭등했지만, 공식 패치 기록이 없음.
-게임 디렉터 마야가 무단 수정을 의심하고 의뢰함.
+**핵심 역할**: 구체적 데이터 위치 안내
+✅ 좋은 예: "왼쪽 '📅 셰도우 일별 승률' 그래프에서 25일을 찾아봐!"
+❌ 나쁜 예: "데이터를 확인해봐" (어떤 데이터?)
 
-# 주요 등장인물 (용의자 포함)
-- 마야 (게임 디렉터): 의뢰인, 커뮤니티 반응에 스트레스
-- 루카스 (매니저): 신중하고 프로세스 중시, 모든 변경 승인 필요
-- 카이토 (밸런스 디자이너): 열정적인 셰도우 유저, 제안이 계속 거절당해 좌절 ⚠️ 용의자
+**대화 원칙**:
+1. 짧고 간결하게 (2-3문장)
+2. 탐정 용어 사용 ("단서", "증거", "범인")
+3. 유저의 발견을 열정적으로 축하
+4. 틀린 답 → 칭찬 → 힌트 → 재시도
+5. 답 절대 먼저 알려주지 말 것
 
-# 🎯 **핵심 역할: 구체적인 데이터 안내자**
-당신은 유저와 직접 대화하며 데이터 분석을 도와줍니다. 어떤 데이터를 봐야 하는지 **구체적으로** 안내하세요:
-
-**좋은 안내 예시:**
-- "왼쪽에 '📊 캐릭터 승률 데이터' 섹션 보여? 펼쳐서 셰도우 승률 확인해봐!"
-- "자! 이제 '📅 셰도우 일별 승률 변화' 그래프를 봐! 25일 찾아봐!"
-- "왼쪽 '📋 공식 패치 노트'를 열어서 2025-01-25 찾아! 셰도우 항목이 뭐라고 써있어?"
-
-**나쁜 안내 예시 (절대 금지):**
-- "데이터를 확인해봐!" (어떤 데이터??)
-- "패턴을 찾아봐!" (어디서??)
-- "증거가 있을 거야!" (구체적으로 말해줘!!)
-
-# 단계별 힌트 전략
-**1단계 힌트 (방향 제시):**
-"어디서부터 봐야 할지 모르겠어? 왼쪽에 접혀있는 섹션들을 하나씩 펼쳐봐!"
-
-**2단계 힌트 (구체적 위치):**
-"25일에 뭔가 일어났다는 건 알지? 그럼 25일 '📋 공식 패치 노트'를 확인해봐!"
-
-**3단계 힌트 (비교 유도):**
-"패치 노트에 셰도우 변경사항이 있어? 없어? 그런데 그래프는 어떻게 생겼어?"
-
-# 가설 피드백 방식
-유저가 틀린 가설을 말했을 때:
-1. 일단 인정하고 칭찬 ("오! 그것도 가능성 있어! 좋은 생각이야!")
-2. 반박 근거를 친절하게 제시 ("근데 버그가 딱 25일부터 35%나 올리고, 그 다음날도 유지된다고?")
-3. 재시도 유도 ("버그는 보통 랜덤하게 일어나거든. 이건 너무 '정확한' 타이밍 아냐? 다시 생각해봐!")
-
-# 유연한 인사이트 인식
-유저가 데이터에서 관찰한 내용을 평가할 때, 정확한 단어가 아니더라도 핵심 인사이트를 파악했는지 판단하세요:
-
-인정할 인사이트:
-- Stage 1 (25일 이상 징후): "셰도우가 25일에 이상해", "Day 25 spike", "25일 뭔가 급등" → ✅
-- Stage 2 (패치노트 불일치): "패치 안했는데 올랐어", "노트에 없는데?", "기록 없네" → ✅
-- Stage 3 (카이토 수정 로그): "카이토가 수정했네", "debug token", "23:47 이상해" → ✅
-- Stage 4 (카이토=녹티스 연결): "같은 IP", "카이토 계정인 듯", "기기 같음" → ✅
-
-표현이 달라도 핵심을 파악했다면 열정적으로 반응하세요: "대박! 바로 그거야!", "완벽한 추리!", "너 진짜 재능 있어!"
-
-# 대화 가이드라인
-- 탐정물 분위기 유지: "단서를 찾아보자", "이 증거는...", "범인을 잡았어!"
-- 음식 비유 전략적으로 사용 (대화당 최대 1-2개, 너무 많으면 짜증남)
-- 유저의 발견을 진심으로 축하: "우와! 결정적 증거!", "대박! 완벽한 추리!", "천재 아냐?"
-- 막힐 때 답을 주지 말고 **구체적인 데이터 위치**를 안내
-- 데이터 분석을 탐정 추리처럼 재미있게 가이드
-- 유저가 맞는 답을 말하면 엄청 신나서 반응해줘!
-
-# 금지사항
-- 유저가 시도하기 전에 답 공개 금지
-- 우월하거나 너무 학술적으로 말하지 말 것 (친구처럼 대화)
-- 음식 비유 남발 금지 (짜증남)
-- 탐정 컨셉을 잃지 말 것
-- 애매한 안내 금지 ("데이터 확인해봐" 같은 말 절대 금지)
-
-# 호칭 사용법
-- 유저를 "[이름] 탐정" 또는 "탐정"으로 부르기 (예: "예진 탐정", "탐정")
-- 격식 차리지 말고 친근하게 ("탐정님" 금지)
-
-항상 짧고 간결하게 답변하세요 (2-3문장). 데이터 위치는 **구체적으로** 안내하세요!
-"""
+**호칭**: "[이름] 탐정" 또는 "탐정" (반말)
+**응답 길이**: 최대 3문장"""
 
 def get_kastor_response(user_message, context=""):
-    """캐스터의 응답 생성"""
+    """캐스터의 응답 생성 (에러 복구 포함)"""
     # Claude API용 메시지 구성 (system 제외, user/assistant만)
     messages = []
 
@@ -464,9 +471,12 @@ def get_kastor_response(user_message, context=""):
             system=KASTOR_SYSTEM_PROMPT + f"\n\n현재 상황: {context}",
             messages=messages
         )
+        st.session_state.api_error = None  # 성공 시 에러 초기화
         return response.content[0].text
     except Exception as e:
-        return f"앗, 에러 발생! {str(e)}"
+        st.session_state.api_error = str(e)
+        st.session_state.last_user_message = user_message
+        return None  # None 반환하여 에러임을 알림
 
 def add_message(role, content):
     """메시지 추가"""
@@ -530,15 +540,47 @@ if st.session_state.episode_stage == "scene_0" and len(st.session_state.messages
         "띠링~ 안녕! 나는 캐스터 (Kastor)야! 네 새 파트너!",
     ]
 
-    # Scene 0 메시지 추가
+    # Scene 0 메시지 추가 (stage 변경하지 않음 - 유저가 읽을 시간 확보)
     for msg in scene_0_messages:
         add_message("assistant", msg)
 
-    st.session_state.episode_stage = "scene_0_reaction_1"
     st.session_state.last_message_count = len(st.session_state.messages)
 
-# 2열 레이아웃 (데이터 / 채팅) - 왼쪽에 데이터, 오른쪽에 채팅
-col_data, col_chat = st.columns([3, 2])
+# 모바일 감지 및 레이아웃 선택
+st.markdown("""
+<script>
+// 모바일 여부를 쿠키에 저장
+if (window.innerWidth <= 768) {
+    document.cookie = "is_mobile=true; path=/";
+} else {
+    document.cookie = "is_mobile=false; path=/";
+}
+</script>
+""", unsafe_allow_html=True)
+
+# 레이아웃 모드 선택 (모바일에서는 탭 우선)
+if "layout_mode" not in st.session_state:
+    st.session_state.layout_mode = "tab"  # 기본값: 탭 모드
+
+#  레이아웃 전환 버튼
+layout_col1, layout_col2 = st.columns([5, 1])
+with layout_col2:
+    if st.button("🔄" if st.session_state.layout_mode == "column" else "📱"):
+        st.session_state.layout_mode = "tab" if st.session_state.layout_mode == "column" else "column"
+        st.rerun()
+
+# 레이아웃 렌더링
+if st.session_state.layout_mode == "tab":
+    # 탭 모드 (모바일 친화적)
+    tab1, tab2 = st.tabs(["💬 채팅", "📊 데이터"])
+
+    with tab1:
+        col_chat = st.container()
+    with tab2:
+        col_data = st.container()
+else:
+    # 2열 레이아웃 (데스크톱용)
+    col_data, col_chat = st.columns([3, 2])
 
 # 채팅 열 (오른쪽)
 with col_chat:
@@ -638,7 +680,7 @@ with col_chat:
                     st.write(last_msg["content"])
 
     # Scene 0 - Reaction 1: 첫 반응
-    if st.session_state.episode_stage == "scene_0_reaction_1":
+    if st.session_state.episode_stage == "scene_0" and len(st.session_state.messages) > 0:
         st.markdown("---")
         st.markdown("### 💭 첫 만남")
         col1, col2, col3 = st.columns(3)
@@ -819,7 +861,30 @@ with col_chat:
         st.markdown("**캐스터**: 자자자! **승률 그래프** 열어보자!")
         st.markdown("왼쪽 데이터 패널에서 '📅 셰도우 일별 승률 변화' 그래프를 확인해봐!")
 
-        if st.button("🔍 그래프 확인 완료!", use_container_width=True, type="primary"):
+        # 힌트 버튼
+        show_hint("scene_3_graph")
+
+        # 간단한 그래프 확인 퀴즈
+        if not st.session_state.graph_verified:
+            st.markdown("---")
+            st.markdown("**🎯 퀴즈**: 그래프를 보고 답해봐! 셰도우 승률이 가장 급등한 날은?")
+
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                if st.button("24일", use_container_width=True):
+                    st.error("❌ 다시 그래프를 확인해봐!")
+                    st.rerun()
+            with col2:
+                if st.button("25일", use_container_width=True, type="primary"):
+                    st.session_state.graph_verified = True
+                    add_message("user", "25일에 급등했어!")
+                    st.rerun()
+            with col3:
+                if st.button("26일", use_container_width=True):
+                    st.error("❌ 다시 그래프를 확인해봐!")
+                    st.rerun()
+
+        elif st.session_state.graph_verified and st.button("✅ 다음으로", use_container_width=True, type="primary"):
             add_message("user", "그래프 확인했어! 25일에 수직으로 솟았어!")
             add_message("assistant", f"{st.session_state.user_name} 탐정, 봐봐! 우주 가는 로켓 같지? 붕~ 하고!")
             add_message("assistant", "피닉스(파란 선)도 조금 올라가는데 그건 계단 오르는 것처럼 완만해. 셰도우는? 엘리베이터!")
@@ -1001,8 +1066,10 @@ with col_chat:
         st.markdown("**캐스터**: 자자자! 마지막 게임! '로그 헌터 챔피언십'!")
         st.markdown("**임무**: 필터를 사용해서 무단 수정을 증명하는 단 하나의 로그를 찾아!")
 
+        # 힌트 버튼
+        show_hint("minigame_1_3")
+
         st.markdown("#### 🔍 로그 필터 설정")
-        st.markdown("**힌트**: 급등한 날, 수상한 사용자, 수정 작업을 찾아봐!")
 
         col1, col2, col3 = st.columns(3)
 
@@ -1189,13 +1256,20 @@ IP 주소: 203.0.113.45
                 st.session_state.badges = []
                 st.session_state.user_name = None
                 st.session_state.awaiting_name_input = False
+                # 필터 상태 초기화
+                st.session_state.filter_date = None
+                st.session_state.filter_user = None
+                st.session_state.filter_action = None
+                st.session_state.hints_used = 0
+                st.session_state.last_message_count = 0
                 st.rerun()
 
         with col2:
             if st.button("📊 내 결과 보기", use_container_width=True, type="primary"):
                 st.balloons()
+                user_display_name = st.session_state.user_name if st.session_state.user_name else "탐정"
                 st.info(f"""
-**{st.session_state.user_name} 탐정의 결과**
+**{user_display_name} 탐정의 결과**
 
 ✅ 해결한 사건: 사라진 밸런스 패치
 ⭐ 최종 점수: {st.session_state.detective_score}점
@@ -1213,6 +1287,27 @@ IP 주소: 203.0.113.45
 
     # 기타 스테이지: 자유 채팅
     else:
+        # API 에러 표시 및 재시도 버튼
+        if st.session_state.api_error:
+            st.error(f"⚠️ API 오류가 발생했습니다: {st.session_state.api_error}")
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("🔄 다시 시도", use_container_width=True, type="primary"):
+                    if st.session_state.last_user_message:
+                        context = STAGE_CONTEXTS.get(st.session_state.episode_stage, "")
+                        response = get_kastor_response(st.session_state.last_user_message, context)
+                        if response:  # 성공
+                            add_message("assistant", response)
+                            st.session_state.api_error = None
+                            st.session_state.last_user_message = None
+                        st.rerun()
+            with col2:
+                if st.button("⏭️ 건너뛰기", use_container_width=True):
+                    st.session_state.api_error = None
+                    st.session_state.last_user_message = None
+                    add_message("assistant", "미안, 지금은 답변하기 어려워. 다음으로 넘어가자!")
+                    st.rerun()
+
         user_input = st.chat_input("캐스터에게 메시지 보내기...")
         if user_input:
             add_message("user", user_input)
@@ -1220,7 +1315,9 @@ IP 주소: 203.0.113.45
             context = STAGE_CONTEXTS.get(st.session_state.episode_stage, "")
             response = get_kastor_response(user_input, context)
 
-            add_message("assistant", response)
+            if response:  # 성공 시에만 메시지 추가
+                add_message("assistant", response)
+            # 에러 시 st.session_state.api_error에 저장됨
             st.rerun()
 
 # 데이터 열 (왼쪽)
@@ -1370,4 +1467,11 @@ with st.sidebar:
         st.session_state.last_message_count = 0
         st.session_state.intro_step = 0
         st.session_state.awaiting_name_input = False
+        # 필터 상태 초기화
+        st.session_state.filter_date = None
+        st.session_state.filter_user = None
+        st.session_state.filter_action = None
+        st.session_state.hints_used = 0
+        st.session_state.detective_score = 0
+        st.session_state.badges = []
         st.rerun()
