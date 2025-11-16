@@ -99,6 +99,7 @@ def add_mobile_styles():
         flex-direction: column !important;
         overflow-y: auto !important;
         max-height: 70vh;
+        padding-bottom: 80px !important; /* 입력창 위한 공간 */
     }
 
     /* 모바일 최적화 */
@@ -109,21 +110,77 @@ def add_mobile_styles():
 
         .stTabs [data-baseweb="tab-panel"] {
             max-height: 70vh;
+            overflow-y: auto;
         }
 
         .stExpander {
             font-size: 0.9rem;
         }
+
+        /* 모바일에서 채팅 컨테이너 높이 조정 */
+        [data-testid="stVerticalBlock"] > div:has(.stChatMessage) {
+            max-height: 60vh;
+            padding-bottom: 100px !important;
+        }
     }
 
-    /* 채팅 입력창 위치 */
+    /* 채팅 입력창 위치 고정 */
     .stChatFloatingInputContainer {
-        bottom: 0px;
+        position: sticky !important;
+        bottom: 0px !important;
+        background: white;
+        padding: 10px 0;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        z-index: 999;
     }
 
-    /* 메시지 간격 조정 */
+    /* 메시지 간격 및 스타일 조정 - 카카오톡/디스코드 스타일 */
     .stChatMessage {
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.8rem !important;
+        padding: 0.5rem !important;
+        border-radius: 12px !important;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
+    }
+
+    /* 사용자 메시지 스타일 (오른쪽, 노란색 말풍선) */
+    .stChatMessage[data-testid="user-message"] {
+        background: linear-gradient(135deg, #FFE500 0%, #FFF3A0 100%) !important;
+        margin-left: 20% !important;
+        border-bottom-right-radius: 4px !important;
+    }
+
+    /* AI 메시지 스타일 (왼쪽, 흰색 말풍선) */
+    .stChatMessage[data-testid="assistant-message"] {
+        background: white !important;
+        margin-right: 20% !important;
+        border-bottom-left-radius: 4px !important;
+        border: 1px solid #e0e0e0 !important;
+    }
+
+    /* 메시지 내용 텍스트 스타일 */
+    .stChatMessage p {
+        margin: 0 !important;
+        line-height: 1.5 !important;
+        color: #333 !important;
+    }
+
+    /* 스크롤바 스타일 개선 */
+    [data-testid="stVerticalBlock"]::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    [data-testid="stVerticalBlock"]::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    [data-testid="stVerticalBlock"]::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 10px;
+    }
+
+    [data-testid="stVerticalBlock"]::-webkit-scrollbar-thumb:hover {
+        background: #555;
     }
 
     /* 배지 스타일 */
@@ -565,13 +622,13 @@ if "layout_mode" not in st.session_state:
 #  레이아웃 전환 버튼
 layout_col1, layout_col2 = st.columns([5, 1])
 with layout_col2:
-    if st.button("🔄" if st.session_state.layout_mode == "column" else "📱"):
+    if st.button("🔄" if st.session_state.layout_mode == "column" else "📱", key="layout_toggle_btn"):
         st.session_state.layout_mode = "tab" if st.session_state.layout_mode == "column" else "column"
         st.rerun()
 
-# 레이아웃 렌더링
+# 레이아웃 렌더링 - 채팅 중심 레이아웃
 if st.session_state.layout_mode == "tab":
-    # 탭 모드 (모바일 친화적)
+    # 탭 모드 (모바일 친화적) - 채팅 탭을 먼저
     tab1, tab2 = st.tabs(["💬 채팅", "📊 데이터"])
 
     with tab1:
@@ -579,10 +636,12 @@ if st.session_state.layout_mode == "tab":
     with tab2:
         col_data = st.container()
 else:
-    # 2열 레이아웃 (데스크톱용)
-    col_data, col_chat = st.columns([3, 2])
+    # 새로운 레이아웃: 채팅 전체, 데이터는 하단 확장 가능
+    col_chat = st.container()
+    with st.expander("📊 데이터 증거 보기 (클릭하여 펼치기)", expanded=False):
+        col_data = st.container()
 
-# 채팅 열 (오른쪽)
+# 채팅 열 (왼쪽 또는 첫 번째 탭)
 with col_chat:
     st.subheader("💬 데이터 탐정 파트너 캐스터")
 
@@ -598,7 +657,7 @@ with col_chat:
         with badge_col2:
             st.markdown(f"**⭐ 점수**: {st.session_state.detective_score}")
 
-    # 진행 상태 표시
+    # 진행 상태 표시 (개선된 버전)
     scene_order = [
         "scene_0", "scene_0_reaction_1", "scene_0_reaction_2", "scene_0_name_input",
         "scene_1_hypothesis", "exploration", "scene_3_graph",
@@ -622,40 +681,74 @@ with col_chat:
         "minigame_1_3": "미니게임 3: 로그 필터링",
         "scene_6_player_profile": "Scene 7: 프로필 분석",
         "scene_7_timeline": "Scene 8: 사건 해결",
-        "conclusion": "사건 완료"
+        "conclusion": "🎉 사건 완료"
     }
     if st.session_state.episode_stage in scene_order:
         idx = scene_order.index(st.session_state.episode_stage) + 1
         total = len(scene_order)
         scene_name = scene_names.get(st.session_state.episode_stage, "진행 중")
-        st.caption(f"📍 {scene_name} ({idx}/{total})")
+        progress_percent = int((idx / total) * 100)
+        st.progress(progress_percent / 100, text=f"**📍 {scene_name}** ({idx}/{total})")
+    else:
+        st.caption("📍 자유 탐색 모드")
 
-    # 대화 표시 - 자동 스크롤 JavaScript 추가
+    # 대화 표시 - 강화된 자동 스크롤 JavaScript
     st.markdown("""
     <script>
-    // 채팅 자동 스크롤 - 새 메시지 감지 및 스크롤
-    function scrollChatToBottom() {
-        const containers = window.parent.document.querySelectorAll('[data-testid="stVerticalBlock"]');
-        containers.forEach(container => {
-            const chatMessages = container.querySelectorAll('.stChatMessage');
-            if (chatMessages.length > 0) {
-                container.scrollTop = container.scrollHeight;
+    // 채팅 자동 스크롤 - 카카오톡 스타일
+    (function() {
+        let lastMessageCount = 0;
+
+        function smoothScrollToBottom() {
+            const chatContainer = window.parent.document.querySelector('[data-testid="stChatMessageContainer"]');
+            if (chatContainer) {
+                chatContainer.scrollTo({
+                    top: chatContainer.scrollHeight,
+                    behavior: 'smooth'
+                });
             }
-        });
-    }
 
-    // 초기 로드 및 주기적 체크
-    setTimeout(scrollChatToBottom, 100);
-    setInterval(scrollChatToBottom, 500);
-
-    // MutationObserver로 DOM 변경 감지
-    const observer = new MutationObserver(scrollChatToBottom);
-    setTimeout(() => {
-        const appView = window.parent.document.querySelector('[data-testid="stAppViewContainer"]');
-        if (appView) {
-            observer.observe(appView, { childList: true, subtree: true });
+            // Fallback: 모든 채팅 메시지 컨테이너 스크롤
+            const containers = window.parent.document.querySelectorAll('[data-testid="stVerticalBlock"]');
+            containers.forEach(container => {
+                const chatMessages = container.querySelectorAll('.stChatMessage');
+                if (chatMessages.length > 0) {
+                    const currentCount = chatMessages.length;
+                    if (currentCount > lastMessageCount) {
+                        container.scrollTo({
+                            top: container.scrollHeight,
+                            behavior: 'smooth'
+                        });
+                        lastMessageCount = currentCount;
+                    }
+                }
+            });
         }
-    }, 1000);
+
+        // 초기 로드 및 빠른 체크
+        setTimeout(smoothScrollToBottom, 100);
+        setTimeout(smoothScrollToBottom, 300);
+        setTimeout(smoothScrollToBottom, 500);
+
+        // 주기적 체크 (더 빈번하게)
+        setInterval(smoothScrollToBottom, 200);
+
+        // MutationObserver로 실시간 감지
+        const observer = new MutationObserver(() => {
+            setTimeout(smoothScrollToBottom, 50);
+        });
+
+        setTimeout(() => {
+            const appView = window.parent.document.querySelector('[data-testid="stAppViewContainer"]');
+            if (appView) {
+                observer.observe(appView, {
+                    childList: true,
+                    subtree: true,
+                    attributes: true
+                });
+            }
+        }, 500);
+    })();
     </script>
     """, unsafe_allow_html=True)
 
@@ -686,7 +779,7 @@ with col_chat:
         col1, col2, col3 = st.columns(3)
 
         with col1:
-            if st.button("😮 누구야?", use_container_width=True):
+            if st.button("😮 누구야?", use_container_width=True, key="scene0_btn_who"):
                 add_message("user", "누구야?")
                 add_message("assistant", "놀랐지? 하하! 나는 AI 데이터 분석 전문가야!")
                 add_message("assistant", "이제부터 너랑 함께 사건을 해결할 거야!")
@@ -694,7 +787,7 @@ with col_chat:
                 st.rerun()
 
         with col2:
-            if st.button("👋 반가워!", use_container_width=True):
+            if st.button("👋 반가워!", use_container_width=True, key="scene0_btn_nice"):
                 add_message("user", "반가워!")
                 add_message("assistant", "오! 반갑다! 에너지 넘치는데?")
                 add_message("assistant", "나는 AI 데이터 분석 전문가고, 너랑 함께 일할 파트너야!")
@@ -702,7 +795,7 @@ with col_chat:
                 st.rerun()
 
         with col3:
-            if st.button("😱 깜짝이야!", use_container_width=True):
+            if st.button("😱 깜짝이야!", use_container_width=True, key="scene0_btn_surprise"):
                 add_message("user", "깜짝이야!")
                 add_message("assistant", "헤헤! 서프라이즈 성공! 나는 AI 데이터 분석가야!")
                 add_message("assistant", "앞으로 너랑 함께 데이터 사건을 해결할 거야!")
@@ -718,7 +811,7 @@ with col_chat:
         col1, col2 = st.columns(2)
 
         with col1:
-            if st.button("🤔 혼자 일하는 게 익숙한데...", use_container_width=True):
+            if st.button("🤔 혼자 일하는 게 익숙한데...", use_container_width=True, key="scene0_r2_alone"):
                 add_message("user", "혼자 일하는 게 익숙한데...")
                 add_message("assistant", "아~ 혼자파구나! 괜찮아, 나 조용히 있을 수도 있어!")
                 add_message("assistant", "...근데 그러면 배고픔만 남는데? 차라리 같이 떠들면서 일하자!")
@@ -728,7 +821,7 @@ with col_chat:
                 st.rerun()
 
         with col2:
-            if st.button("😊 좋아! 같이 해보자!", use_container_width=True, type="primary"):
+            if st.button("😊 좋아! 같이 해보자!", use_container_width=True, type="primary", key="scene0_r2_together"):
                 add_message("user", "좋아! 같이 해보자!")
                 add_message("assistant", "오예! 완벽한 팀이 될 거야! 데이터 사건은 우리한테 맡겨!")
                 add_message("assistant", "자! 그럼 이름부터 알려줘! 계속 '야~' 하고 부를 수는 없잖아?")
@@ -798,7 +891,7 @@ with col_chat:
         col1, col2, col3 = st.columns(3)
 
         with col1:
-            if st.button("🔧 A) 공식 패치\n(기록 누락)", use_container_width=True):
+            if st.button("🔧 A) 공식 패치\n(기록 누락)", use_container_width=True, key="scene1_hypo_patch"):
                 add_message("user", "A) 공식 패치 (기록 누락)")
                 add_message("assistant", "공식 패치? 음~ 가능성은... 15%?")
                 add_message("assistant", "바쁜 회사에서 기록 깜빡할 수는 있는데... 35% 승률 폭등을 '실수로'? 그건 좀...")
@@ -807,7 +900,7 @@ with col_chat:
                 st.rerun()
 
         with col2:
-            if st.button("🐛 B) 희귀한 버그", use_container_width=True):
+            if st.button("🐛 B) 희귀한 버그", use_container_width=True, key="scene1_hypo_bug"):
                 add_message("user", "B) 희귀한 버그")
                 add_message("assistant", "버그? 오오~ 프로그래머다운 발상이네!")
                 add_message("assistant", "근데 말이지, 버그가 '딱 하루'만 셰도우를 35% 강하게 만들고 그 다음날도 계속 유지할까?")
@@ -816,7 +909,7 @@ with col_chat:
                 st.rerun()
 
         with col3:
-            if st.button("⚠️ C) 무단 수정", use_container_width=True, type="primary"):
+            if st.button("⚠️ C) 무단 수정", use_container_width=True, key="scene1_hypo_unauthorized"):
                 add_message("user", "C) 무단 수정")
                 add_message("assistant", "오! 범죄 냄새! 예리하네!")
                 add_message("assistant", "좋아좋아! 그 직감 중요해!")
@@ -833,7 +926,7 @@ with col_chat:
 
     # Scene 2: 마야에게 전화 (exploration 시작)
     elif st.session_state.episode_stage == "exploration":
-        if st.button("📞 마야에게 전화 걸기", use_container_width=True, type="primary"):
+        if st.button("📞 마야에게 전화 걸기", use_container_width=True, type="primary", key="btn_20_____________"):
             # Scene 2 대화
             scene_2_messages = [
                 "*[전화 거는 소리]*",
@@ -871,20 +964,20 @@ with col_chat:
 
             col1, col2, col3 = st.columns(3)
             with col1:
-                if st.button("24일", use_container_width=True):
+                if st.button("24일", use_container_width=True, key="btn_19_24_"):
                     st.error("❌ 다시 그래프를 확인해봐!")
                     st.rerun()
             with col2:
-                if st.button("25일", use_container_width=True, type="primary"):
+                if st.button("25일", use_container_width=True, type="primary", key="btn_18_25_"):
                     st.session_state.graph_verified = True
                     add_message("user", "25일에 급등했어!")
                     st.rerun()
             with col3:
-                if st.button("26일", use_container_width=True):
+                if st.button("26일", use_container_width=True, key="btn_17_26_"):
                     st.error("❌ 다시 그래프를 확인해봐!")
                     st.rerun()
 
-        elif st.session_state.graph_verified and st.button("✅ 다음으로", use_container_width=True, type="primary"):
+        elif st.session_state.graph_verified and st.button("다음으로 →", use_container_width=True, key="btn_next_scene3"):
             add_message("user", "그래프 확인했어! 25일에 수직으로 솟았어!")
             add_message("assistant", f"{st.session_state.user_name} 탐정, 봐봐! 우주 가는 로켓 같지? 붕~ 하고!")
             add_message("assistant", "피닉스(파란 선)도 조금 올라가는데 그건 계단 오르는 것처럼 완만해. 셰도우는? 엘리베이터!")
@@ -906,13 +999,13 @@ with col_chat:
 
         col1, col2, col3 = st.columns(3)
         with col1:
-            if st.button("📅 24일", use_container_width=True):
+            if st.button("📅 24일", use_container_width=True, key="btn_16___24_"):
                 add_message("user", "24일?")
                 add_message("assistant", "오~ 아깝다! 24일은 급등 전이야. 다시!")
                 st.rerun()
 
         with col2:
-            if st.button("📅 25일 ✅", use_container_width=True, type="primary"):
+            if st.button("📅 25일", use_container_width=True, key="btn_15___25___"):
                 add_message("user", "25일!")
                 add_message("assistant", "**우와! 정답!**")
                 add_message("assistant", f"{st.session_state.user_name} 탐정, 완벽해! 그것도 엄청 빨리 찾았어!")
@@ -932,7 +1025,7 @@ with col_chat:
                 st.rerun()
 
         with col3:
-            if st.button("📅 26일", use_container_width=True):
+            if st.button("📅 26일", use_container_width=True, key="btn_14___26_"):
                 add_message("user", "26일?")
                 add_message("assistant", "오~ 아깝다! 26일은 이미 올라간 '후'야. 우리가 찾는 건 '폭발한 순간'! 다시 한 번!")
                 st.rerun()
@@ -945,7 +1038,7 @@ with col_chat:
 
         col1, col2, col3 = st.columns(3)
         with col1:
-            if st.button("📄 A) 공식 패치 노트", use_container_width=True, type="primary"):
+            if st.button("📄 A) 공식 패치 노트", use_container_width=True, key="choice2_patch"):
                 add_message("user", "A) 공식 패치 노트 확인")
                 add_message("assistant", "오! 현명한 선택!")
                 add_message("assistant", "항상 **공식 기록**부터 확인해야 해. 기계 분해하기 전에 설명서 읽는 것처럼!")
@@ -986,7 +1079,7 @@ with col_chat:
         st.markdown("**캐스터**: 자, 공식 패치 노트 확인!")
         st.markdown("왼쪽 데이터 패널에서 '📄 공식 패치 노트'를 펼쳐서 2025-01-25를 찾아봐!")
 
-        if st.button("📋 패치 노트 확인 완료!", use_container_width=True, type="primary"):
+        if st.button("📋 패치 노트 확인 완료!", use_container_width=True, type="primary", key="btn_10_______________"):
             add_message("user", "패치 노트 확인! 셰도우: 변경사항 없음이라고 써있어!")
             add_message("assistant", "'셰도우: 변경사항 없음'...")
             add_message("assistant", "근데 그래프는 뭐라고 했어?")
@@ -1013,7 +1106,7 @@ with col_chat:
 - 28일: 버그 수정 → 셰도우 약간 하락
 """)
 
-        if st.button("💡 25일에 '알 수 없는 이벤트'가 발생!", use_container_width=True, type="primary"):
+        if st.button("💡 25일에 '알 수 없는 이벤트'가 발생!", use_container_width=True, type="primary", key="btn_9___25____________________"):
             add_message("user", "25일에 공식 이벤트가 없는데 셰도우만 급등했어!")
             add_message("assistant", "**대박! 완벽해!**")
             add_message("assistant", "25일 좀 봐! 공식 이벤트가 없는데 셰도우만 급등...")
@@ -1049,7 +1142,7 @@ with col_chat:
 - ⚙️ **무엇을** 했는지 (수행한 작업)
 """)
 
-        if st.button("🔍 서버 로그 확인 시작!", use_container_width=True, type="primary"):
+        if st.button("🔍 서버 로그 확인 시작!", use_container_width=True, type="primary", key="btn_8_______________"):
             add_message("user", "서버 로그 보자!")
             add_message("assistant", "그럼 누가 셰도우 바꿨는지 볼 수 있겠네?")
             add_message("assistant", "응! 근데... 로그가 10,000개야.")
@@ -1107,7 +1200,7 @@ with col_chat:
             st.info(f"💡 필터 설정 중... ({sum([bool(st.session_state.filter_date), bool(st.session_state.filter_user), bool(st.session_state.filter_action)])}/3)")
 
         if st.button("🔍 필터 적용하기", use_container_width=True, type="primary",
-                     disabled=not (st.session_state.filter_date and st.session_state.filter_user and st.session_state.filter_action)):
+                     disabled=not (st.session_state.filter_date and st.session_state.filter_user and st.session_state.filter_action), key="btn_filter_apply"):
             add_message("user", "25일, 카이토, Modify로 필터링!")
             add_message("assistant", "**찾았다! 이거야!**")
             add_message("assistant", """
@@ -1144,7 +1237,7 @@ IP 주소: 203.0.113.45 (집 IP!)
         st.markdown("### 👤 Scene 6: 플레이어 프로필 분석")
         st.markdown("**캐스터**: 카이토가 셰도우 수정하고... 3분 후!")
 
-        if st.button("🔍 플레이어 '녹티스' 프로필 확인", use_container_width=True, type="primary"):
+        if st.button("🔍 플레이어 '녹티스' 프로필 확인", use_container_width=True, type="primary", key="btn_6____________________"):
             add_message("user", "녹티스 프로필 확인!")
             add_message("assistant", """
 👤 **플레이어 프로필: 녹티스**
@@ -1186,7 +1279,7 @@ IP 주소: 203.0.113.45
         st.markdown("---")
         st.markdown("### ⏰ Scene 7-10: 타임라인 완성 & 사건 해결")
 
-        if st.button("🎯 카이토가 범인이야! 사건 해결!", use_container_width=True, type="primary"):
+        if st.button("🎯 카이토가 범인이야! 사건 해결!", use_container_width=True, type="primary", key="btn_5____________________"):
             add_message("user", "카이토가 범인이야!")
             add_message("assistant", """🎉 **대박! 사건 해결! +50점!**
 
@@ -1249,7 +1342,7 @@ IP 주소: 203.0.113.45
         col1, col2 = st.columns(2)
 
         with col1:
-            if st.button("🔄 처음부터 다시 하기", use_container_width=True):
+            if st.button("🔄 처음부터 다시 하기", use_container_width=True, key="btn_4_____________"):
                 st.session_state.messages = []
                 st.session_state.episode_stage = "scene_0"
                 st.session_state.detective_score = 0
@@ -1265,7 +1358,7 @@ IP 주소: 203.0.113.45
                 st.rerun()
 
         with col2:
-            if st.button("📊 내 결과 보기", use_container_width=True, type="primary"):
+            if st.button("📊 내 결과 보기", use_container_width=True, type="primary", key="btn_3__________"):
                 st.balloons()
                 user_display_name = st.session_state.user_name if st.session_state.user_name else "탐정"
                 st.info(f"""
@@ -1292,7 +1385,7 @@ IP 주소: 203.0.113.45
             st.error(f"⚠️ API 오류가 발생했습니다: {st.session_state.api_error}")
             col1, col2 = st.columns(2)
             with col1:
-                if st.button("🔄 다시 시도", use_container_width=True, type="primary"):
+                if st.button("🔄 다시 시도", use_container_width=True, type="primary", key="btn_2________"):
                     if st.session_state.last_user_message:
                         context = STAGE_CONTEXTS.get(st.session_state.episode_stage, "")
                         response = get_kastor_response(st.session_state.last_user_message, context)
@@ -1302,7 +1395,7 @@ IP 주소: 203.0.113.45
                             st.session_state.last_user_message = None
                         st.rerun()
             with col2:
-                if st.button("⏭️ 건너뛰기", use_container_width=True):
+                if st.button("⏭️ 건너뛰기", use_container_width=True, key="btn_1________"):
                     st.session_state.api_error = None
                     st.session_state.last_user_message = None
                     add_message("assistant", "미안, 지금은 답변하기 어려워. 다음으로 넘어가자!")
@@ -1334,7 +1427,12 @@ with col_data:
         # 1단계: 캐릭터 데이터 (scene_3_graph부터 공개)
         if st.session_state.episode_stage in ["scene_3_graph", "minigame_1_1", "choice_2_investigation", "scene_4_patch_notes", "minigame_1_2", "scene_5_server_logs", "minigame_1_3", "scene_6_player_profile", "scene_7_timeline", "conclusion"]:
             is_current = st.session_state.episode_stage == "scene_3_graph"
-            title = "🎮 캐릭터 승률 데이터" + (" 👈 여기부터!" if is_current else " ✅")
+            title = "🎮 캐릭터 승률 데이터" + (" ✨ 👈 지금 여기 확인!" if is_current else " ✅")
+
+            # 현재 활성화된 섹션에 하이라이트 추가
+            if is_current:
+                st.markdown("### ✨ 현재 조사 중인 증거 ✨")
+                st.markdown("👇 **아래 데이터를 확인하세요!**")
 
             with st.expander(title, expanded=is_current):
                 st.caption("💡 데이터를 클릭하거나 호버하면 자세한 정보를 볼 수 있습니다")
@@ -1364,7 +1462,12 @@ with col_data:
         # 2단계: 일별 데이터 (scene_3_graph부터 공개)
         if st.session_state.episode_stage in ["scene_3_graph", "minigame_1_1", "choice_2_investigation", "scene_4_patch_notes", "minigame_1_2", "scene_5_server_logs", "minigame_1_3", "scene_6_player_profile", "scene_7_timeline", "conclusion"]:
             is_current = st.session_state.episode_stage in ["scene_3_graph", "minigame_1_1"]
-            title = "📅 셰도우 일별 승률 변화" + (" 👈 지금 여기!" if is_current else " ✅")
+            title = "📅 셰도우 일별 승률 변화" + (" ✨ 👈 지금 여기 확인!" if is_current else " ✅")
+
+            # 현재 활성화된 섹션에 하이라이트 추가
+            if is_current:
+                st.markdown("### ✨ 현재 조사 중인 증거 ✨")
+                st.markdown("👇 **그래프에서 급등한 날을 찾아보세요!**")
 
             with st.expander(title, expanded=is_current):
                 st.caption("💡 그래프를 드래그해서 확대하고, 데이터 포인트에 호버하면 자세한 정보를 볼 수 있습니다")
@@ -1396,14 +1499,26 @@ with col_data:
         # 3단계: 패치 노트 (scene_4_patch_notes부터 공개)
         if st.session_state.episode_stage in ["scene_4_patch_notes", "minigame_1_2", "scene_5_server_logs", "minigame_1_3", "scene_6_player_profile", "scene_7_timeline", "conclusion"]:
             is_current = st.session_state.episode_stage == "scene_4_patch_notes"
-            with st.expander("📄 공식 패치 노트" + (" 👈 지금 여기!" if is_current else " ✅"), expanded=is_current):
+
+            # 현재 활성화된 섹션에 하이라이트 추가
+            if is_current:
+                st.markdown("### ✨ 현재 조사 중인 증거 ✨")
+                st.markdown("👇 **25일 패치 노트를 확인하세요!**")
+
+            with st.expander("📄 공식 패치 노트" + (" ✨ 👈 지금 여기 확인!" if is_current else " ✅"), expanded=is_current):
                 st.caption("💡 표를 스크롤하여 모든 패치 내역을 확인하세요")
                 st.dataframe(patch_notes_df, use_container_width=True, height=300)
 
         # 4단계: 서버 로그 (scene_5_server_logs부터 공개)
         if st.session_state.episode_stage in ["scene_5_server_logs", "minigame_1_3", "scene_6_player_profile", "scene_7_timeline", "conclusion"]:
             is_current = st.session_state.episode_stage in ["scene_5_server_logs", "minigame_1_3"]
-            with st.expander("🖥️ 서버 로그 (필터링된 데이터)" + (" 👈 지금 여기!" if is_current else " ✅"), expanded=is_current):
+
+            # 현재 활성화된 섹션에 하이라이트 추가
+            if is_current:
+                st.markdown("### ✨ 현재 조사 중인 증거 ✨")
+                st.markdown("👇 **서버 로그를 필터링해서 증거를 찾으세요!**")
+
+            with st.expander("🖥️ 서버 로그 (필터링된 데이터)" + (" ✨ 👈 지금 여기 확인!" if is_current else " ✅"), expanded=is_current):
                 st.caption("💡 표에서 수상한 패턴을 찾아보세요")
                 st.dataframe(server_logs_df, use_container_width=True, height=300)
 
@@ -1416,7 +1531,13 @@ with col_data:
         # 5단계: 플레이어 프로필 (scene_6_player_profile부터 공개)
         if st.session_state.episode_stage in ["scene_6_player_profile", "scene_7_timeline", "conclusion"]:
             is_current = st.session_state.episode_stage == "scene_6_player_profile"
-            with st.expander("👤 플레이어 프로필 - 녹티스" + (" 👈 지금 여기!" if is_current else " ✅"), expanded=is_current):
+
+            # 현재 활성화된 섹션에 하이라이트 추가
+            if is_current:
+                st.markdown("### ✨ 현재 조사 중인 증거 ✨")
+                st.markdown("👇 **플레이어 녹티스의 IP 주소와 기기 지문을 확인하세요!**")
+
+            with st.expander("👤 플레이어 프로필 - 녹티스" + (" ✨ 👈 지금 여기 확인!" if is_current else " ✅"), expanded=is_current):
                 st.caption("💡 IP 주소와 기기 정보를 주의깊게 확인하세요")
                 st.dataframe(player_profile_df, use_container_width=True, height=200)
 
@@ -1459,7 +1580,7 @@ with st.sidebar:
     st.write(f"현재 스테이지: {st.session_state.episode_stage}")
     st.write(f"가설 개수: {len(st.session_state.hypotheses)}")
 
-    if st.button("🔄 대화 초기화"):
+    if st.button("🔄 대화 초기화", key="btn_0_________"):
         st.session_state.messages = []
         st.session_state.episode_stage = "scene_0"
         st.session_state.hypotheses = []
