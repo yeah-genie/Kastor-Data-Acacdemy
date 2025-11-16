@@ -161,14 +161,29 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
 
   void _handleSuggestedQuestion(String question) {
     // 추천 질문을 탭했을 때 자동으로 처리
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(question),
-        duration: const Duration(seconds: 1),
-        behavior: SnackBarBehavior.floating,
-      ),
+    // 1. 사용자가 질문을 선택했음을 시각적으로 표시 (채팅에 추가)
+    final message = StoryMessage(
+      id: 'msg_${DateTime.now().millisecondsSinceEpoch}',
+      speaker: 'detective',
+      text: question,
+      timestamp: DateTime.now(),
     );
-    // TODO: 실제로는 AI가 답변하도록 구현
+
+    final currentState = ref.read(storyProviderV2);
+    final updatedMessages = [...currentState.messages, message];
+
+    // 메시지 상태 업데이트
+    ref.read(storyProviderV2.notifier).state = currentState.copyWith(
+      messages: updatedMessages,
+    );
+
+    // 2. 짧은 딜레이 후 스토리 진행 (Kastor의 답변으로 이어짐)
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted) {
+        ref.read(storyProviderV2.notifier).continueStory();
+        _scrollToBottom();
+      }
+    });
   }
 
   @override
