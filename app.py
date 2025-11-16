@@ -5,6 +5,7 @@ import plotly.graph_objects as go
 from anthropic import Anthropic
 import os
 from dotenv import load_dotenv
+import time
 
 # 환경 변수 로드
 load_dotenv()
@@ -16,8 +17,24 @@ st.set_page_config(
     layout="wide"
 )
 
+# API 키 로드 (Streamlit Cloud와 로컬 모두 지원)
+def get_api_key():
+    # Streamlit Cloud Secrets 먼저 확인
+    if hasattr(st, 'secrets') and 'ANTHROPIC_API_KEY' in st.secrets:
+        return st.secrets['ANTHROPIC_API_KEY']
+    # 환경 변수 확인
+    elif os.getenv("ANTHROPIC_API_KEY"):
+        return os.getenv("ANTHROPIC_API_KEY")
+    else:
+        return None
+
 # Claude 클라이언트 초기화
-client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+api_key = get_api_key()
+if api_key:
+    client = Anthropic(api_key=api_key)
+else:
+    st.error("⚠️ API 키가 설정되지 않았습니다. Streamlit Cloud Secrets 또는 .env 파일을 확인하세요.")
+    st.stop()
 
 # 세션 상태 초기화
 if "messages" not in st.session_state:
@@ -28,6 +45,10 @@ if "hypotheses" not in st.session_state:
     st.session_state.hypotheses = []
 if "user_name" not in st.session_state:
     st.session_state.user_name = None
+if "last_message_count" not in st.session_state:
+    st.session_state.last_message_count = 0
+if "intro_step" not in st.session_state:
+    st.session_state.intro_step = 0
 
 # 데이터 로드
 @st.cache_data
@@ -89,6 +110,24 @@ def add_message(role, content):
     """메시지 추가"""
     st.session_state.messages.append({"role": role, "content": content})
 
+def display_message_with_typing(role, content, container=None):
+    """타이핑 효과로 메시지 표시"""
+    if container is None:
+        container = st.chat_message(role)
+    else:
+        container = container.chat_message(role)
+
+    message_placeholder = container.empty()
+    full_response = ""
+
+    # 타이핑 효과
+    for char in content:
+        full_response += char
+        message_placeholder.write(full_response + "▌")
+        time.sleep(0.02)  # 타이핑 속도
+
+    message_placeholder.write(full_response)
+
 # Episode 스테이지별 컨텍스트
 STAGE_CONTEXTS = {
     "intro": "유저를 처음 만났습니다. 자신을 소개하고 사건을 설명해주세요.",
@@ -130,26 +169,44 @@ st.divider()
 # 대화 영역
 st.subheader("💬 Kastor와 대화하기")
 
-# 이전 대화 표시
+# 인트로 메시지 단계별 표시
+intro_messages = [
+    "띠링~ 안녕! 나는 Kastor야! 🎉",
+    "오늘 첫 사건이 들어왔어! 게임 '레전드 아레나'의 디렉터 마야가 긴급 의뢰를 보냈거든.",
+    "**문제**: 캐릭터 '셰도우'의 승률이 하루 만에 50% → 85%로 폭등! 😱",
+    "패치도 안 했는데 왜 이렇게 된 거지? 커뮤니티가 난리 났대!",
+    "자, 먼저 네 이름이 뭐야? 👀"
+]
+
+# 인트로 자동 시작
+if st.session_state.episode_stage == "intro" and st.session_state.intro_step < len(intro_messages):
+    current_step = st.session_state.intro_step
+    add_message("assistant", intro_messages[current_step])
+    st.session_state.intro_step += 1
+    st.session_state.last_message_count = len(st.session_state.messages)
+    time.sleep(0.5)  # 메시지 간 간격
+    if st.session_state.intro_step < len(intro_messages):
+        st.rerun()
+
+# 대화 표시
 chat_container = st.container()
 with chat_container:
-    for message in st.session_state.messages:
+    # 이전 메시지는 일반 표시
+    for i, message in enumerate(st.session_state.messages[:-1]):
         with st.chat_message(message["role"]):
             st.write(message["content"])
 
-# 인트로 자동 시작
-if st.session_state.episode_stage == "intro" and len(st.session_state.messages) == 0:
-    intro_message = """띠링~ 안녕! 나는 Kastor야! 🎉
-
-오늘 첫 사건이 들어왔어! 게임 '레전드 아레나'의 디렉터 마야가 긴급 의뢰를 보냈거든.
-
-**문제**: 캐릭터 '셰도우'의 승률이 하루 만에 50% → 85%로 폭등! 😱
-
-패치도 안 했는데 왜 이렇게 된 거지? 커뮤니티가 난리 났대!
-
-자, 먼저 네 이름이 뭐야?"""
-    add_message("assistant", intro_message)
-    st.rerun()
+    # 가장 최근 메시지는 타이핑 효과
+    if len(st.session_state.messages) > 0:
+        last_msg = st.session_state.messages[-1]
+        if len(st.session_state.messages) > st.session_state.last_message_count:
+            # 새 메시지 - 타이핑 효과
+            display_message_with_typing(last_msg["role"], last_msg["content"])
+            st.session_state.last_message_count = len(st.session_state.messages)
+        else:
+            # 기존 메시지 - 일반 표시
+            with st.chat_message(last_msg["role"]):
+                st.write(last_msg["content"])
 
 # 선택지 버튼 (스테이지별)
 st.divider()
@@ -341,4 +398,6 @@ with st.sidebar:
         st.session_state.episode_stage = "intro"
         st.session_state.hypotheses = []
         st.session_state.user_name = None
+        st.session_state.last_message_count = 0
+        st.session_state.intro_step = 0
         st.rerun()
