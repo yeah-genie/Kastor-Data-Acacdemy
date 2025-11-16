@@ -38,22 +38,26 @@ else:
     st.error("⚠️ API 키가 설정되지 않았습니다. Streamlit Cloud Secrets 또는 .env 파일을 확인하세요.")
     st.stop()
 
-# 이름 정리 함수 (조사 제거)
+# 이름 정리 함수 (조사 및 호칭 제거)
 def clean_name(raw_name):
-    """이름에서 한국어 조사를 제거하여 깨끗한 이름만 추출"""
+    """이름에서 한국어 조사, 호칭, 특수문자를 제거하여 깨끗한 이름만 추출"""
     # "예진이야", "예진이", "예진야" -> "예진"
-    # "철수야", "철수이야" -> "철수"
+    # "철수님", "지우씨" -> "철수", "지우"
+    import re
+
     cleaned = raw_name.strip()
 
-    # 마지막 글자가 조사인 경우 제거
-    if cleaned.endswith("이야"):
-        cleaned = cleaned[:-2]
-    elif cleaned.endswith("야"):
-        cleaned = cleaned[:-1]
-    elif cleaned.endswith("이"):
-        cleaned = cleaned[:-1]
+    # 특수문자 제거
+    cleaned = re.sub(r'[^\w\s가-힣]', '', cleaned)
 
-    return cleaned
+    # 마지막 글자가 조사/호칭인 경우 제거 (우선순위: 긴 것부터)
+    suffixes_to_remove = ["이야", "야", "님", "씨", "이", "아"]
+    for suffix in suffixes_to_remove:
+        if cleaned.endswith(suffix) and len(cleaned) > len(suffix):
+            cleaned = cleaned[:-len(suffix)]
+            break
+
+    return cleaned.strip()
 
 # 모바일 감지 및 CSS 스타일링
 def add_mobile_styles():
@@ -321,6 +325,12 @@ if "hints_used" not in st.session_state:
     st.session_state.hints_used = 0
 if "awaiting_name_input" not in st.session_state:
     st.session_state.awaiting_name_input = False
+if "filter_date" not in st.session_state:
+    st.session_state.filter_date = None
+if "filter_user" not in st.session_state:
+    st.session_state.filter_user = None
+if "filter_action" not in st.session_state:
+    st.session_state.filter_action = None
 
 # 데이터 로드
 @st.cache_data
@@ -463,7 +473,7 @@ def add_message(role, content):
     st.session_state.messages.append({"role": role, "content": content})
 
 def display_message_with_typing(role, content, container=None):
-    """타이핑 효과로 메시지 표시"""
+    """타이핑 효과로 메시지 표시 (메시지 길이에 따라 속도 조절)"""
     if container is None:
         container = st.chat_message(role)
     else:
@@ -472,11 +482,23 @@ def display_message_with_typing(role, content, container=None):
     message_placeholder = container.empty()
     full_response = ""
 
+    # 메시지 길이에 따라 타이핑 속도 조절
+    # 짧은 메시지(<50자): 0.015초/문자
+    # 보통 메시지(50-150자): 0.01초/문자
+    # 긴 메시지(>150자): 0.005초/문자
+    content_length = len(content)
+    if content_length < 50:
+        typing_speed = 0.015
+    elif content_length < 150:
+        typing_speed = 0.01
+    else:
+        typing_speed = 0.005
+
     # 타이핑 효과
     for char in content:
         full_response += char
         message_placeholder.write(full_response + "▌")
-        time.sleep(0.01)  # 타이핑 속도
+        time.sleep(typing_speed)
 
     message_placeholder.write(full_response)
 
@@ -505,18 +527,14 @@ if st.session_state.episode_stage == "scene_0" and len(st.session_state.messages
 "일어나! 탐정 첫 출근이잖아!"
 
 *[핸드폰을 집어들며 알람을 끈다]*""",
-        "띠링~ 안녕 탐정! 나는 캐스터 (Kastor)야! 네 새 파트너!",
-        "놀랐지? 하하! 나는 AI 데이터 분석 전문가고, 이제부터 너랑 함께 사건을 해결할 거야!",
-        "그래그래! 혼자 일하면 지루하잖아. 나랑 함께면 데이터도 재밌고, 사건도 쑥쑥 풀려!",
-        "자, 그런데! 탐정님 이름이 뭐야? 계속 '야~' 하고 부를 수는 없잖아?",
-        "입력해봐! 저장해둘게!",
+        "띠링~ 안녕! 나는 캐스터 (Kastor)야! 네 새 파트너!",
     ]
 
     # Scene 0 메시지 추가
     for msg in scene_0_messages:
         add_message("assistant", msg)
 
-    st.session_state.awaiting_name_input = True
+    st.session_state.episode_stage = "scene_0_reaction_1"
     st.session_state.last_message_count = len(st.session_state.messages)
 
 # 2열 레이아웃 (데이터 / 채팅) - 왼쪽에 데이터, 오른쪽에 채팅
@@ -524,19 +542,51 @@ col_data, col_chat = st.columns([3, 2])
 
 # 채팅 열 (오른쪽)
 with col_chat:
-        st.subheader("💬 데이터 탐정 파트너 캐스터")
+    st.subheader("💬 데이터 탐정 파트너 캐스터")
 
-        # 진행 상태 표시
-        scene_order = [
-            "scene_0", "scene_1_hypothesis", "exploration", "scene_3_graph",
-            "minigame_1_1", "choice_2_investigation", "scene_4_patch_notes",
-            "minigame_1_2", "scene_5_server_logs", "minigame_1_3",
-            "scene_6_player_profile", "scene_7_timeline", "conclusion"
-        ]
-        if st.session_state.episode_stage in scene_order:
-            idx = scene_order.index(st.session_state.episode_stage) + 1
-            total = len(scene_order)
-            st.caption(f"진행 상태: {idx}/{total}")
+    # 배지 및 점수 표시
+    if st.session_state.detective_score > 0 or len(st.session_state.badges) > 0:
+        badge_col1, badge_col2 = st.columns([2, 1])
+        with badge_col1:
+            if len(st.session_state.badges) > 0:
+                badge_html = " ".join([f'<span class="badge">{badge}</span>' for badge in st.session_state.badges])
+                st.markdown(f"**🏆 획득 배지**: {badge_html}", unsafe_allow_html=True)
+            else:
+                st.markdown("**🏆 획득 배지**: 아직 없음")
+        with badge_col2:
+            st.markdown(f"**⭐ 점수**: {st.session_state.detective_score}")
+
+    # 진행 상태 표시
+    scene_order = [
+        "scene_0", "scene_0_reaction_1", "scene_0_reaction_2", "scene_0_name_input",
+        "scene_1_hypothesis", "exploration", "scene_3_graph",
+        "minigame_1_1", "choice_2_investigation", "scene_4_patch_notes",
+        "minigame_1_2", "scene_5_server_logs", "minigame_1_3",
+        "scene_6_player_profile", "scene_7_timeline", "conclusion"
+    ]
+    scene_names = {
+        "scene_0": "Scene 0: 첫 만남",
+        "scene_0_reaction_1": "Scene 0: 첫 만남",
+        "scene_0_reaction_2": "Scene 0: 파트너십",
+        "scene_0_name_input": "Scene 0: 이름 입력",
+        "scene_1_hypothesis": "Scene 1: 가설 세우기",
+        "exploration": "Scene 2: 데이터 수집",
+        "scene_3_graph": "Scene 3: 그래프 분석",
+        "minigame_1_1": "미니게임 1: 급등 찾기",
+        "choice_2_investigation": "Scene 4: 조사 방향 선택",
+        "scene_4_patch_notes": "Scene 5: 문서 분석",
+        "minigame_1_2": "미니게임 2: 타임라인 퍼즐",
+        "scene_5_server_logs": "Scene 6: 로그 분석",
+        "minigame_1_3": "미니게임 3: 로그 필터링",
+        "scene_6_player_profile": "Scene 7: 프로필 분석",
+        "scene_7_timeline": "Scene 8: 사건 해결",
+        "conclusion": "사건 완료"
+    }
+    if st.session_state.episode_stage in scene_order:
+        idx = scene_order.index(st.session_state.episode_stage) + 1
+        total = len(scene_order)
+        scene_name = scene_names.get(st.session_state.episode_stage, "진행 중")
+        st.caption(f"📍 {scene_name} ({idx}/{total})")
 
     # 대화 표시 - 자동 스크롤 JavaScript 추가
     st.markdown("""
@@ -587,8 +637,66 @@ with col_chat:
                 with st.chat_message(last_msg["role"]):
                     st.write(last_msg["content"])
 
+    # Scene 0 - Reaction 1: 첫 반응
+    if st.session_state.episode_stage == "scene_0_reaction_1":
+        st.markdown("---")
+        st.markdown("### 💭 첫 만남")
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            if st.button("😮 누구야?", use_container_width=True):
+                add_message("user", "누구야?")
+                add_message("assistant", "놀랐지? 하하! 나는 AI 데이터 분석 전문가야!")
+                add_message("assistant", "이제부터 너랑 함께 사건을 해결할 거야!")
+                st.session_state.episode_stage = "scene_0_reaction_2"
+                st.rerun()
+
+        with col2:
+            if st.button("👋 반가워!", use_container_width=True):
+                add_message("user", "반가워!")
+                add_message("assistant", "오! 반갑다! 에너지 넘치는데?")
+                add_message("assistant", "나는 AI 데이터 분석 전문가고, 너랑 함께 일할 파트너야!")
+                st.session_state.episode_stage = "scene_0_reaction_2"
+                st.rerun()
+
+        with col3:
+            if st.button("😱 깜짝이야!", use_container_width=True):
+                add_message("user", "깜짝이야!")
+                add_message("assistant", "헤헤! 서프라이즈 성공! 나는 AI 데이터 분석가야!")
+                add_message("assistant", "앞으로 너랑 함께 데이터 사건을 해결할 거야!")
+                st.session_state.episode_stage = "scene_0_reaction_2"
+                st.rerun()
+
+    # Scene 0 - Reaction 2: 파트너십 제안
+    elif st.session_state.episode_stage == "scene_0_reaction_2":
+        st.markdown("---")
+        st.markdown("### 🤝 파트너가 될래?")
+        st.markdown("**캐스터**: 혼자 일하면 지루하잖아. 나랑 함께면 데이터도 재밌고, 사건도 쑥쑥 풀려!")
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            if st.button("🤔 혼자 일하는 게 익숙한데...", use_container_width=True):
+                add_message("user", "혼자 일하는 게 익숙한데...")
+                add_message("assistant", "아~ 혼자파구나! 괜찮아, 나 조용히 있을 수도 있어!")
+                add_message("assistant", "...근데 그러면 배고픔만 남는데? 차라리 같이 떠들면서 일하자!")
+                add_message("assistant", "자! 그럼 이름부터 알려줘! 계속 '야~' 하고 부를 수는 없잖아?")
+                st.session_state.awaiting_name_input = True
+                st.session_state.episode_stage = "scene_0_name_input"
+                st.rerun()
+
+        with col2:
+            if st.button("😊 좋아! 같이 해보자!", use_container_width=True, type="primary"):
+                add_message("user", "좋아! 같이 해보자!")
+                add_message("assistant", "오예! 완벽한 팀이 될 거야! 데이터 사건은 우리한테 맡겨!")
+                add_message("assistant", "자! 그럼 이름부터 알려줘! 계속 '야~' 하고 부를 수는 없잖아?")
+                st.session_state.detective_score += 5
+                st.session_state.awaiting_name_input = True
+                st.session_state.episode_stage = "scene_0_name_input"
+                st.rerun()
+
     # Scene 0: 이름 입력 대기
-    if st.session_state.awaiting_name_input:
+    elif st.session_state.awaiting_name_input:
         user_name = st.chat_input("네 이름을 입력해줘! (예: 지우)")
         if user_name:
             # 이름 정리
@@ -892,14 +1000,47 @@ with col_chat:
         st.markdown("### 🎮 미니게임 1.3: 코드 단서 헌터")
         st.markdown("**캐스터**: 자자자! 마지막 게임! '로그 헌터 챔피언십'!")
         st.markdown("**임무**: 필터를 사용해서 무단 수정을 증명하는 단 하나의 로그를 찾아!")
-        st.markdown("""
-**필터 힌트**:
-1. 📅 날짜: 25일 (급등한 날)
-2. 👤 사용자: 카이토 (admin01)
-3. ⚙️ 작업: Modify (수정)
-""")
 
-        if st.button("🔍 필터 적용: 25일 + 카이토 + Modify", use_container_width=True, type="primary"):
+        st.markdown("#### 🔍 로그 필터 설정")
+        st.markdown("**힌트**: 급등한 날, 수상한 사용자, 수정 작업을 찾아봐!")
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            st.markdown("**📅 날짜**")
+            dates = ["전체", "2025-01-24", "2025-01-25 ✅", "2025-01-26"]
+            date_selection = st.radio("날짜 선택:", dates, key="date_filter", label_visibility="collapsed")
+            if "2025-01-25" in date_selection:
+                st.session_state.filter_date = "2025-01-25"
+            else:
+                st.session_state.filter_date = None
+
+        with col2:
+            st.markdown("**👤 사용자**")
+            users = ["전체", "admin01 (카이토) ✅", "admin02 (루카스)", "dev01"]
+            user_selection = st.radio("사용자 선택:", users, key="user_filter", label_visibility="collapsed")
+            if "admin01" in user_selection:
+                st.session_state.filter_user = "admin01"
+            else:
+                st.session_state.filter_user = None
+
+        with col3:
+            st.markdown("**⚙️ 작업**")
+            actions = ["전체", "READ", "MODIFY ✅", "DELETE"]
+            action_selection = st.radio("작업 선택:", actions, key="action_filter", label_visibility="collapsed")
+            if "MODIFY" in action_selection:
+                st.session_state.filter_action = "MODIFY"
+            else:
+                st.session_state.filter_action = None
+
+        # 필터 적용 결과 표시
+        if st.session_state.filter_date and st.session_state.filter_user and st.session_state.filter_action:
+            st.success("✅ 모든 필터가 올바르게 설정되었어요!")
+        elif st.session_state.filter_date or st.session_state.filter_user or st.session_state.filter_action:
+            st.info(f"💡 필터 설정 중... ({sum([bool(st.session_state.filter_date), bool(st.session_state.filter_user), bool(st.session_state.filter_action)])}/3)")
+
+        if st.button("🔍 필터 적용하기", use_container_width=True, type="primary",
+                     disabled=not (st.session_state.filter_date and st.session_state.filter_user and st.session_state.filter_action)):
             add_message("user", "25일, 카이토, Modify로 필터링!")
             add_message("assistant", "**찾았다! 이거야!**")
             add_message("assistant", """
@@ -1014,14 +1155,61 @@ IP 주소: 203.0.113.45
         st.markdown(f"**최종 점수**: {st.session_state.detective_score}점")
         st.markdown(f"**획득 배지**: {len(st.session_state.badges)}개")
 
-        if st.button("🔄 처음부터 다시 하기"):
-            st.session_state.messages = []
-            st.session_state.episode_stage = "scene_0"
-            st.session_state.detective_score = 0
-            st.session_state.badges = []
-            st.session_state.user_name = None
-            st.session_state.awaiting_name_input = False
-            st.rerun()
+        # 등급 계산
+        if st.session_state.detective_score >= 200:
+            rank = "S (마스터 탐정)"
+            rank_emoji = "🏆"
+        elif st.session_state.detective_score >= 150:
+            rank = "A (우수 탐정)"
+            rank_emoji = "🥇"
+        elif st.session_state.detective_score >= 100:
+            rank = "B (숙련 탐정)"
+            rank_emoji = "🥈"
+        else:
+            rank = "C (신입 탐정)"
+            rank_emoji = "🥉"
+
+        st.markdown(f"**{rank_emoji} 등급**: {rank}")
+
+        # 배지 목록 표시
+        if len(st.session_state.badges) > 0:
+            badge_html = " ".join([f'<span class="badge badge-gold">{badge}</span>' for badge in st.session_state.badges])
+            st.markdown(f"**획득한 배지들**: {badge_html}", unsafe_allow_html=True)
+
+        st.markdown("---")
+        st.markdown("### 🎮 다음 단계")
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            if st.button("🔄 처음부터 다시 하기", use_container_width=True):
+                st.session_state.messages = []
+                st.session_state.episode_stage = "scene_0"
+                st.session_state.detective_score = 0
+                st.session_state.badges = []
+                st.session_state.user_name = None
+                st.session_state.awaiting_name_input = False
+                st.rerun()
+
+        with col2:
+            if st.button("📊 내 결과 보기", use_container_width=True, type="primary"):
+                st.balloons()
+                st.info(f"""
+**{st.session_state.user_name} 탐정의 결과**
+
+✅ 해결한 사건: 사라진 밸런스 패치
+⭐ 최종 점수: {st.session_state.detective_score}점
+🏆 등급: {rank}
+🎖️ 배지: {len(st.session_state.badges)}개
+
+**배운 기술:**
+- 이상치 탐지
+- 타임라인 분석
+- 로그 필터링
+- 디지털 지문 분석
+
+다음 에피소드를 기대해주세요! 🚀
+                """)
 
     # 기타 스테이지: 자유 채팅
     else:
