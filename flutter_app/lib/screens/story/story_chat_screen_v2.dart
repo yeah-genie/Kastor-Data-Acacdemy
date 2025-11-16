@@ -22,23 +22,27 @@ class StoryChatScreenV2 extends ConsumerStatefulWidget {
   ConsumerState<StoryChatScreenV2> createState() => _StoryChatScreenV2State();
 }
 
-class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
+class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2>
+    with SingleTickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _inputController = TextEditingController();
   int? _showingEmojiPickerForMessageIndex;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _isProcessingChoice = false;
+  late TabController _tabController;
 
   @override
   void dispose() {
     _scrollController.dispose();
     _inputController.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
     // Listen to story state changes and auto-scroll
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.listen(storyProviderV2, (previous, next) {
@@ -198,49 +202,15 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
       _scrollToBottom();
     }
 
-    // 데스크톱: 2-패널 레이아웃
-    // 모바일: Drawer + 채팅
+    // 데스크톱: 2-패널 레이아웃 (7:3 비율)
+    // 모바일: 탭 (채팅/데이터)
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: const Color(0xFF1A1D2E),
-      // 모바일용 Drawer
-      drawer: isMobile
-          ? Drawer(
-              backgroundColor: Colors.transparent,
-              child: const DataInsightsPanel(),
-            )
-          : null,
-      // 모바일용 FAB - 데이터 패널 빠른 접근
-      floatingActionButton: isMobile
-          ? FloatingActionButton.extended(
-              onPressed: () {
-                _scaffoldKey.currentState?.openDrawer();
-              },
-              backgroundColor: const Color(0xFF6366F1),
-              elevation: 4,
-              icon: const Icon(Icons.analytics, color: Colors.white, size: 20),
-              label: Text(
-                settings.language == 'ko' ? '데이터' : 'Data',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                ),
-              ),
-            )
-          : null,
       appBar: AppBar(
         backgroundColor: const Color(0xFF1A1D2E),
         elevation: 0,
-        leading: isMobile
-            ? IconButton(
-                icon: const Icon(Icons.menu),
-                onPressed: () {
-                  _scaffoldKey.currentState?.openDrawer();
-                },
-              )
-            : null,
-        automaticallyImplyLeading: isMobile,
+        automaticallyImplyLeading: false,
         title: Text(
           settings.language == 'ko' ? 'EP1: 사라진 밸런스 패치' : 'EP1: The Missing Balance Patch',
           style: TextStyle(
@@ -249,6 +219,24 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
             fontWeight: FontWeight.w600,
           ),
         ),
+        bottom: isMobile
+            ? TabBar(
+                controller: _tabController,
+                indicatorColor: const Color(0xFF6366F1),
+                labelColor: const Color(0xFF6366F1),
+                unselectedLabelColor: Colors.white.withOpacity(0.6),
+                tabs: [
+                  Tab(
+                    icon: const Icon(Icons.chat_bubble_outline, size: 20),
+                    text: settings.language == 'ko' ? '채팅' : 'Chat',
+                  ),
+                  Tab(
+                    icon: const Icon(Icons.analytics_outlined, size: 20),
+                    text: settings.language == 'ko' ? '데이터' : 'Data',
+                  ),
+                ],
+              )
+            : null,
         actions: [
           // Notifications (모바일에서만 간소화)
           if (!isMobile)
@@ -380,17 +368,43 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
                     ],
                   ),
                 )
-              : Row(
-              children: [
-                // 데스크톱: 왼쪽 데이터 패널
-                if (!isMobile) const DataInsightsPanel(),
+              : isMobile
+                  // 모바일: 탭뷰
+                  ? TabBarView(
+                      controller: _tabController,
+                      children: [
+                        // 채팅 탭
+                        _buildChatArea(storyState, settings, isMobile),
+                        // 데이터 탭
+                        const DataInsightsPanel(),
+                      ],
+                    )
+                  // 데스크톱: 7:3 비율 Row
+                  : Row(
+                      children: [
+                        // 채팅 영역 (왼쪽 70%)
+                        Expanded(
+                          flex: 7,
+                          child: _buildChatArea(storyState, settings, isMobile),
+                        ),
 
-                // 채팅 영역 (데스크톱에서는 오른쪽, 모바일에서는 전체)
-                Expanded(
-                  child: _buildChatArea(storyState, settings, isMobile),
-                ),
-              ],
-            ),
+                        // 데이터 패널 (오른쪽 30%)
+                        Expanded(
+                          flex: 3,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border(
+                                left: BorderSide(
+                                  color: const Color(0xFF6366F1).withOpacity(0.2),
+                                  width: 1,
+                                ),
+                              ),
+                            ),
+                            child: const DataInsightsPanel(),
+                          ),
+                        ),
+                      ],
+                    ),
     );
   }
 
@@ -1167,7 +1181,7 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
             const SizedBox(height: 12),
             Text(
               settings.language == 'ko'
-                  ? 'Kastor와 함께 데이터를 분석하고\n미스터리를 해결하세요'
+                  ? '캐스터와 함께 데이터를 분석하고\n미스터리를 해결하세요'
                   : 'Analyze data with Kastor and\nsolve the mystery together',
               style: TextStyle(
                 fontSize: 16,
