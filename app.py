@@ -6,6 +6,7 @@ from anthropic import Anthropic
 import os
 from dotenv import load_dotenv
 import time
+import re
 
 # 환경 변수 로드
 load_dotenv()
@@ -14,7 +15,8 @@ load_dotenv()
 st.set_page_config(
     page_title="캐스터 Data Academy - Episode 1",
     page_icon="🔍",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="collapsed"
 )
 
 # API 키 로드 (Streamlit Cloud와 로컬 모두 지원)
@@ -35,6 +37,59 @@ if api_key:
 else:
     st.error("⚠️ API 키가 설정되지 않았습니다. Streamlit Cloud Secrets 또는 .env 파일을 확인하세요.")
     st.stop()
+
+# 이름 정리 함수 (조사 제거)
+def clean_name(raw_name):
+    """이름에서 한국어 조사를 제거하여 깨끗한 이름만 추출"""
+    # "예진이야", "예진이", "예진야" -> "예진"
+    # "철수야", "철수이야" -> "철수"
+    cleaned = raw_name.strip()
+
+    # 마지막 글자가 조사인 경우 제거
+    if cleaned.endswith("이야"):
+        cleaned = cleaned[:-2]
+    elif cleaned.endswith("야"):
+        cleaned = cleaned[:-1]
+    elif cleaned.endswith("이"):
+        cleaned = cleaned[:-1]
+
+    return cleaned
+
+# 모바일 감지 및 CSS 스타일링
+def add_mobile_styles():
+    """모바일 최적화 CSS 추가"""
+    st.markdown("""
+    <style>
+    /* 모바일 최적화 */
+    @media (max-width: 768px) {
+        .block-container {
+            padding: 1rem 0.5rem !important;
+        }
+
+        /* 채팅 컨테이너 높이 증가 */
+        [data-testid="stVerticalBlock"] > div:has(> div > div > div > div[data-testid="stChatMessageContainer"]) {
+            height: 60vh !important;
+        }
+
+        /* 데이터 섹션 축소 */
+        .stExpander {
+            font-size: 0.9rem;
+        }
+    }
+
+    /* 채팅 자동 스크롤 */
+    .stChatFloatingInputContainer {
+        bottom: 20px;
+    }
+
+    /* 메시지 간격 조정 */
+    .stChatMessage {
+        margin-bottom: 0.5rem;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+add_mobile_styles()
 
 # 세션 상태 초기화
 if "messages" not in st.session_state:
@@ -212,12 +267,47 @@ if st.session_state.episode_stage == "intro" and st.session_state.intro_step < l
     if st.session_state.intro_step < len(intro_messages):
         st.rerun()
 
-# 2-Column 레이아웃: 왼쪽(데이터 7), 오른쪽(채팅 3)
+# 모바일 감지 (User-Agent 기반)
+# 모바일에서는 1열 레이아웃, 데스크톱에서는 2열 레이아웃
+st.markdown("""
+<script>
+const isMobile = window.innerWidth <= 768;
+if (isMobile) {
+    document.body.classList.add('mobile-view');
+}
+</script>
+<style>
+@media (max-width: 768px) {
+    [data-testid="column"] {
+        width: 100% !important;
+        flex: 100% !important;
+    }
+}
+</style>
+""", unsafe_allow_html=True)
+
+# 2-Column 레이아웃: 왼쪽(데이터), 오른쪽(채팅)
+# 모바일에서는 자동으로 1열로 전환됨
 col_data, col_chat = st.columns([7, 3])
 
 # 오른쪽 컬럼: 채팅 영역
 with col_chat:
     st.subheader("💬 탐정 파트너 캐스터")
+
+    # 대화 표시 - 자동 스크롤 JavaScript 추가
+    st.markdown("""
+    <script>
+    // 채팅 자동 스크롤
+    function scrollToBottom() {
+        const chatContainer = window.parent.document.querySelector('[data-testid="stVerticalBlock"]');
+        if (chatContainer) {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    }
+    // 페이지 로드 시 및 메시지 추가 시 자동 스크롤
+    setTimeout(scrollToBottom, 100);
+    </script>
+    """, unsafe_allow_html=True)
 
     # 대화 표시
     chat_container = st.container(height=500)
@@ -320,8 +410,10 @@ with col_chat:
 
         # 이름 입력 체크
         if st.session_state.user_name is None and st.session_state.episode_stage == "intro":
-            st.session_state.user_name = user_input
-            response = f"오, {user_input} 탐정! 멋진 이름이네? 🎉 자, 그럼 사건 해결 시작해볼까? 왼쪽 데이터를 확인해봐!"
+            # 이름 정리 (조사 제거)
+            cleaned_name = clean_name(user_input)
+            st.session_state.user_name = cleaned_name
+            response = f"오, {cleaned_name} 탐정! 멋진 이름이네? 🎉 자, 그럼 사건 해결 시작해볼까? 왼쪽 데이터를 확인해봐! 뭔가 말이 이상하지?"
             st.session_state.episode_stage = "exploration"
         else:
             context = STAGE_CONTEXTS.get(st.session_state.episode_stage, "")
