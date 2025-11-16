@@ -125,46 +125,55 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   Widget _buildNavItem(int index) {
     final tab = _tabs[index];
     final isSelected = _currentTabIndex == index;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 600;
 
-    return InkWell(
-      onTap: () {
-        setState(() {
-          _currentTabIndex = index;
-        });
-      },
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? const Color(0xFF6366F1).withOpacity(0.2)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected
-                ? const Color(0xFF6366F1)
-                : Colors.transparent,
-            width: 1,
+    return Flexible(
+      child: InkWell(
+        onTap: () {
+          setState(() {
+            _currentTabIndex = index;
+          });
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: isMobile ? 8 : 16,
+            vertical: isMobile ? 6 : 8,
           ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              tab.icon,
-              color: isSelected ? const Color(0xFF6366F1) : Colors.white60,
-              size: 24,
+          decoration: BoxDecoration(
+            color: isSelected
+                ? const Color(0xFF6366F1).withOpacity(0.2)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isSelected
+                  ? const Color(0xFF6366F1)
+                  : Colors.transparent,
+              width: 1,
             ),
-            const SizedBox(height: 4),
-            Text(
-              tab.label,
-              style: TextStyle(
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                tab.icon,
                 color: isSelected ? const Color(0xFF6366F1) : Colors.white60,
-                fontSize: 12,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                size: isMobile ? 20 : 24,
               ),
-            ),
-          ],
+              SizedBox(height: isMobile ? 2 : 4),
+              Text(
+                tab.label,
+                style: TextStyle(
+                  color: isSelected ? const Color(0xFF6366F1) : Colors.white60,
+                  fontSize: isMobile ? 10 : 12,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ],
+          ),
         ),
       ),
     );

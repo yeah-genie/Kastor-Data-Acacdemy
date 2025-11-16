@@ -11,6 +11,8 @@ class EpisodeSelectionScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final gameState = ref.watch(gameStateProvider);
     final episodes = _getEpisodes(gameState.completedEpisodes);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 600;
 
     return Scaffold(
       body: Container(
@@ -29,52 +31,60 @@ class EpisodeSelectionScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header
+              // Header - Responsive padding
               Padding(
-                padding: const EdgeInsets.all(24),
+                padding: EdgeInsets.all(isMobile ? 16 : 24),
                 child: Row(
                   children: [
                     IconButton(
                       onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                      icon: Icon(
+                        Icons.arrow_back,
+                        color: Colors.white,
+                        size: isMobile ? 20 : 24,
+                      ),
                     ),
-                    const SizedBox(width: 16),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Episodes',
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineMedium
-                              ?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Select a case to investigate',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.7),
-                            fontSize: 14,
+                    SizedBox(width: isMobile ? 8 : 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Episodes',
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineMedium
+                                ?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: isMobile ? 20 : 28,
+                                ),
                           ),
-                        ),
-                      ],
+                          SizedBox(height: isMobile ? 2 : 4),
+                          Text(
+                            'Select a case to investigate',
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.7),
+                              fontSize: isMobile ? 12 : 14,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
 
-              // Episode Cards
+              // Episode Cards - Responsive padding
               Expanded(
                 child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 24),
                   itemCount: episodes.length,
                   itemBuilder: (context, index) {
                     return _EpisodeCard(
                       episode: episodes[index],
                       index: index,
+                      isMobile: isMobile,
                     );
                   },
                 ),
@@ -139,16 +149,18 @@ class EpisodeSelectionScreen extends ConsumerWidget {
 class _EpisodeCard extends StatelessWidget {
   final _Episode episode;
   final int index;
+  final bool isMobile;
 
   const _EpisodeCard({
     required this.episode,
     required this.index,
+    this.isMobile = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 24),
+      margin: EdgeInsets.only(bottom: isMobile ? 16 : 24),
       child: Card(
         elevation: 8,
         shape: RoundedRectangleBorder(
@@ -188,17 +200,17 @@ class _EpisodeCard extends StatelessWidget {
                   },
             borderRadius: BorderRadius.circular(20),
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(isMobile ? 16 : 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Header Row
                   Row(
                     children: [
-                      // Episode Number
+                      // Episode Number - Responsive size
                       Container(
-                        width: 64,
-                        height: 64,
+                        width: isMobile ? 48.0 : 64.0,
+                        height: isMobile ? 48.0 : 64.0,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           gradient: episode.isLocked
@@ -237,23 +249,25 @@ class _EpisodeCard extends StatelessWidget {
                         ),
                         child: Center(
                           child: episode.isLocked
-                              ? const Icon(Icons.lock,
-                                  color: Colors.white54, size: 28)
+                              ? Icon(Icons.lock,
+                                  color: Colors.white54,
+                                  size: isMobile ? 20 : 28)
                               : episode.isCompleted
-                                  ? const Icon(Icons.check,
-                                      color: Colors.white, size: 32)
+                                  ? Icon(Icons.check,
+                                      color: Colors.white,
+                                      size: isMobile ? 24 : 32)
                                   : Text(
                                       '${episode.number}',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: 28,
+                                        fontSize: isMobile ? 20 : 28,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
                         ),
                       ),
-                      const SizedBox(width: 16),
-                      // Title & Meta
+                      SizedBox(width: isMobile ? 12 : 16),
+                      // Title & Meta - Responsive font size
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -262,17 +276,17 @@ class _EpisodeCard extends StatelessWidget {
                               'Episode ${episode.number}',
                               style: TextStyle(
                                 color: Colors.white.withOpacity(0.7),
-                                fontSize: 12,
+                                fontSize: isMobile ? 10 : 12,
                                 fontWeight: FontWeight.w600,
                                 letterSpacing: 1,
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: isMobile ? 2 : 4),
                             Text(
                               episode.title,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 18,
+                                fontSize: isMobile ? 15 : 18,
                                 fontWeight: FontWeight.bold,
                                 height: 1.2,
                               ),

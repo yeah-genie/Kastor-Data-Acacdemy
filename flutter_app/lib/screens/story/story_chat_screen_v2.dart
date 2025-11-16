@@ -145,6 +145,8 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
   Widget build(BuildContext context) {
     final storyState = ref.watch(storyProviderV2);
     final settings = ref.watch(settingsProvider);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isMobile = screenWidth < 600;
 
     // Scroll to bottom when new messages arrive
     if (storyState.messages.isNotEmpty) {
@@ -158,8 +160,8 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
         elevation: 0,
         title: Text(
           settings.language == 'ko' ? 'EP1: 사라진 밸런스 패치' : 'EP1: The Missing Balance Patch',
-          style: const TextStyle(
-            fontSize: 16,
+          style: TextStyle(
+            fontSize: isMobile ? 14 : 16,
             color: Colors.white,
             fontWeight: FontWeight.w600,
           ),
@@ -223,12 +225,15 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
               ),
             ],
           ),
-          // Investigation points
+          // Investigation points - Responsive padding
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: EdgeInsets.symmetric(horizontal: isMobile ? 8.0 : 16.0),
             child: Center(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: EdgeInsets.symmetric(
+                  horizontal: isMobile ? 8 : 12,
+                  vertical: isMobile ? 4 : 6,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFF6366F1).withOpacity(0.2),
                   borderRadius: BorderRadius.circular(16),
@@ -236,13 +241,14 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.star, size: 16, color: Color(0xFFFBBF24)),
-                    const SizedBox(width: 4),
+                    Icon(Icons.star, size: isMobile ? 14 : 16, color: const Color(0xFFFBBF24)),
+                    SizedBox(width: isMobile ? 2 : 4),
                     Text(
                       '${storyState.investigationPoints}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFFFBBF24),
+                        fontSize: isMobile ? 12 : 14,
+                        color: const Color(0xFFFBBF24),
                       ),
                     ),
                   ],
@@ -283,13 +289,16 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
                       final message = storyState.messages[index];
                       final prevMessage = index > 0 ? storyState.messages[index - 1] : null;
                       final isPlayerMessage = message.speaker == 'detective';
-                      
+                      final screenWidth = MediaQuery.of(context).size.width;
+                      final isMobile = screenWidth < 600;
+                      final avatarSize = isMobile ? 48.0 : 60.0;
+
                       // Check if we should hide avatar (same speaker consecutive messages)
-                      final hideAvatar = prevMessage != null && 
+                      final hideAvatar = prevMessage != null &&
                           prevMessage.speaker == message.speaker &&
                           !message.isNarration &&
                           !prevMessage.isNarration;
-                      
+
                       // Check if we should hide time (within 1 minute of previous message)
                       final hideTime = prevMessage != null &&
                           prevMessage.speaker == message.speaker &&
@@ -329,11 +338,11 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
                               ? MainAxisAlignment.end
                               : MainAxisAlignment.start,
                           children: [
-                            // Avatar (hide if consecutive message from same person)
+                            // Avatar (hide if consecutive message from same person) - Responsive size
                             if (!isPlayerMessage && !hideAvatar) ...[
                               Container(
-                                width: 60,
-                                height: 60,
+                                width: avatarSize,
+                                height: avatarSize,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   gradient: LinearGradient(
@@ -346,28 +355,28 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
                                   ),
                                   border: Border.all(
                                     color: _getSpeakerColor(message.speaker).withOpacity(0.5),
-                                    width: 2,
+                                    width: isMobile ? 1.5 : 2,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
                                       color: _getSpeakerColor(message.speaker).withOpacity(0.4),
-                                      blurRadius: 12,
-                                      spreadRadius: 2,
+                                      blurRadius: isMobile ? 8 : 12,
+                                      spreadRadius: isMobile ? 1 : 2,
                                     ),
                                   ],
                                 ),
                                 child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
+                                  padding: EdgeInsets.all(isMobile ? 6.0 : 8.0),
                                   child: SvgPicture.asset(
                                     _getAvatarPath(message.speaker),
-                                    width: 44,
-                                    height: 44,
+                                    width: avatarSize - (isMobile ? 12 : 16),
+                                    height: avatarSize - (isMobile ? 12 : 16),
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 12),
+                              SizedBox(width: isMobile ? 8 : 12),
                             ] else if (!isPlayerMessage && hideAvatar) ...[
-                              const SizedBox(width: 72), // Space for hidden avatar (increased)
+                              SizedBox(width: avatarSize + (isMobile ? 8 : 12)), // Space for hidden avatar
                             ],
 
                             // Message bubble

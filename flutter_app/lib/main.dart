@@ -222,22 +222,27 @@ class _HomePageState extends ConsumerState<HomePage> {
                   
                   const SizedBox(height: 12),
                   
-                  // Motto (Academic Latin style)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 40),
-                    child: Text(
-                      settings.language == 'ko'
-                          ? '데이터로 진실을 밝히다'
-                          : 'Veritas per Data',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'Cinzel',
-                        fontSize: 14,
-                        fontStyle: FontStyle.italic,
-                        color: AcademyColors.neonCyan.withOpacity(0.8),
-                        letterSpacing: 1,
-                      ),
-                    ),
+                  // Motto (Academic Latin style) - Responsive padding
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isMobile = constraints.maxWidth < 600;
+                      return Padding(
+                        padding: EdgeInsets.symmetric(horizontal: isMobile ? 24 : 40),
+                        child: Text(
+                          settings.language == 'ko'
+                              ? '데이터로 진실을 밝히다'
+                              : 'Veritas per Data',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'Cinzel',
+                            fontSize: isMobile ? 12 : 14,
+                            fontStyle: FontStyle.italic,
+                            color: AcademyColors.neonCyan.withOpacity(0.8),
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                   
                   const SizedBox(height: 8),
@@ -378,27 +383,32 @@ class _HomePageState extends ConsumerState<HomePage> {
                     },
                   ),
 
-                  // Progress indicator
+                  // Progress indicator - Responsive padding
                   if (gameState.gameProgress > 0) ...[
                     const SizedBox(height: 60),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 60),
-                      child: Column(
-                        children: [
-                          Text(
-                            '진행률: ${(gameState.gameProgress * 100).toStringAsFixed(0)}%',
-                            style: const TextStyle(color: Colors.white70),
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final isMobile = constraints.maxWidth < 600;
+                        return Padding(
+                          padding: EdgeInsets.symmetric(horizontal: isMobile ? 40 : 60),
+                          child: Column(
+                            children: [
+                              Text(
+                                '진행률: ${(gameState.gameProgress * 100).toStringAsFixed(0)}%',
+                                style: const TextStyle(color: Colors.white70),
+                              ),
+                              const SizedBox(height: 8),
+                              LinearProgressIndicator(
+                                value: gameState.gameProgress,
+                                backgroundColor: Colors.white24,
+                                valueColor: const AlwaysStoppedAnimation<Color>(
+                                  Color(0xFF6366F1),
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 8),
-                          LinearProgressIndicator(
-                            value: gameState.gameProgress,
-                            backgroundColor: Colors.white24,
-                            valueColor: const AlwaysStoppedAnimation<Color>(
-                              Color(0xFF6366F1),
-                            ),
-                          ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
                   ],
                 ],
@@ -465,8 +475,11 @@ class _MenuButtonState extends State<_MenuButton> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final buttonWidth = screenWidth < 360 ? screenWidth - 40 : (screenWidth < 600 ? 320 : 360);
+
     final button = SizedBox(
-      width: 320,
+      width: buttonWidth,
       child: MouseRegion(
         onEnter: (_) => setState(() => _isHovered = true),
         onExit: (_) => setState(() => _isHovered = false),
