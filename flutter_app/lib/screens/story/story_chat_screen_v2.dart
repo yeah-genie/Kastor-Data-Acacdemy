@@ -358,8 +358,9 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
                       final prevMessage = index > 0 ? storyState.messages[index - 1] : null;
                       final isPlayerMessage = message.speaker == 'detective';
                       final screenWidth = MediaQuery.of(context).size.width;
-                      final isMobile = screenWidth < 600;
-                      final avatarSize = isMobile ? 48.0 : 60.0;
+                      // 메시지 UI 요소 크기 기준 (아바타, 패딩 등) - 600px 기준
+                      final isSmallScreen = screenWidth < 600;
+                      final avatarSize = isSmallScreen ? 48.0 : 60.0;
 
                       // Check if we should hide avatar (same speaker consecutive messages)
                       final hideAvatar = prevMessage != null &&
@@ -423,28 +424,28 @@ class _StoryChatScreenV2State extends ConsumerState<StoryChatScreenV2> {
                                   ),
                                   border: Border.all(
                                     color: _getSpeakerColor(message.speaker).withOpacity(0.5),
-                                    width: isMobile ? 1.5 : 2,
+                                    width: isSmallScreen ? 1.5 : 2,
                                   ),
                                   boxShadow: [
                                     BoxShadow(
                                       color: _getSpeakerColor(message.speaker).withOpacity(0.4),
-                                      blurRadius: isMobile ? 8 : 12,
-                                      spreadRadius: isMobile ? 1 : 2,
+                                      blurRadius: isSmallScreen ? 8 : 12,
+                                      spreadRadius: isSmallScreen ? 1 : 2,
                                     ),
                                   ],
                                 ),
                                 child: Padding(
-                                  padding: EdgeInsets.all(isMobile ? 6.0 : 8.0),
+                                  padding: EdgeInsets.all(isSmallScreen ? 6.0 : 8.0),
                                   child: SvgPicture.asset(
                                     _getAvatarPath(message.speaker),
-                                    width: avatarSize - (isMobile ? 12 : 16),
-                                    height: avatarSize - (isMobile ? 12 : 16),
+                                    width: avatarSize - (isSmallScreen ? 12 : 16),
+                                    height: avatarSize - (isSmallScreen ? 12 : 16),
                                   ),
                                 ),
                               ),
-                              SizedBox(width: isMobile ? 8 : 12),
+                              SizedBox(width: isSmallScreen ? 8 : 12),
                             ] else if (!isPlayerMessage && hideAvatar) ...[
-                              SizedBox(width: avatarSize + (isMobile ? 8 : 12)), // Space for hidden avatar
+                              SizedBox(width: avatarSize + (isSmallScreen ? 8 : 12)), // Space for hidden avatar
                             ],
 
                             // Message bubble
